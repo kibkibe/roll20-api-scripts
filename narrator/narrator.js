@@ -1,4 +1,4 @@
-/* https://github.com/kibkibe/roll20-api-scripts/narrator/ */
+/* https://github.com/kibkibe/roll20-api-scripts/narrator */
 /* (narrator.js) 201127 코드 시작 */
 on('ready', function() {
     if (!state.narration) {
