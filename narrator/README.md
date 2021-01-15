@@ -11,7 +11,7 @@ Roll20에서 ORPG를 진행할 때 긴 나레이션을 한꺼번에 입력한 �
 
 1. roll20 세션방의 대문에 해당하는 페이지에서 [설정]->[API 스크립트]를 선택해 스크립트 수정 페이지로 들어갑니다. (PRO 계정에서만 이 메뉴가 보입니다.)
 
-2. New Script에 이 코드들을 복사해 붙여놓고 [Save Script]로 저장합니다. 
+2. New Script에 [[ narrator.js ]](https://github.com/kibkibe/roll20-api-scripts/blob/master/narrator/narrator.js)의 코드들을 복사해 붙여놓고 [Save Script]로 저장합니다. 
 
 3. 페이지 아래쪽의 API Output Console에 에러 메시지가 표시되지 않는다면 정상적으로 적용된 것입니다. 세션방에서 테스트를 진행할 수 있습니다.
 
