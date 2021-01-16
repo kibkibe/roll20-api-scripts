@@ -3,7 +3,7 @@
 
 ## 설치법
 ### 준비1. 스크립트 적용하기
-[도움말 페이지 바로가기](https://github.com/kibkibe/roll20-api-scripts/wiki)
+[[ 스크립트 공통 설치법 안내 페이지 ]](https://github.com/kibkibe/roll20-api-scripts/wiki) 바로가기
 1. roll20 세션방의 대문에 해당하는 페이지에서 [설정]->[API 스크립트]를 선택해 스크립트 수정 페이지로 들어갑니다. (PRO 계정에서만 이 메뉴가 보입니다.)
 2. New Script에 [[ 코드 ]](https://github.com/kibkibe/roll20-api-scripts/blob/master/visual_dialogue/visual_dialogue.js)들을 복사해 붙여넣습니다.
 3. [옵션](#옵션) 파트를 참조하여 세션방에 적용할 옵션을 설정합니다.
