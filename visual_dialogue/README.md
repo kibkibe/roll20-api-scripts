@@ -1,6 +1,6 @@
 ## 소개
 비주얼노벨 스타일의 채팅 화면을 구현해주는 스크립트입니다.  
-롤플레잉 대사를 화면에 부각되게 표시하고 시각적인 연출을  수 있습니다.
+롤플레잉 대사를 화면에 부각되게 표시하고 시각적인 연출을 보여줄 수 있습니다.
 
 ## 설치법
 ### 준비1. 스크립트 적용하기
@@ -9,6 +9,11 @@
 2. New Script에 [[ 코드 ]](https://github.com/kibkibe/roll20-api-scripts/blob/master/visual_dialogue/visual_dialogue.js)들을 복사해 붙여넣습니다.
 3. [옵션](#옵션) 파트를 참조하여 세션방에 적용할 옵션을 설정합니다.
 4. [Save Script]를 눌러 저장합니다. 페이지 아래쪽의 API Output Console에 에러 메시지가 표시되지 않는다면 정상적으로 적용된 것입니다.
+
+### ! 중요
+> 이 코드는 API를 통해 출력된 대사들은 기본적으로 표시대상에서 제외하도록 설정되어 있습니다.
+> as_switcher.js, as_autofiller.js, narrator.js 등의 스크립트로 대사를 입력하실 경우
+> 해당 스크립트들을 visual_dialogue.js와 호환되는 새 버전으로 업데이트하시기 바랍니다.
 
 ### 준비2. 요소 배치 -필수 토큰 생성하기
 ![](https://github.com/kibkibe/roll20-api-scripts/blob/master/wiki_image/vd/layout_1.jpg)
