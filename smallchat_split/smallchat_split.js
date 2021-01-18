@@ -1,4 +1,4 @@
-/* 설치법: https://github.com/kibkibe/roll20_api_scripts/wiki/%5B%EC%84%A4%EC%B9%98%EB%B2%95%5D-smallchat_split.js */
+/* https://github.com/kibkibe/roll20-api-scripts/tree/master/smallchat_split */
 /* (smallchat_split.js) 201101 코드 시작 */
 on('ready', function() {
     if (!state.smallchatlog) state.smallchatlog = [];

@@ -1,5 +1,5 @@
-/* 설치법: https://github.com/kibkibe/roll20_api_scripts/wiki/%5B%EC%84%A4%EC%B9%98%EB%B2%95%5D-temporary_chat.js */
-/* (temporary_chat.js) 201101 코드 시작 */
+/* https://github.com/kibkibe/roll20-api-scripts/tree/master/utilities */
+/* (temporary_chat.js) 210118 코드 시작 */
 on("chat:message", function(msg){
     if (msg.type == "api"){
         if (msg.content.indexOf("!? ") === 0) {
@@ -9,10 +9,10 @@ on("chat:message", function(msg){
             let style = "font-size:0.9em;";
             try {
                 sendChat((show_player_name? "player|"+msg.playerid : msg.who),"<span style='" + style + "'>"+msg.content.substring(3, msg.content.length)+"</span>",null,{noarchive:true});
-            } catch (error) {
+            } catch (err) {
                 sendChat('error','/w GM '+err,null,{noarchive:true});
             }
         }
     }
 });
-/* (temporary_chat.js) 201101 코드 종료 */
+/* (temporary_chat.js) 210118 코드 종료 */

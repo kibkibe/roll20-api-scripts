@@ -1,5 +1,5 @@
-/* https://github.com/kibkibe/roll20-api-scripts/wiki/%5B%EC%84%A4%EC%B9%98%EB%B2%95%5D-as_autofiller.js */
-/* (as_autofiller.js) 201215 코드 시작 */
+/* https://github.com/kibkibe/roll20-api-scripts/tree/master/as_autofiller */
+/* (as_autofiller.js) 210118 코드 시작 */
 on("chat:message", function(msg)
 {
 if (msg.type == "api"){
@@ -32,14 +32,14 @@ if (msg.type == "api"){
                 }
                 if (nearest_item.idx != false_value) {
                     sendChat("character|"+characters[nearest_item.idx].get('id'),
-                    msg.content.substring(command.length+ keyword.length+1, msg.content.length));
+                    msg.content.substring(command.length+ keyword.length+1, msg.content.length)+(api_tag&&!msg.content.includes(api_tag)?api_tag:""));
                 } else {
                     sendChat("as_autofiller.js", "/w gm **" + keyword + "**가 이름에 포함된 NPC가 없습니다.",null,{noarchive:true});
                 }
             } else if (keyword && keyword.length == command.length) {
                 var gm = findObjs({ name: master_name, type: 'character'})[0];
                 if (gm) {
-                    sendChat("character|"+gm.get("_id"),msg.content.substring(3));
+                    sendChat("character|"+gm.get("_id"),msg.content.substring(3) +(api_tag&&!msg.content.includes(api_tag)?api_tag:""));
                 } else {
                     sendChat("system","/w gm **!!** 뒤에 입력한 키워드가 없고 이름이 '" + master_name + "'인 캐릭터가 저널에 없습니다.",null,{noarchive:true});
                 }
@@ -50,4 +50,4 @@ if (msg.type == "api"){
     }
 }
 });
-/* (as_autofiller.js) 201212 코드 종료 */
+/* (as_autofiller.js) 210118 코드 종료 */

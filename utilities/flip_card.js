@@ -1,5 +1,5 @@
-/* 설치법: https://github.com/kibkibe/roll20_api_scripts/wiki/%5B%EC%84%A4%EC%B9%98%EB%B2%95%5D-flip_card.js */
-/* (flip_card.js) 201101 코드 시작 */
+/* https://github.com/kibkibe/roll20-api-scripts/tree/master/utilities */
+/* (flip_card.js) 210118 코드 시작 */
 on("chat:message", function(msg)
 {
 if (msg.type == "api"){
@@ -8,7 +8,7 @@ if (msg.type == "api"){
 			for (var i=0;i<msg.selected.length;i++) {
 				var obj = getObj("graphic", msg.selected[i]._id);
 				var side = obj.get('currentSide')===0?1:0;
-				var img = obj.get('sides').split('|')[side].replace('%3A',':').replace('%3F','?').replace('max','thumb');
+				var img = obj.get('sides').split('|')[side].replace('%3A',':').replace('%3F','?').replace('max','thumb').replace('med','thumb');
 				obj.set({currentSide:side,imgsrc:img});
 			}
 		} catch(err){
@@ -16,4 +16,4 @@ if (msg.type == "api"){
 		}
     }
 }});
-/* (flip_card.js) 201101 코드 종료 */
+/* (flip_card.js) 210118 코드 종료 */

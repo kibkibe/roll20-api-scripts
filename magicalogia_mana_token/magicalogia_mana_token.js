@@ -1,4 +1,4 @@
-/* 설치법: https://github.com/kibkibe/roll20_api_scripts/wiki/%5B%EC%84%A4%EC%B9%98%EB%B2%95%5D-magicalogia_mana_token.js */
+/* https://github.com/kibkibe/roll20-api-scripts/tree/master/magicalogia_mana_token */
 /* (magicalogia_mana_token.js) 201210 코드 시작 */
 let charge_check = [
     {attr: "Magic_*id*_Charge", is_static_attr: false},

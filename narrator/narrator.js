@@ -1,5 +1,6 @@
 /* https://github.com/kibkibe/roll20-api-scripts/tree/master/narrator */
-/* (narrator.js) 201127 코드 시작 */
+/* (narrator.js) 210118 코드 시작 */
+const nt_linebreaker = 'Uk3jmApq-*QzfkMA';
 on('ready', function() {
     if (!state.narration) {
         state.narration = [];
@@ -16,7 +17,10 @@ function narrate() {
 
 	try {
     	if (state.is_narrating == 2 && state.narration.length > 0) {
-    		sendChat(state.narration[0].as,state.narration[0].msg);
+			const split = state.narration[0].msg.split(nt_linebreaker);
+			split.forEach(element => {
+				sendChat(state.narration[0].as,element + (api_tag&&!element.includes(api_tag)?api_tag:""));
+			});
     		state.narration.splice(0,1);
     		if (state.narration.length > 0) {
     			setTimeout(narrate, interval);
@@ -33,30 +37,26 @@ function narrate() {
 on("chat:message", function(msg)
 {
 if (msg.type == "api"){
-	if (msg.content == "!,") { //일시정지/재시작
-		if (state.is_narrating == 2) {
-			state.is_narrating = 1;
-		} else {
-			state.is_narrating = 2;
-			narrate();
-		}
-	} else if (msg.content == "!/") { //취소
-	
-		try {
-    	    state.narration = [];
-    	    state.is_narrating = 1;
-		} catch (err) {
-			sendChat('error','/w GM '+err,null,{noarchive:true});
-		}
-	    
-	} else if (msg.content.indexOf("!... ") === 0) { //명령어를 변경하실 수 있습니다.
-		try {
+	try {
+		if (msg.content == "!,") { //일시정지/재시작
+			if (state.is_narrating == 2) {
+				state.is_narrating = 1;
+			} else {
+				state.is_narrating = 2;
+				narrate();
+			}
+		} else if (msg.content == "!/") { //취소
+		
+				state.narration = [];
+				state.is_narrating = 1;
+			
+		} else if (msg.content.indexOf("!... ") == 0) { //명령어를 변경하실 수 있습니다.
 			var str = msg.content.replace("!... ","");
 			var as_who;
 
-			if (str.indexOf("/desc") === 0) {
+			if (str.indexOf("/desc") == 0) {
 				as_who = '';
-			} else if (str.indexOf("/as") === 0 || str.indexOf("/emas") === 0) {
+			} else if (str.indexOf("/as") == 0 || str.indexOf("/emas") == 0) {
 				var arr = str.split('"');
 				var cha = findObjs({_type: "character", name: arr[1]})[0];
 				if (cha) {
@@ -89,10 +89,24 @@ if (msg.type == "api"){
 			    state.is_narrating = 2;
 			    setTimeout(narrate, 500);
 			}
+		} else if (msg.content.indexOf("!,,, ") == 0) {
 
-		} catch (err) {
-			sendChat('error','/w GM '+err,null,{noarchive:true});
+			var str = msg.content.replace("!,,, ","");
+			if (state.narration.length > 0) {
+				state.narration[state.narration.length-1].msg += "<br>" + str;
+			} else {
+				sendChat('error','/w GM !,,, 명령어로 줄바꿈을 시도했으나 이전 줄이 없습니다. !...로 첫줄을 먼저 쓰세요.',null,{noarchive:true});
+			}
+		} else if (msg.content.indexOf("!. ") == 0) {
+			var str = msg.content.replace("!. ","");
+			if (state.narration.length > 0) {
+				state.narration[state.narration.length-1].msg += nt_linebreaker + str;
+			} else {
+				sendChat('error','/w GM !. 명령어로 줄바꿈을 시도했으나 이전 줄이 없습니다. !...로 첫줄을 먼저 쓰세요.',null,{noarchive:true});
+			}
 		}
-    }
+	} catch (err) {
+		sendChat('error','/w GM '+err,null,{noarchive:true});
+	}
 }});
-/* (narrator.js) 201127 코드 종료 */
+/* (narrator.js) 210118 코드 종료 */

@@ -1,4 +1,4 @@
-/* 설치법: https://github.com/kibkibe/roll20_api_scripts/wiki/%5B%EC%84%A4%EC%B9%98%EB%B2%95%5D-attribute_tracker.js */
+/* https://github.com/kibkibe/roll20-api-scripts/tree/master/attribute_tracker */
 /* (attribute_tracker.js) 201212 코드 시작 */
 // !! 아래의 예시 check_list 중 사용하실 1개만 남기고 삭제하시거나 사용할 룰에 맞춰 새 체크리스트를 생성하세요.
 // CoC 체크리스트

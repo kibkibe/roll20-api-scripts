@@ -1,5 +1,5 @@
-/* 설치법: https://github.com/kibkibe/roll20_api_scripts/wiki/%5B%EC%84%A4%EC%B9%98%EB%B2%95%5D-token_scripter.js */
-/* (token_scripter.js) 201228 코드 시작 */
+/* https://github.com/kibkibe/roll20-api-scripts/tree/master/token_scripter */
+/* (token_scripter.js) 210118 코드 시작 */
 on("change:graphic", function(obj, prev) {
     try {
         if (obj.get('top') === prev.top && obj.get('left') === prev.left) return;
@@ -46,4 +46,4 @@ on("change:graphic", function(obj, prev) {
         sendChat("error","/w gm "+err,null,{noarchive:true});
     }
 });
-/* (token_scripter.js) 201228 코드 종료 */
+/* (token_scripter.js) 210118 코드 종료 */

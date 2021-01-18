@@ -1,4 +1,4 @@
-/* 설치법: https://github.com/kibkibe/roll20_api_scripts/wiki/%5B%EC%84%A4%EC%B9%98%EB%B2%95%5D-smallchat.js */
+/* https://github.com/kibkibe/roll20-api-scripts/tree/master/smallchat */
 /* (smallchat.js) 201101 코드 시작 */
 on("chat:message", function(msg)
 {

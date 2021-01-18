@@ -1,5 +1,7 @@
 /* https://github.com/kibkibe/roll20-api-scripts/visual_dialogue */
-/* (visual_dialogue.js) 210110 코드 시작 */
+/* (visual_dialogue.js) 210116 코드 시작 */
+const api_tag = '<a href="#vd-permitted-api-chat"></a>';
+const vd_divider = 'ℍ';
 on('ready', function() {
     state.vd_settings = {
         // 스탠딩 이미지 관련
@@ -7,10 +9,10 @@ on('ready', function() {
                         // 이 숫자를 넘어가면 엑스트라, 혹은 채팅기록이 가장 오래된 캐릭터의 스탠딩이 삭제되고 그 위치에 새 스탠딩이 추가됩니다.
         width: 420,     // 표시할 스탠딩 이미지들의 가로 사이즈입니다.
         height: 420,    // 표시할 스탠딩 이미지들의 세로 사이즈입니다.
-        show_extra_standing: true, // /as를 이용해 저널에 없는 캐릭터로 채팅할 경우 엑스트라 전용 스탠딩을 표시할지 (true) 스탠딩을 생략할지(false) 설정합니다.
-                                   // true일 경우 extra_name에 설정한 이름에 따라 엑스트라용 스탠딩을 가져옵니다.
         use_emotion: true,  // 캐릭터들이 여러 감정표현을 사용할지(true) 대표 스탠딩 하나만 사용할지(false) 설정합니다.
                             // false일 경우 deck_name에 설정한 카드 덱에서 모든 캐릭터의 스탠딩 이미지를 가져옵니다.
+        show_extra_standing: true,  // /as를 이용해 저널에 없는 캐릭터로 채팅할 경우 엑스트라 전용 스탠딩을 표시할지 (true) 스탠딩을 생략할지(false) 설정합니다.
+                                    // true일 경우 extra_name에 설정한 이름에 따라 엑스트라용 스탠딩을 가져옵니다.
         deck_name: 'standings', // use_emotion가 false일 경우에 캐릭터의 스탠딩 이미지를 가져올 카드덱의 이름을 설정합니다.
         extra_name: 'extra', // use_emotion이 true일 경우에 엑스트라용 스탠딩 이미지를 가져올 카드덱의 이름을 설정합니다.
         ignore_list: 'GM',  // show_extra_standing 옵션과 별개로 스탠딩을 표시하지 않을 캐릭터의 이름을 기입합니다. 여러개일 경우 콤마(,)로 구분합니다.
@@ -45,17 +47,17 @@ if (page_list.indexOf(getObj('page',Campaign().get("playerpageid")).get('name'))
     return;
 }
 
-const api_tag = '<div style="display:inline-block;width:1px;height:1px;overflow:hidden;">permitted api chat</div>';
 if ((msg.type == "general" || msg.type == "desc" || msg.type == "emote")
     && (msg.playerid != 'API' || msg.content.includes(api_tag))
     && !msg.rolltemplate){
     
     if (findCharacterWithName(msg.who) || findObjs({_type:'player',_displayname:msg.who.replace(' (GM)','')}).length == 0) {
         if (msg.content.length > 0) {
-            msg.content = msg.content.replace(api_tag,'');
+            msg.content = msg.content.replace(api_tag,'').replace(/<br>/g,vd_divider);
+            msg.time = new Date().getTime();
             state.vd_stock.push(msg);
             if (state.vd_stock.length == 1) {
-                showDialogue();
+                setTimeout(showDialogue, 100);
             }
         } 
     }
@@ -84,15 +86,15 @@ if ((msg.type == "general" || msg.type == "desc" || msg.type == "emote")
         let text_dialogue = getObj('text', bg_dialogue.get('gmnotes'));
         text_name.remove();
         text_dialogue.remove();
-        sendChat('GM','!@퇴장:전원');
+        sendChat('vd-api-wildcard','!@퇴장:전원');
 
     } else if (msg.content.indexOf("!@퇴장") == 0 || msg.content.indexOf("!@exit") == 0) {
 
-        const keyword = msg.content.replace("!@퇴장","").replace("!@exit","");
+        const keyword = msg.content.replace("!@퇴장","").replace("!@exit","").replace(api_tag,'');
 
         if (keyword.length == 0) {
             removeStanding(msg);
-        } else if (playerIsGM(msg.playerid) || msg.who == 'GM') {
+        } else if (playerIsGM(msg.playerid) || msg.playerid == 'API' || msg.who == 'vd-api-wildcard') {
             if (keyword == ":전원" || keyword == ":전체" || keyword == ":all") {
                 let tokens = findObjs({ _type: 'graphic', name: 'vd_standing', _pageid: Campaign().get("playerpageid")});
                 tokens.forEach(token => {
@@ -110,20 +112,21 @@ if ((msg.type == "general" || msg.type == "desc" || msg.type == "emote")
         }
 
     } else {
-        /* type이 API이고 감정표현 관련일 경우 */
-        // 현재 표시중인 스탠딩 중 지금 감정표현을 입력한 캐릭터가 있는지 체크
 
-        let chat_cha = findCharacterWithName(msg.who);
+        let cha_name = msg.who;
+        let content_str = msg.content.replace(api_tag,'').replace('!@','');
+        let emot = content_str;
+        if (content_str.lastIndexOf(':') > -1 && (playerIsGM(msg.playerid) || msg.playerid == 'API')) {
+            cha_name = content_str.substring(0,content_str.lastIndexOf(':'));
+            emot = content_str.substring(content_str.lastIndexOf(':')+1,content_str.length);
+        }
+        let chat_cha = findCharacterWithName(cha_name);
         let current_token = null;
         if (chat_cha || state.vd_settings.show_extra_standing) {
-            current_token = findTokenWithCharacter(chat_cha?chat_cha.get('_id'):'', msg.who);
+            current_token = findTokenWithCharacter(chat_cha?chat_cha.get('_id'):'', cha_name);
         }
         if (current_token) {
-            // 현재 표시중일 경우 명령어 내의 감정이름 추출
-            let emot = msg.content.replace('!@','');
-            let nm = chat_cha?msg.who:state.vd_settings.extra_name;
-
-            // 감정이름에 해당되는 카드 확인
+            let nm = chat_cha?cha_name:state.vd_settings.extra_name;
             let rt = findObjs({ _type: 'deck', name: !state.vd_settings.use_emotion?state.vd_settings.deck_name:nm});
             if (rt.length == 0) {
                 if (!state.vd_settings.use_emotion) {
@@ -140,7 +143,7 @@ if ((msg.type == "general" || msg.type == "desc" || msg.type == "emote")
                     _pageid: current_token.get('_pageid'),
                     width: state.vd_settings.width,
                     height: state.vd_settings.height,
-                    bar1_value: msg.who,
+                    bar1_value: cha_name,
                     left:current_token.get('left'),
                     top:current_token.get('top'),
                     layer: 'map',
@@ -152,7 +155,7 @@ if ((msg.type == "general" || msg.type == "desc" || msg.type == "emote")
                 } else {
                     let search_opt = { _type: 'card', _deckid: rt[0].get('_id')};
                     if (!state.vd_settings.use_emotion) {
-                        search_opt.name = chat_cha ? msg.who : state.vd_settings.extra_name;
+                        search_opt.name = chat_cha ? cha_name : state.vd_settings.extra_name;
                     } else if (emot.length > 0) {
                         search_opt.name = emot;
                     }
@@ -168,10 +171,10 @@ if ((msg.type == "general" || msg.type == "desc" || msg.type == "emote")
                         return;
                     }
                 }
-                let new_token = createObj('graphic', opt);
-                current_token.remove();
-                toFront(new_token);
+                current_token.set(opt);
             }
+        } else {
+            sendChat("error","/w \"" + msg.who + "\" 이름이 **" + cha_name +"**인 캐릭터가 없습니다.",null,{noarchive:true});
         }
     }    
 }
@@ -180,6 +183,17 @@ const showDialogue = function() {
 
     let msg = state.vd_stock[0];
 
+    for (let index = 1; index < state.vd_stock.length; index++) {
+        const element = state.vd_stock[index];
+        if (element.who == msg.who && Math.abs(element.time - msg.time) < 100) {
+            msg.content = msg.content + "\n" + element.content;
+            state.vd_stock.splice(index,1);
+            index--;
+        } else {
+            break;
+        }
+    }
+
     let is_general = msg.type == "general";
     const font_color = state.vd_settings[is_general?'dialogue_font_color':'desc_font_color'];
     let font_size = state.vd_settings[is_general ? 'dialogue_font_size' : 'desc_font_size'];
@@ -187,9 +201,9 @@ const showDialogue = function() {
     let bg_name = findObjs({ _type: 'graphic', name:'vd_name', _pageid:Campaign().get("playerpageid")});
     let bg_dialogue = findObjs({ _type: 'graphic', name:'vd_dialogue', _pageid:Campaign().get("playerpageid")});
     let bg_panel = findObjs({ _type: 'graphic', name:'vd_panel', _pageid:Campaign().get("playerpageid")});
+    let token_standings = findObjs({ _type: 'graphic', name:'vd_standing', _pageid:Campaign().get("playerpageid")});
     let split = [];
     
-    // 필수 객체가 있는지 체크
     if (bg_area.length > 0) {
         bg_area = bg_area[0];
     } else {
@@ -214,8 +228,6 @@ const showDialogue = function() {
         sendChat("error","/w gm 플레이어 페이지(" + getObj('page',Campaign().get("playerpageid")).get('name') + ")에 vd_panel 토큰이 없습니다.",null,{noarchive:true});
         return;
     }
-    /* 대사 생성*/
-    // 대사창이 있는지 확인하고 없으면 생성
     const width = bg_dialogue.get('width');
     const name_width = bg_name.get('width');
     let blank_name = '';
@@ -287,7 +299,6 @@ const showDialogue = function() {
         return;
     }
 
-    // 대사 길이 분석 
     let desc_ratio = is_general ? 1 : 0.8;
     let amount = Math.ceil(width/font_size/state.vd_settings['letter_spacing']*3) -3;
     let idx = 0;
@@ -304,8 +315,8 @@ const showDialogue = function() {
             }
         }
         length += 3;
-        if (length >= amount * desc_ratio) {
-            let substr = str.substring(idx,i+1);
+        if (length >= amount * desc_ratio || c == vd_divider) {
+            let substr = str.substring(idx,i+1).replace(vd_divider,'');
             split.push(is_general || msg.who.length > 0 ? substr:getStringWithMargin(amount,length,desc_ratio,substr));
             idx = i+1;
             length = 0;
@@ -316,7 +327,6 @@ const showDialogue = function() {
         split.push(is_general || msg.who.length > 0 ? substr:getStringWithMargin(amount,length,desc_ratio,substr));
     } 
 
-    // 길이별로 줄바꿈 추가 및 실제 표시할 string값 생성
     if (is_general || msg.who.length > 0) {
         while ((split.length+1) * font_size * state.vd_settings['line_height'] <
         bg_dialogue.get('height') + state.vd_settings['margin']*2) {
@@ -335,25 +345,24 @@ const showDialogue = function() {
     showHideDecorations('vd_deco',msg.type != 'desc');
     showHideDecorations('vd_panel',true);
 
+    toFront(bg_panel);
+    toFront(text_name);
+    toFront(text_dialogue);
     setTimeout(() => {
-        toBack(bg_panel);
+        toFront(bg_panel);
         toFront(text_name);
         toFront(text_dialogue);
     }, 100);
 
     const ignore_list = state.vd_settings.ignore_list.replace(/, /g,',').replace(/ ,/g,',').split(',');
     if (msg.type != "desc" && ignore_list.indexOf(msg.who) < 0) {
-        // 대사를 한 캐릭터 판별
         let chat_cha = findCharacterWithName(msg.who);
         let current_token = null;
         if (chat_cha || state.vd_settings.show_extra_standing) {
             current_token = findTokenWithCharacter(chat_cha?chat_cha.get('_id'):'', msg.who);
         }
-
-        // 현재 표시중인 스탠딩 객체 수집
         let tokens = findObjs({ _type: 'graphic', name: 'vd_standing', _pageid: Campaign().get("playerpageid")});
         let lowest_priority = tokens[0];
-        // 현재 표시중인 모든 캐릭터 스탠딩을 dim 상태로 표시
         for (var i=0;i<tokens.length;i++) {
             var token = tokens[i];
             token.set('tint_color','#000000');
@@ -363,7 +372,6 @@ const showDialogue = function() {
         }
 
         if (current_token == null && (chat_cha || state.vd_settings.show_extra_standing)) {
-            // 현재 표시중이 아닐 경우 카드를 통해 객체 생성 
             let nm = chat_cha?msg.who:state.vd_settings.extra_name;
             let rt = findObjs({ _type: 'deck', name: !state.vd_settings.use_emotion? state.vd_settings.deck_name :nm});
             if (rt.length == 0) {
@@ -375,13 +383,14 @@ const showDialogue = function() {
                 showNextDialogue();
                 return;
             } else {
+                // let imgsrc = rt[0].get('avatar').replace('med','thumb').replace('max','thumb');
                 let opt = {
                     name: 'vd_standing',
                     _pageid: bg_area.get('_pageid'),
                     width: state.vd_settings.width,
                     height: state.vd_settings.height,
                     bar1_value: msg.who,
-                    layer: 'map',
+                    layer: 'gmlayer',
                     imgsrc: rt[0].get('avatar').replace('med','thumb').replace('max','thumb'),
                     represents: chat_cha? chat_cha.get('_id'): ''
                 };
@@ -392,25 +401,27 @@ const showDialogue = function() {
                     }
                 }
         
-                // 새로 생성된 객체를 포함한 스탠딩이 최대 표시개수를 초과했는지 체크
                 if (tokens.length >= state.vd_settings.max_number) {
-                    // 초과했을 경우 최근 대사가 가장 오래된 캐릭터의 스탠딩을 변형
                     opt.left = lowest_priority.get('left');
                 } else {
-                    // 초과하지 않았을 경우 알고리즘상으로 다음 순위의 위치에 생성
                     opt.left = arrangeStandings(true);
                 }
                 opt.top = bg_area.get('top');
-                current_token = createObj('graphic', opt);
+
                 if (tokens.length >= state.vd_settings.max_number) {
-                    lowest_priority.remove();
+                    lowest_priority.set(opt);
+                    current_token = lowest_priority;
+                } else {
+                    current_token = createObj('graphic', opt);
                 }
+                toFront(current_token);
+                setTimeout(() => {
+                    current_token.set({tint_color:'transparent',gmnotes:Date.now(),layer:"map"});
+                }, 100);
             }
-        }
-        if (current_token) {
-            // 대사를 한 캐릭터의 스탠딩의 dim 상태 해제
-            current_token.set({tint_color:'transparent',gmnotes:Date.now()});
+        } else {
             toFront(current_token);
+            current_token.set({tint_color:'transparent',gmnotes:Date.now()});
         }
     }
     setTimeout(showNextDialogue, Math.max(state.vd_settings.min_showtime, str.length * state.vd_settings.showtime_ratio));
@@ -449,18 +460,14 @@ const getStringWithMargin = function(amount, length, ratio, str) {
 }  
 const findCharacterWithName = function(who) {
     let chat_cha = findObjs({ _type: 'character', name: who});
-    // 시트가 있는 캐릭터인지 임시 AS인지 체크
     if (chat_cha.length > 0) {
-        // 시트가 있는 캐릭터
         return chat_cha[0];
     } else {
-        // 임시 AS 캐릭터
         return null;
     }
 }
 const findTokenWithCharacter = function(id, who) {
 
-    // 스탠딩을 표시하는 대상일 경우 해당 캐릭터의 스탠딩이 현재 표시중인지 확인
     let arr = findObjs({ _type: 'graphic', name: 'vd_standing', represents: id, _pageid: Campaign().get("playerpageid"), bar1_value: who});
     if (arr.length > 0) {
         return arr[0];
@@ -481,7 +488,6 @@ const arrangeStandings = function(addNew) {
     let tokens = findObjs({ _type: 'graphic', name: 'vd_standing', _pageid: Campaign().get("playerpageid")});
     if (tokens.length > 0 || addNew) {
         let bg_area = findObjs({ _type: 'graphic', name:'vd_area', _pageid:Campaign().get("playerpageid")});
-        // 필수 객체가 있는지 체크
         if (bg_area.length > 0) {
             bg_area = bg_area[0];
         } else {
@@ -521,4 +527,4 @@ const arrangeStandings = function(addNew) {
         return addNew ? left + space * (rand == Infinity ? 0 : rand) : false;
     }
 }
-/* (visual_dialogue.js) 210110 코드 종료 */
+/* (visual_dialogue.js) 210116 코드 종료 */
