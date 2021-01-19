@@ -1,8 +1,9 @@
 /* https://github.com/kibkibe/roll20-api-scripts/tree/master/as_autofiller */
-/* (as_autofiller.js) 210118 코드 시작 */
+/* (as_autofiller.js) 210119 코드 시작 */
 on("chat:message", function(msg)
 {
 if (msg.type == "api"){
+    const api_tag = '<a href="#vd-permitted-api-chat"></a>';
     try {
         let command = "!!";
         var master_name = "GM"; //토큰을 선택하지 않고 명령어를 사용했을 때 기본적으로 표시될 캐릭터의 이름을 기입해주세요.
@@ -39,7 +40,7 @@ if (msg.type == "api"){
             } else if (keyword && keyword.length == command.length) {
                 var gm = findObjs({ name: master_name, type: 'character'})[0];
                 if (gm) {
-                    sendChat("character|"+gm.get("_id"),msg.content.substring(3) +(api_tag&&!msg.content.includes(api_tag)?api_tag:""));
+                    sendChat("character|"+gm.get("_id"),msg.content.substring(3) +(!msg.content.includes(api_tag)?api_tag:""));
                 } else {
                     sendChat("system","/w gm **!!** 뒤에 입력한 키워드가 없고 이름이 '" + master_name + "'인 캐릭터가 저널에 없습니다.",null,{noarchive:true});
                 }
@@ -50,4 +51,4 @@ if (msg.type == "api"){
     }
 }
 });
-/* (as_autofiller.js) 210118 코드 종료 */
+/* (as_autofiller.js) 210119 코드 종료 */

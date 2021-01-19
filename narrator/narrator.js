@@ -1,5 +1,5 @@
 /* https://github.com/kibkibe/roll20-api-scripts/tree/master/narrator */
-/* (narrator.js) 210118 코드 시작 */
+/* (narrator.js) 210119 코드 시작 */
 const nt_linebreaker = 'Uk3jmApq-*QzfkMA';
 on('ready', function() {
     if (!state.narration) {
@@ -18,8 +18,9 @@ function narrate() {
 	try {
     	if (state.is_narrating == 2 && state.narration.length > 0) {
 			const split = state.narration[0].msg.split(nt_linebreaker);
+			const api_tag = '<a href="#vd-permitted-api-chat"></a>';
 			split.forEach(element => {
-				sendChat(state.narration[0].as,element + (api_tag&&!element.includes(api_tag)?api_tag:""));
+				sendChat(state.narration[0].as,element + (!element.includes(api_tag)?api_tag:""));
 			});
     		state.narration.splice(0,1);
     		if (state.narration.length > 0) {
@@ -109,4 +110,4 @@ if (msg.type == "api"){
 		sendChat('error','/w GM '+err,null,{noarchive:true});
 	}
 }});
-/* (narrator.js) 210118 코드 종료 */
+/* (narrator.js) 210119 코드 종료 */

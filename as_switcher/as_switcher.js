@@ -1,14 +1,15 @@
 /* https://github.com/kibkibe/roll20-api-scripts/tree/master/as_switcher */
-/* (as_switcher.js) 210117 코드 시작 */
+/* (as_switcher.js) 210119 코드 시작 */
 on("chat:message", function(msg)
 {
 if (msg.type == "api"){
     if (msg.content.indexOf("!! ") === 0) {
 		try {
+			const api_tag = '<a href="#vd-permitted-api-chat"></a>';
 			if (msg.selected && msg.selected.length > 0) {
 				var tok = getObj("graphic", msg.selected[0]._id);
 				if (tok.get('represents') && tok.get('represents').length > 1) {
-				    sendChat("character|"+tok.get('represents'),msg.content.substring(3)+api_tag?api_tag:"");
+				    sendChat("character|"+tok.get('represents'),msg.content.substring(3)+api_tag);
 				    return;
 				}
 			}
@@ -25,4 +26,4 @@ if (msg.type == "api"){
 	}
 }
 });
-/* (as_switcher.js) 210117 코드 종료 */
+/* (as_switcher.js) 210119 코드 종료 */
