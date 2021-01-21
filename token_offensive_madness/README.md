@@ -1,11 +1,11 @@
 # About
-![tokens with nametag sample image](https://github.com/kibkibe/roll20_api_scripts/blob/master/token_offensive_madness/brochure_named.png)
-![tokens without nametag sample image](https://github.com/kibkibe/roll20_api_scripts/blob/master/token_offensive_madness/brochure_nonamed.png)
+![tokens with nametag sample image](https://github.com/kibkibe/roll20-api-scripts/blob/master/token_offensive_madness/brochure_named.png)
+![tokens without nametag sample image](https://github.com/kibkibe/roll20-api-scripts/blob/master/token_offensive_madness/brochure_nonamed.png)
 
 
 **Offensive Madness**는 마기카로기아의 ORPG 플레이를 위한 원형토큰입니다.
 
-[[ Download Link ]](https://github.com/kibkibe/roll20_api_scripts/raw/master/token_offensive_madness/token_offensive_madness_by_yangsalt.zip)
+[[ Download Link ]](https://github.com/kibkibe/roll20-api-scripts/raw/master/token_offensive_madness/token_offensive_madness_by_yangsalt.zip)
 
 
 
@@ -30,7 +30,7 @@
 
 # License FAQ
 - **이 토큰은 아래의 상용/프리소스를 이용하여 제작되었습니다.**
-  - [Sacred Geometry Vector Bundle by. Skybox Creative](https://creativemarket.com/skyboxcreative/349504-Sacred-Geometry-Vector-Bundle)
+  - Icon: [Sacred Geometry Vector Bundle by. Skybox Creative](https://creativemarket.com/skyboxcreative/349504-Sacred-Geometry-Vector-Bundle)
   - Brush: [Ady's Splatter Brushes](https://www.deviantart.com/ady333/art/Ady-s-Splatter-Brushes-26360711)
   - Font: Niveau Grotesk
 
@@ -48,4 +48,4 @@
 
 # Designed By
 양천일염/Yangsalt @kibkibe_trpg
-https://github.com/kibkibe/roll20_api_scripts/edit/master/token_offensive_madness
+https://github.com/kibkibe/roll20-api-scripts/edit/master/token_offensive_madness
