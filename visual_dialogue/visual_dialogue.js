@@ -1,4 +1,4 @@
-/* https://github.com/kibkibe/roll20-api-scripts/visual_dialogue */
+/* https://github.com/kibkibe/roll20-api-scripts/tree/master/visual_dialogue */
 /* (visual_dialogue.js) 210116 코드 시작 */
 const api_tag = '<a href="#vd-permitted-api-chat"></a>';
 const vd_divider = 'ℍ';

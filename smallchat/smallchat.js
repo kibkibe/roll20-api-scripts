@@ -9,7 +9,7 @@ if (msg.type == "api"){
         let style = "color:#aaaaaa";
         try {
             sendChat((show_player_name? "player|"+msg.playerid : msg.who),"<span style='" + style + "'>"+msg.content.substring(2, msg.content.length)+"</span>",null,{noarchive:false});
-        } catch (error) {
+        } catch (err) {
 			sendChat('error','/w GM '+err,null,{noarchive:true});
         }
     }

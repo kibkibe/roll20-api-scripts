@@ -147,8 +147,8 @@ if (msg.type == "api"){
                 state.smallchatlog.splice(0,1);
             }
         });
-	} catch (error) {
-        sendChat('error','/w GM '+error,null,{noarchive:true});
+	} catch (err) {
+        sendChat('error','/w GM '+err,null,{noarchive:true});
 	}
     }
 }

@@ -15,7 +15,7 @@ on("change:graphic", function(obj, prev) {
             const default_character = "GM";
 
             const results = filterObjs(function(area) {    
-                if (area.get('_type') == 'graphic' && area.get('bar3_value') =='ts_area' &&
+                if (area.get('_type') == 'graphic' && area.get('bar3_value') =='ts_trigger' &&
                 area.get('left')-area.get('width')/2 -margin <=left-width/2 &&
                 area.get('top')-area.get('height')/2 -margin<=top-height/2 &&
                 area.get('top')+area.get('height')/2 +margin>= top+height/2 &&
