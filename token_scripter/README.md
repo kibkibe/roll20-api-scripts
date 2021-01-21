@@ -28,10 +28,10 @@ narrator.js와 호환됩니다.
 2. 의도한대로 텍스트가 표시되는지 확인합니다.
 
 ## 옵션
-![x](https://github.com/kibkibe/roll20-api-scripts/blob/master/wiki_image/ts/2_1.png)
+![x](https://github.com/kibkibe/roll20-api-scripts/blob/master/wiki_image/ts/2_1.png)  
 GM 노트에 /desc, /as, /em 등의 명령어를 사용할 수 있습니다.  
 
-![x](https://github.com/kibkibe/roll20-api-scripts/blob/master/wiki_image/ts/2_2.png)
+![x](https://github.com/kibkibe/roll20-api-scripts/blob/master/wiki_image/ts/2_2.png)  
 각종 텍스트 서식을 입히거나 이미지를 삽입할 수도 있으며, narrator.js와 함께 사용할 수도 있습니다.  
 단, GM 노트에 적용한 서식과 API 명령어가 채팅창에서도 모두 동일하게 동작하지는 않을 수 있으니 실제 사용 전에 테스트를 해서 제작의도대로 표시되는지를 확인하세요.
 
