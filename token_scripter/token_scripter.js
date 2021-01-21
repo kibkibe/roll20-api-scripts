@@ -3,8 +3,7 @@
 on("change:graphic", function(obj, prev) {
     try {
         if (obj.get('top') === prev.top && obj.get('left') === prev.left) return;
-        if (obj.get('name') == 'ts_marker') {
-            let areas = [];            
+        if (obj.get('name') == 'ts_marker') {  
             const left = obj.get('left');
             const top = obj.get('top');
             const width = obj.get('width');
@@ -24,11 +23,31 @@ on("change:graphic", function(obj, prev) {
                 } else return false;
             });
 
+            const getDefaultName = function() {
+                let as_who = findObjs({_type: "character", name: default_character});
+                if (as_who.length > 0) {
+                    as_who = "character|" + as_who[0].get('_id');
+                } else {
+                    as_who = findObjs({_type: "player", _displayname: default_character});
+                    if (as_who.length > 0) {
+                        as_who = "player|" + as_who[0].get('_id');
+                    } else {
+                        as_who = default_character;
+                    }
+                }
+                return as_who;
+            }
+
             if (results && results.length > 0) {
                 var area = results[0];
                 let attr = {};
                 if (obj.get('gmnotes').length > 0) {
-                    attr = JSON.parse(obj.get('gmnotes'));
+                    try {
+                        attr = JSON.parse(unescape(obj.get('gmnotes')).replace(/(<([^>]+)>)/gi, ""));
+                    } catch (err) {
+                        sendChat("error","/w gm GM 노트에 기입된 텍스트의 형식이 맞지 않아 값을 초기화합니다. 기존에 입력된 값은 아래와 같습니다.<br>**" + unescape(obj.get('gmnotes')) +"**",null,{noarchive:true});
+                        obj.set('gmnotes','');
+                    }
                 }
 
                 let str = unescape(area.get('gmnotes'));
@@ -66,7 +85,11 @@ on("change:graphic", function(obj, prev) {
                     }
                     log(final_str);
                     if (is_rich_text) {
-                        sendChat("", final_str);
+                        if (final_str.indexOf('!...') > -1) {
+                            final_str = final_str.replace(/\!\.\.\.\s*/g,"");
+                            final_str = "!..." + final_str;
+                        }
+                        sendChat(getDefaultName(), final_str);
                     } else {
 
                         let as_who;
@@ -88,17 +111,7 @@ on("change:graphic", function(obj, prev) {
                                 final_str = final_str.substring('/as '.length + arr[1].length + 3);
                             }
                         } else {
-                            as_who = findObjs({_type: "character", name: default_character});
-                            if (as_who.length > 0) {
-                                as_who = "character|" + as_who[0].get('_id');
-                            } else {
-                                as_who = findObjs({_type: "player", _displayname: default_character});
-                                if (as_who.length > 0) {
-                                    as_who = "player|" + as_who[0].get('_id');
-                                } else {
-                                    as_who = default_character;
-                                }
-                            }
+                            as_who = getDefaultName();
                         }
                         sendChat(as_who, final_str);
                     }
