@@ -37,7 +37,7 @@ if (msg.type == "api"){
             var res_target = 5 + Math.abs(target_x-arche_x)*2 + Math.abs(target_y-arche_y);
             if (target_x != arche_x) { res_target -= 1; }
             if (res_target > 12) { res_target = 12; }
-            sendChat("","*<" + split[1] + ">*, **" + target + "**의 저항목표치: **[ " + res_target + " ]**");
+            sendChat(split[1], "&{template:Magic} {{name=@{" + split[1] + "}}} {{skillname= @{" + target + "}}}{{target=[[@{" + res_target + "}]]}}{{roll=[[1d6]],[[1d6]]}}");
             
         } catch (err) {
             sendChat('error','/w GM '+err,null,{noarchive:true});

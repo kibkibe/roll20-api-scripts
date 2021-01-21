@@ -1,44 +1,108 @@
 /* https://github.com/kibkibe/roll20-api-scripts/tree/master/token_scripter */
-/* (token_scripter.js) 210118 코드 시작 */
+/* (token_scripter.js) 210121 코드 시작 */
 on("change:graphic", function(obj, prev) {
     try {
         if (obj.get('top') === prev.top && obj.get('left') === prev.left) return;
         if (obj.get('name') == 'ts_marker') {
-            var areas = [];
-            // option. 스크립트 내에서 카운트를 셀 경우 (ex: 라운드 수 처리 등) 마커토큰을 올려놨을 때 카운트가 +1될 영역토큰의 이름을 지정합니다.
-            // 공백으로 둘 경우 카운트를 세지 않습니다.
-            var final_token = '후공공격';
-
-            let tokens = findObjs({bar3_value:'ts_area',_type:'graphic'});
-            
-            var left = obj.get('left');
-            var top = obj.get('top');
-            var width = obj.get('width');
-            var height = obj.get('height');
+            let areas = [];            
+            const left = obj.get('left');
+            const top = obj.get('top');
+            const width = obj.get('width');
+            const height = obj.get('height');
             // option. 마커토큰이 영역토큰과 약간 어긋나도 인식되도록 오차범위(픽셀단위)를 설정합니다. 숫자가 작을수록 정확하고 엄격하게 판정합니다.
-            let margin = 10;
-            var count = obj.get('bar1_value');
-            
-            for (var z=0;z<tokens.length;z++) {
-                var area = tokens[z];
-                if (area.get('left')-area.get('width')/2 -margin <=left-width/2 &&
-                    area.get('top')-area.get('height')/2 -margin<=top-height/2 &&
-                    area.get('top')+area.get('height')/2 +margin>= top+height/2 &&
-                    area.get('left')+area.get('width')/2 +margin>= left+width/2) {
-                        let str = unescape(area.get('gmnotes')).replace('{count}',count);
-                        if (str.includes('/desc')) {
-                            str = str.replace('</p><p>','<br>');
-                            let split = str.split('<br>');
-                            for (var i=0;i<split.length;i++) {
-                                sendChat("", split[i].replace(/(<([^>]+)>)/gi, ""));
+            const margin = 10;
+            // option.  /as,/emas,/desc 명령이 포함되지 않는 메시지를 표시할 기본 캐릭터를 설정합니다. 공백으로 설정시 채팅에 이름을 표시하지 않습니다.
+            const default_character = "GM";
+
+            const results = filterObjs(function(area) {    
+                if (area.get('_type') == 'graphic' && area.get('bar3_value') =='ts_area' &&
+                area.get('left')-area.get('width')/2 -margin <=left-width/2 &&
+                area.get('top')-area.get('height')/2 -margin<=top-height/2 &&
+                area.get('top')+area.get('height')/2 +margin>= top+height/2 &&
+                area.get('left')+area.get('width')/2 +margin>= left+width/2) {
+                    return true;
+                } else return false;
+            });
+
+            if (results && results.length > 0) {
+                var area = results[0];
+                let attr = {};
+                if (obj.get('gmnotes').length > 0) {
+                    attr = JSON.parse(obj.get('gmnotes'));
+                }
+
+                let str = unescape(area.get('gmnotes'));
+                str = str.replace(/<\/p>/g,'<br>');
+                let split = str.split('<br>');
+                for (var i=0;i<split.length;i++) {
+
+                    let final_str = split[i];
+                    const attr_match = final_str.match(/\{\{[^\}]+\}\}/g,'');
+                    if (attr_match) {
+                        attr_match.forEach(item => {
+                            if (item.includes(":")) {
+                                const attr_split = item.split(":");
+                                let add_value = parseInt(attr_split[1].replace(/[{}]/g,''));
+                                add_value = isNaN(add_value) ? 0 : add_value;
+                                let current_value = parseInt(attr[attr_split[0].replace(/[{}]/g,'')]);
+                                current_value = isNaN(current_value)  ? 0:current_value;
+                                attr[attr_split[0].replace(/[{}]/g,'')] = current_value + add_value;
+                                final_str = final_str.replace(item,'');
+                            } else {
+                                let current_value = parseInt(attr[item.replace(/[{}]/g,'')]);
+                                current_value = isNaN(current_value)  ? 0:current_value;
+                                final_str = final_str.replace(item,current_value);
+                            }
+                        });
+                    }
+                    const tag_match = final_str.match(/(<([^>]+)>)/gi);
+                    let is_rich_text = false;
+                    if (tag_match) {
+                        tag_match.forEach(item => {
+                            if (item.search(/<\/*[pbi]>/gi) < 0) {
+                                is_rich_text = true;
+                            }
+                        });
+                    }
+                    log(final_str);
+                    if (is_rich_text) {
+                        sendChat("", final_str);
+                    } else {
+
+                        let as_who;
+                        final_str = final_str.replace(/(<([^>]+)>)/gi, "");
+
+                        if (final_str.indexOf("/desc") == 0) {
+                            as_who = '';
+                        } else if (final_str.indexOf("/as") == 0 || final_str.indexOf("/emas") == 0) {
+                            const arr = final_str.split('"');
+                            let cha = findObjs({_type: "character", name: arr[1]})[0];
+                            if (cha) {
+                                as_who = "character|" + cha.get('_id');
+                            } else {
+                                as_who = arr[1];
+                            }
+                            if (final_str.indexOf("/emas") == 0) {
+                                final_str = "/em " + final_str.substring('/emas '.length + arr[1].length + 3);
+                            } else {
+                                final_str = final_str.substring('/as '.length + arr[1].length + 3);
                             }
                         } else {
-                            sendChat("", str);
+                            as_who = findObjs({_type: "character", name: default_character});
+                            if (as_who.length > 0) {
+                                as_who = "character|" + as_who[0].get('_id');
+                            } else {
+                                as_who = findObjs({_type: "player", _displayname: default_character});
+                                if (as_who.length > 0) {
+                                    as_who = "player|" + as_who[0].get('_id');
+                                } else {
+                                    as_who = default_character;
+                                }
+                            }
                         }
-                        if (final_token.length > 0 && final_token == area.get('name')) {
-                            obj.set('bar1_value', Number(obj.get('bar1_value')) + 1);
-                        }
-                        break;
+                        sendChat(as_who, final_str);
+                    }
+                    obj.set('gmnotes',JSON.stringify(attr));
                 }
             }
         }
@@ -46,4 +110,4 @@ on("change:graphic", function(obj, prev) {
         sendChat("error","/w gm "+err,null,{noarchive:true});
     }
 });
-/* (token_scripter.js) 210118 코드 종료 */
+/* (token_scripter.js) 210121 코드 종료 */
