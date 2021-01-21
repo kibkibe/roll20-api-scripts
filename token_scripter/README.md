@@ -12,11 +12,13 @@ narrator.js와 호환됩니다.
 4. [Save Script]를 눌러 저장합니다. 페이지 아래쪽의 API Output Console에 에러 메시지가 표시되지 않는다면 정상적으로 적용된 것입니다.
 
 ### 준비2. 마커 토큰 배치
+![x](https://github.com/kibkibe/roll20-api-scripts/blob/master/wiki_image/ts/1_1.png)
 1. 움직이는데 사용할 토큰을 생성하고 이름을 `ts_marker`로 설정합니다.  
 2. GM만 이 토큰을 사용할지 플레이어가 움직일 수 있게 할지에 따라서 제어 권한을 설정합니다.
 3. 완료입니다. 이제 스크립트는 이 토큰을 옮길 때 마다 움직임을 추적할 것입니다.
 
 ### 준비3. 트리거 토큰 배치
+![x](https://github.com/kibkibe/roll20-api-scripts/blob/master/wiki_image/ts/1_2.png)
 1. 트리거로 사용할 토큰을 생성하고 **bar3**의 값을 `ts_trigger`로 설정합니다. (이름으로 설정하는 것이 아님에 주의하세요.)
 2. 트리거 토큰의 GM 노트에 원하는 내용을 적습니다.
 3. 완료입니다. 이제 스크립트는 마커 토큰이 어느 트리거 토큰 위에 올라갔느냐에 따라 메시지를 출력할 것입니다.
@@ -26,9 +28,12 @@ narrator.js와 호환됩니다.
 2. 의도한대로 텍스트가 표시되는지 확인합니다.
 
 ## 옵션
+![x](https://github.com/kibkibe/roll20-api-scripts/blob/master/wiki_image/ts/2_1.png)
 GM 노트에 /desc, /as, /em 등의 명령어를 사용할 수 있습니다.  
-또한 각종 텍스트 서식을 입히거나 이미지를 삽입할 수도 있습니다.
-단, GM 노트에 적용한 서식이 채팅창에서도 모두 동일하게 적용되지 않을 수 있으니 실제 사용 전에 제작의도대로 표시되는지 반드시 테스트를 해보세요.
+
+![x](https://github.com/kibkibe/roll20-api-scripts/blob/master/wiki_image/ts/2_2.png)
+각종 텍스트 서식을 입히거나 이미지를 삽입할 수도 있으며, narrator.js와 함께 사용할 수도 있습니다.  
+단, GM 노트에 적용한 서식과 API 명령어가 채팅창에서도 모두 동일하게 동작하지는 않을 수 있으니 실제 사용 전에 테스트를 해서 제작의도대로 표시되는지를 확인하세요.
 
 ## 명령어
 GM 노트의 내용에 `{{값이름}}`과 같은 형식으로 입력하면 변수값을 사용할 수 있습니다.  
