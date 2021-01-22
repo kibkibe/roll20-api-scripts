@@ -1,5 +1,5 @@
 /* https://github.com/kibkibe/roll20-api-scripts/tree/master/token_scripter */
-/* (token_scripter.js) 210121 코드 시작 */
+/* (token_scripter.js) 210122 코드 시작 */
 on("change:graphic", function(obj, prev) {
     try {
         if (obj.get('top') === prev.top && obj.get('left') === prev.left) return;
@@ -14,7 +14,7 @@ on("change:graphic", function(obj, prev) {
             const default_character = "GM";
 
             const results = filterObjs(function(area) {    
-                if (area.get('_type') == 'graphic' && area.get('bar3_value') =='ts_trigger' &&
+                if (area.get('_type') == 'graphic' && area.get('_pageid') == obj.get('_pageid') && area.get('bar3_value') =='ts_trigger' &&
                 area.get('left')-area.get('width')/2 -margin <=left-width/2 &&
                 area.get('top')-area.get('height')/2 -margin<=top-height/2 &&
                 area.get('top')+area.get('height')/2 +margin>= top+height/2 &&
@@ -123,4 +123,4 @@ on("change:graphic", function(obj, prev) {
         sendChat("error","/w gm "+err,null,{noarchive:true});
     }
 });
-/* (token_scripter.js) 210121 코드 종료 */
+/* (token_scripter.js) 210122 코드 종료 */
