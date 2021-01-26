@@ -12,7 +12,7 @@ if (msg.type == "api"){
 				const split = element.split('](');
 				const rb = split[0].replace('[','');
 				const rt = split[1].replace(')','');
-				str = str.replace(element, '<div style="display:inline-block;margin-bottom:-4px;">\
+				str = str.replace(element, '<div style="display:inline-block;vertical-align:bottom;">\
 				<div style="display:table"><div style="display:table-row;text-align:center;font-size:7pt;font-weight:bold;">'
 				+ rt + '</div><div style="display:table-row;text-align:center;">' + rb + '</div></div></div>');
 			});
