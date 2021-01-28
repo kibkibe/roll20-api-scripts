@@ -5,6 +5,7 @@ on("chat:message", function(msg)
 if (msg.type == "api"){
 	const ms_command = "!소환"; //명령어는 변경하셔도 됩니다. 시작은 무조건 느낌표.
 	const mr_command = "!저항 ";
+	const mc_command = "!저항목표 ";
 	// TATECK님의 커스텀 시트를 사용하는지(true) 공개버전 시트를 사용하는지(false) 설정합니다.
 	const use_custom_sheet = false; 
 
@@ -165,7 +166,7 @@ if (msg.type == "api"){
 		} catch (err) {
 			sendChat('error','/w GM '+err,null,{noarchive:true});
 		}
-	} else if (msg.content.indexOf(mr_command) === 0) {
+	} else if (msg.content.indexOf(mr_command) == 0 || msg.content.indexOf(mc_command) == 0) {
         try {
             const table = [
                 ['황금','대지','숲','길','바다','정적','비','폭풍','태양','천공','이계'],
@@ -186,7 +187,7 @@ if (msg.type == "api"){
                     const split = gmnotes.split(',');
                     const name = split[0];
                     const type = split[1];
-                    const target = msg.content.replace(mr_command,'');
+                    const target = msg.content.replace(mc_command,'').replace(mr_command,'');
                     if (!name || !target || name.length == 0 || target.length == 0) {
                         sendChat('error','/w GM 원형의 특기를 가져올 수 없습니다.',null,{noarchive:true});
                         return;
@@ -210,12 +211,16 @@ if (msg.type == "api"){
                     if (target_x == -1 || target_y == -1 || arche_x == -1 || arche_y == -1) { sendChat('error','/w GM 원형 혹은 판정할 특기의 이름이 잘못되었습니다.',null,{noarchive:true}); return;}
                     let res_target = 5 + Math.abs(target_x-arche_x)*2 + Math.abs(target_y-arche_y);
                     if (target_x != arche_x) { res_target -= 1; }
-                    if (res_target > 12) { res_target = 12; }
-                    if (use_custom_sheet) {
-                        sendChat(name + "의 " + type, "&{template:MagiDice} {{name=" + name + "의 " + type + "}} {{spec=" + target + "}}{{target=[[" + res_target + "]]}}{{roll1=[[1d6]]}}{{roll2=[[1d6]]}}");
-                    } else {
-                        sendChat(name + "의 " + type, "&{template:Magic} {{name=" + name + "의 " + type + "}} {{skillname=" + target + "}}{{target=[[" + res_target + "]]}}{{roll=[[1d6]],[[1d6]]}}");
-                    }
+					if (res_target > 12) { res_target = 12; }
+					if (msg.content.indexOf(mc_command) > -1) {
+						sendChat(name + "의 " + type, "**<" +target + ">**의 목표치: **" + res_target + "**");
+					} else {
+						if (use_custom_sheet) {
+							sendChat(name + "의 " + type, "&{template:MagiDice} {{name=" + name + "의 " + type + "}} {{spec=" + target + "}}{{target=[[" + res_target + "]]}}{{roll1=[[1d6]]}}{{roll2=[[1d6]]}}");
+						} else {
+							sendChat(name + "의 " + type, "&{template:Magic} {{name=" + name + "의 " + type + "}} {{skillname=" + target + "}}{{target=[[" + res_target + "]]}}{{roll=[[1d6]],[[1d6]]}}");
+						}
+					}
                 }
             } else {
                 sendChat('error','/w GM 선택된 원형 토큰이 없습니다.',null,{noarchive:true});
