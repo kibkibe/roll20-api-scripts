@@ -1,5 +1,5 @@
 /* https://github.com/kibkibe/roll20-api-scripts/tree/master/narrator */
-/* (narrator.js) 210119 코드 시작 */
+/* (narrator.js) 210128 코드 시작 */
 const nt_linebreaker = 'Uk3jmApq-*QzfkMA';
 on('ready', function() {
     if (!state.narration) {
@@ -37,7 +37,7 @@ function narrate() {
 }
 on("chat:message", function(msg)
 {
-if (msg.type == "api"){
+if (msg.type == "api" && (msg.playerid == 'API' || playerIsGM(msg.playerid))){
 	try {
 		if (msg.content == "!,") { //일시정지/재시작
 			if (state.is_narrating == 2) {
@@ -110,4 +110,4 @@ if (msg.type == "api"){
 		sendChat('error','/w GM '+err,null,{noarchive:true});
 	}
 }});
-/* (narrator.js) 210119 코드 종료 */
+/* (narrator.js) 210128 코드 종료 */

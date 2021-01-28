@@ -1,5 +1,5 @@
 /* https://github.com/kibkibe/roll20-api-scripts/tree/master/token_scripter */
-/* (token_scripter.js) 210122 코드 시작 */
+/* (token_scripter.js) 210128 코드 시작 */
 on("change:graphic", function(obj, prev) {
     try {
         if (obj.get('top') === prev.top && obj.get('left') === prev.left) return;
@@ -24,6 +24,9 @@ on("change:graphic", function(obj, prev) {
             });
 
             const getDefaultName = function() {
+                if (default_character == '') {
+                    return '';
+                }
                 let as_who = findObjs({_type: "character", name: default_character});
                 if (as_who.length > 0) {
                     as_who = "character|" + as_who[0].get('_id');
@@ -83,7 +86,6 @@ on("change:graphic", function(obj, prev) {
                             }
                         });
                     }
-                    log(final_str);
                     if (is_rich_text) {
                         if (final_str.indexOf('!...') > -1) {
                             final_str = final_str.replace(/\!\.\.\.\s*/g,"");
@@ -123,4 +125,4 @@ on("change:graphic", function(obj, prev) {
         sendChat("error","/w gm "+err,null,{noarchive:true});
     }
 });
-/* (token_scripter.js) 210122 코드 종료 */
+/* (token_scripter.js) 210128 코드 종료 */

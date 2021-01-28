@@ -1,100 +1,10 @@
 /* https://github.com/kibkibe/roll20-api-scripts/tree/master/magicalogia_match_dice */
-/* (magicalogia_match_dice.js) 201227 코드 시작 */
-on("ready", function() {
-    on("add:graphic", function(obj) {
-        try {
-            if (obj.get('subtype') == 'card') {
-                let deck = findObjs({ _type: 'deck', name: 'Dice'})[0];
-                let model = findObjs({ _type: "card", _deckid: deck.get('_id'), _id:obj.get('_cardid')})[0];
-                if (model) {
-                    let areas = getPlotAreas();
-                    if (!areas) {
-                        return;
-                    }
-                    let obj_coord = {
-                        left:obj.get('left')-(obj.get('width')/2),
-                        top:obj.get('top')-(obj.get('height')/2),
-                        width: obj.get('width'),
-                        height: obj.get('height')};
-                    let i=0, j=0;
-                    let stacked_dice = 0;
-                    let shorttest_dis = {x_dis:99999,y_dis:99999};
-                    let dice = findObjs({ _type: 'graphic', _subtype: 'card', _cardid: obj.get('_cardid')});
-
-                    for (var z=0;z<areas.length;z++) {
-                        for(var x=0;x<areas[z].length;x++) {
-                            let spot = areas[z][x];
-                            let spot_coord = {
-                                left:spot.get('left')-(spot.get('width')/2),
-                                top:spot.get('top')-(spot.get('height')/2),
-                                width: spot.get('width'),
-                                height: spot.get('height')};
-                            let current_dis = {x_dis:0, y_dis:0};
-                            if (spot_coord.left < obj_coord.left && spot_coord.left+spot_coord.width > obj_coord.left) {
-                                current_dis.x_dis = 0;
-                            } else {
-                                current_dis.x_dis = Math.min(Math.abs(spot_coord.left - obj_coord.left),
-                                Math.abs(spot_coord.left+spot_coord.width-obj_coord.left-obj_coord.width));
-                            }
-                            if (spot_coord.top < obj.top && spot_coord.top+spot_coord.height > obj.top) {
-                                current_dis.y_dis = 0;
-                            } else {
-                                current_dis.y_dis = Math.min(Math.abs(spot_coord.top - obj_coord.top),
-                                Math.abs(spot_coord.top+spot_coord.height-obj_coord.top-obj_coord.height));
-                            }
-                            if (current_dis.x_dis + current_dis.y_dis < shorttest_dis.x_dis + shorttest_dis.y_dis) {
-                                shorttest_dis = current_dis;
-                                i=z;
-                                j=x;
-
-                                stacked_dice = 0;
-                                dice.forEach(die => {
-                                    if (spot_coord.left<=die.get('left')-die.get('width')/2 &&
-                                        spot_coord.top<=die.get('top')-die.get('height')/2 &&
-                                        spot_coord.left+spot_coord.width>=die.get('left')+die.get('width')/2 &&
-                                        spot_coord.top+spot_coord.height>=die.get('top')+die.get('height')/2) {
-                                        stacked_dice++;
-                                    }
-                                });
-                                
-                            }
-                        }
-                    }
-                    let nearest_area = areas[i][j];
-                    let is_area_landscape = nearest_area.get('width') > nearest_area.get('height');
-                    obj.set({
-                        left:Math.floor(nearest_area.get('left')-(nearest_area.get('width')/2)+(obj.get('width')/2))+(is_area_landscape?stacked_dice*obj.get('width'):0),
-                        top:Math.floor(nearest_area.get('top')-(nearest_area.get('height')/2)+(obj.get('height')/2))+(!is_area_landscape?stacked_dice*obj.get('height'):0)});
-                }
-            }
-        } catch (err) {
-            sendChat('error','/w GM '+err,null,{noarchive:true});
-        }
-    });
-});
-
-function getPlotAreas() {
-
-    var areas = [];
-    if (findObjs({ name: 'A_delegate'}).length > 0) {
-        areas.push(findObjs({ name: 'A_delegate'}));
-    } else { sendChat("matchDice", "/w gm A_delegate 영역이 없습니다.",null,{noarchive:true}); return false; }
-    if (findObjs({ name: 'A_observer'}).length > 0) {
-        areas.push(findObjs({ name: 'A_observer'}));
-    } else { sendChat("matchDice", "/w gm A_observer 영역이 없습니다.",null,{noarchive:true}); return false; }
-    if (findObjs({ name: 'B_delegate'}).length > 0) {
-        areas.push(findObjs({ name: 'B_delegate'}));
-    } else { sendChat("matchDice", "/w gm B_delegate 영역이 없습니다.",null,{noarchive:true}); return false; }
-    if (findObjs({ name: 'B_observer'}).length > 0) {
-        areas.push(findObjs({ name: 'B_observer'}));
-    } else { sendChat("matchDice", "/w gm B_observer 영역이 없습니다.",null,{noarchive:true}); return false; }
-
-    return areas;
-}
-
+/* (magicalogia_match_dice.js) 210128 코드 시작 */
 on("chat:message", function(msg)
 {
-if (msg.type == "api"){
+// 매칭을 GM만 실행할 수 있게 할지 (true) 플레이어도 할 수 있게 할지 (false) 설정합니다.
+const is_gm_only = true;
+if (msg.type == "api" && (!is_gm_only || (msg.playerid == 'API' || playerIsGM(msg.playerid)))){
     if (msg.content.indexOf("!match_dice") === 0) {
         try {
             let deck = findObjs({ _type: 'deck', name: 'Dice'})[0];
@@ -127,19 +37,19 @@ if (msg.type == "api"){
                         if (dname != "?") {
                             obj.set('name', dname);
                         }
-                        let left = obj.get('left')+0;
-                        let top = obj.get('top')+0;
-                        let width = obj.get('width')+0;
-                        let height = obj.get('height')+0;
-                        let margin = 10;
+                        let left = parseInt(obj.get('left'));
+                        let top = parseInt(obj.get('top'));
+                        let width = parseInt(obj.get('width'));
+                        let height = parseInt(obj.get('height'));
+                        const margin = 10;
                         let stop = false;
                         for (var z=0;z<areas.length;z++) {
                             for(var x=0;x<areas[z].length;x++) {
                                 let area = areas[z][x];
                                 if (area.get('left')-area.get('width')/2-margin<=left-width/2 &&
                                 area.get('top')-area.get('height')/2-margin<=top-height/2 &&
-                                area.get('top')+area.get('height')/2 +margin>= top+height/2 &&
-                                area.get('left')+area.get('width')/2 +margin>= left+width/2) {
+                                area.get('top')+area.get('height')/2+margin>= top+height/2 &&
+                                area.get('left')+area.get('width')/2+margin>= left+width/2) {
                                     if (obj.get('name') === '0') {
                                         concentrateIdx = z;
                                     }
@@ -220,4 +130,97 @@ if (msg.type == "api"){
         sendChat('error','/w GM '+err,null,{noarchive:true});
     }
 }}});
-/* (magicalogia_match_dice.js) 201227 코드 종료 */
+on("ready", function() {
+    on("add:graphic", function(obj) {
+        try {
+            if (obj.get('subtype') == 'card') {
+                let deck = findObjs({ _type: 'deck', name: 'Dice'})[0];
+                let model = findObjs({ _type: "card", _deckid: deck.get('_id'), _id:obj.get('_cardid')})[0];
+                if (model) {
+                    let areas = getPlotAreas();
+                    if (!areas) {
+                        return;
+                    }
+                    let obj_coord = {
+                        left:obj.get('left')-(obj.get('width')/2),
+                        top:obj.get('top')-(obj.get('height')/2),
+                        width: obj.get('width'),
+                        height: obj.get('height')};
+                    let i=0, j=0;
+                    let stacked_dice = 0;
+                    let shorttest_dis = {x_dis:99999,y_dis:99999};
+                    let dice = findObjs({ _type: 'graphic', _subtype: 'card', gmnotes: 'Dice', _pageid: obj.get('_pageid')});
+                    const margin = 10;
+
+                    for (var z=0;z<areas.length;z++) {
+                        for(var x=0;x<areas[z].length;x++) {
+                            let spot = areas[z][x];
+                            let spot_coord = {
+                                left:spot.get('left')-(spot.get('width')/2),
+                                top:spot.get('top')-(spot.get('height')/2),
+                                width: spot.get('width'),
+                                height: spot.get('height')};
+                            let current_dis = {x_dis:0, y_dis:0};
+                            if (spot_coord.left < obj_coord.left && spot_coord.left+spot_coord.width > obj_coord.left) {
+                                current_dis.x_dis = 0;
+                            } else {
+                                current_dis.x_dis = Math.min(Math.abs(spot_coord.left - obj_coord.left),
+                                Math.abs(spot_coord.left+spot_coord.width-obj_coord.left-obj_coord.width));
+                            }
+                            if (spot_coord.top < obj.top && spot_coord.top+spot_coord.height > obj.top) {
+                                current_dis.y_dis = 0;
+                            } else {
+                                current_dis.y_dis = Math.min(Math.abs(spot_coord.top - obj_coord.top),
+                                Math.abs(spot_coord.top+spot_coord.height-obj_coord.top-obj_coord.height));
+                            }
+                            if (current_dis.x_dis + current_dis.y_dis < shorttest_dis.x_dis + shorttest_dis.y_dis) {
+                                shorttest_dis = current_dis;
+                                i=z;
+                                j=x;
+
+                                stacked_dice = 0;
+                                dice.forEach(die => {
+                                    if (spot_coord.left-margin<=die.get('left')-die.get('width')/2 &&
+                                        spot_coord.top-margin<=die.get('top')-die.get('height')/2 &&
+                                        spot_coord.left+spot_coord.width+margin>=die.get('left')+die.get('width')/2 &&
+                                        spot_coord.top+spot_coord.height+margin>=die.get('top')+die.get('height')/2) {
+                                        stacked_dice++;
+                                    }
+                                });
+                                break;
+                            }
+                        }
+                    }
+                    let nearest_area = areas[i][j];
+                    let is_area_landscape = nearest_area.get('width') > nearest_area.get('height');
+                    obj.set({
+                        gmnotes:'Dice',
+                        left:Math.floor(nearest_area.get('left')-(nearest_area.get('width')/2)+(obj.get('width')/2))+(is_area_landscape?stacked_dice*obj.get('width'):0),
+                        top:Math.floor(nearest_area.get('top')-(nearest_area.get('height')/2)+(obj.get('height')/2))+(!is_area_landscape?stacked_dice*obj.get('height'):0)});
+                }
+            }
+        } catch (err) {
+            sendChat('error','/w GM '+err,null,{noarchive:true});
+        }
+    });
+});
+
+function getPlotAreas() {
+
+    var areas = [];
+    if (findObjs({ name: 'A_delegate'}).length > 0) {
+        areas.push(findObjs({ name: 'A_delegate'}));
+    } else { sendChat("matchDice", "/w gm A_delegate 영역이 없습니다.",null,{noarchive:true}); return false; }
+    if (findObjs({ name: 'A_observer'}).length > 0) {
+        areas.push(findObjs({ name: 'A_observer'}));
+    } else { sendChat("matchDice", "/w gm A_observer 영역이 없습니다.",null,{noarchive:true}); return false; }
+    if (findObjs({ name: 'B_delegate'}).length > 0) {
+        areas.push(findObjs({ name: 'B_delegate'}));
+    } else { sendChat("matchDice", "/w gm B_delegate 영역이 없습니다.",null,{noarchive:true}); return false; }
+    if (findObjs({ name: 'B_observer'}).length > 0) {
+        areas.push(findObjs({ name: 'B_observer'}));
+    } else { sendChat("matchDice", "/w gm B_observer 영역이 없습니다.",null,{noarchive:true}); return false; }
+
+    return areas;
+}
+/* (magicalogia_match_dice.js) 210128 코드 종료 */
