@@ -48,25 +48,22 @@ if (msg.type == "api"){
 				statusmarkers: "",
 				layer: "objects"
 			};
-
-			const default_tokens = ["red", "blue", "green", "brown", "purple", "pink", "yellow"];
+			// 원형의 기본 습득 이펙트를 입력합니다. 룰북 내의 데이터이기 때문에 무료 배포하는 코드에 포함할 수 없으므로 해당 내용은 수기입해주시기 바랍니다.
 			const archetype_list = [
-				{name:'정령', effect:'block2'},
-				{name:'마검', effect:'damage1'},
-				{name:'악몽', effect:'minus2'},
-				{name:'기사', effect:'block1,damage1,boost1'},
-				{name:'처녀', effect:'block1,cast,word7'},
-				{name:'전차', effect:'block2,mana1'},
-				{name:'마왕', effect:'block2,damage2,boost1'},
-				{name:'군단', effect:'block3,damage1,word6'},
-				{name:'왕국', effect:'block3,cast,mana1,boost2'},
-				{name:'마신', effect:'block3,damage3,cast,plus3,minus3,boost1'},
+				{name:'정령', effect:''},
+				{name:'마검', effect:''},
+				{name:'악몽', effect:''},
+				{name:'기사', effect:''},
+				{name:'처녀', effect:''},
+				{name:'전차', effect:''},
+				{name:'마왕', effect:''},
+				{name:'군단', effect:''},
+				{name:'왕국', effect:''},
+				{name:'마신', effect:''},
 				{name:'나락문', effect:''}
 			];
+			const default_tokens = ["red", "blue", "green", "brown", "purple", "pink", "yellow"];
 
-			//명령형식 !소환 --정적 --마검 --cast,mana1,damage2
-			// 타입, 특기 판별
-			// 분할결과가 2개밖에 없을 경우 나락문으로 판단하고 타입만 추출
 			let section = msg.content.split(/\s*--/g);
 			let skill, type;
 			let split = "";
@@ -75,41 +72,29 @@ if (msg.type == "api"){
 				type = section[1];
 			} else {
 				skill = section[1];
-				type = section[2];
-				// 해당 아키타입이 보유한 기본 이펙트를 추출					
+				type = section[2];				
 				const archetype = archetype_list.find(archetype => archetype.name == type);
 				if (!archetype) {
-					// 적절한 아키타입이 없으면 오류 출력
 					return;
 				} else {
 					split += archetype.effect;
 				}
-				// 성장치가 붙은 경우 파싱
 				if (section.length > 3) {
 					split += "," + section[3]
 				}
 			}
 				
-			opt.name = (skill && display_skill ? skill+ (type && display_type ? "의 ":"") : "") + (type && display_type ? type:''); // display_type과 display_skill에 따라 표시
+			opt.name = (skill && display_skill ? skill+ (type && display_type ? "의 ":"") : "") + (type && display_type ? type:'');
 			const token_markers = JSON.parse(Campaign().get("token_markers"));
 			
 			if (use_effect_marker || use_text) {
-
-				// string을 배열화
 				split = split.split(/\s*,\s*/g);
-	
-				// 캠페인에서 사용할 수 있는 마커 목록 불러오기
-	
-				// 이펙트 추출
 				for (let index = 0; index < split.length; index++) {
 					const element = split[index];
 					const effect = element.replace(/\d/g,'');
 					let number = element.replace(effect,'');
-					
-					// name과 keyword를 바탕으로 이펙트 검색
 					for (let i = 0; i < effect_list.length; i++) {
 						const fx = effect_list[i];
-						// effect_list에 포함된 이벤트 검색
 						if (effect == fx.marker || fx.keyword.split(",").indexOf(effect) > -1) {
 							number = fx.non_numbering ? '' : number;
 							let fx_obj = {display_name:fx.display_name,number:number};
@@ -123,26 +108,25 @@ if (msg.type == "api"){
 									break;
 								}
 							}
-							//숫자가 포함되었거나 non_numbering이 true인 이펙트일 경우 유효한 것으로 판단
-							if (fx.use_bar && (number && number.length > 0)) { // Bar를 사용하는 이펙트일 경우
+							if (fx.use_bar && (number && number.length > 0)) {
 								opt.bar1_value += parseInt(number);
 								opt.bar1_max = opt.bar1_value;
 								opt.showplayers_bar1 = true;
 							} else if (fx.non_numbering || (number && number.length > 0)) {
-								let marker = token_markers.find(mark => mark.name == fx.marker+(use_text?'':number));
-								if (!marker) {
-									if (default_tokens.indexOf(fx.marker) > -1) {
-										marker = {tag:fx.marker};
-									} else {
-										sendChat('error',"/w GM 사용할 수 있는 마커 중 이름이 **"+fx.marker+(use_text?'':number)+"**인 항목이 없습니다.",null,{noarchive:true});
-										return;
-									}
-								}
 								if (use_effect_marker) {
+									let marker = token_markers.find(mark => mark.name == fx.marker+(use_text?'':number));
+									if (!marker) {
+										if (default_tokens.indexOf(fx.marker) > -1) {
+											marker = {tag:fx.marker};
+										} else {
+											sendChat('error',"/w GM 사용할 수 있는 마커 중 이름이 **"+fx.marker+(use_text?'':number)+"**인 항목이 없습니다.",null,{noarchive:true});
+											return;
+										}
+									}
 									fx_obj.value = (use_text ?
 										(marker.tag + (number.length>0?"@":'') + number) :
 										marker.tag);
-								} else {
+								} else if (use_text) {
 									fx_obj.value = fx.display_name+number;
 								}
 								if (duplicated_index > -1) {
@@ -154,18 +138,21 @@ if (msg.type == "api"){
 						}
 					}
 				}
-				// 가공된 effect를 |로 join
-				if (use_effect_marker) { // createObj의 statusmarkers에 포함
+				if (use_effect_marker) {
 					effects.forEach(element => {
 						opt.statusmarkers += "," + element.value;
 					});
 					opt.statusmarkers = opt.statusmarkers.length > 0 ? opt.statusmarkers.substring(1) : '';
-				} else if (use_text) { // 마커를 사용하지 않지만 원형 이름에 텍스트로 이펙트를 보여줄 경우
-					opt.name = opt.name + (opt.name.length > 0 ? "" : "/") + effects.join(div_text);
+				} else if (use_text) {
+					let str = "";
+					for (let j = 0; j < effects.length; j++) {
+						str += div_text + effects[j].value;
+					}
+					str = str.substring(1);
+					log(str);
+					opt.name = opt.name + (opt.name.length > 0 ? "/" : "") + str;
 				}				
 			}
-
-			//덱의 이름(name: 'archetype')은 변경하셔도 좋습니다. 사용할 세션방의 덱 이름과 일치시켜 주세요.
 			var archetype_deck = findObjs({ _type: 'deck', name: 'archetype'})[0];
 			var archetype = findObjs({ _type: "card", _deckid: archetype_deck.get('_id'), name:type});
 			if (archetype.length > 0) {
@@ -178,7 +165,7 @@ if (msg.type == "api"){
 		} catch (err) {
 			sendChat('error','/w GM '+err,null,{noarchive:true});
 		}
-	} else if (msg.content.indexOf(mr_command) === 0) { //명령어는 변경하셔도 됩니다. 시작은 무조건 느낌표.
+	} else if (msg.content.indexOf(mr_command) === 0) {
         try {
             const table = [
                 ['황금','대지','숲','길','바다','정적','비','폭풍','태양','천공','이계'],
