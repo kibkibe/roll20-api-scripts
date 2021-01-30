@@ -187,7 +187,6 @@ on("ready", function() {
                                         stacked_dice++;
                                     }
                                 });
-                                break;
                             }
                         }
                     }
