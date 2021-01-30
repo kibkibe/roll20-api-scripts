@@ -1,5 +1,5 @@
 /* https://github.com/kibkibe/roll20-api-scripts/tree/master/visual_dialogue */
-/* (visual_dialogue.js) 210116 코드 시작 */
+/* (visual_dialogue.js) 210130 코드 시작 */
 const api_tag = '<a href="#vd-permitted-api-chat"></a>';
 const vd_divider = 'ℍ';
 on('ready', function() {
@@ -111,7 +111,7 @@ if ((msg.type == "general" || msg.type == "desc" || msg.type == "emote")
             }
         }
 
-    } else {
+    } else if (state.vd_settings.use_emotion) {
 
         let cha_name = msg.who;
         let content_str = msg.content.replace(api_tag,'').replace('!@','');
@@ -201,7 +201,6 @@ const showDialogue = function() {
     let bg_name = findObjs({ _type: 'graphic', name:'vd_name', _pageid:Campaign().get("playerpageid")});
     let bg_dialogue = findObjs({ _type: 'graphic', name:'vd_dialogue', _pageid:Campaign().get("playerpageid")});
     let bg_panel = findObjs({ _type: 'graphic', name:'vd_panel', _pageid:Campaign().get("playerpageid")});
-    let token_standings = findObjs({ _type: 'graphic', name:'vd_standing', _pageid:Campaign().get("playerpageid")});
     let split = [];
     
     if (bg_area.length > 0) {
@@ -383,7 +382,6 @@ const showDialogue = function() {
                 showNextDialogue();
                 return;
             } else {
-                // let imgsrc = rt[0].get('avatar').replace('med','thumb').replace('max','thumb');
                 let opt = {
                     name: 'vd_standing',
                     _pageid: bg_area.get('_pageid'),
@@ -394,7 +392,7 @@ const showDialogue = function() {
                     imgsrc: rt[0].get('avatar').replace('med','thumb').replace('max','thumb'),
                     represents: chat_cha? chat_cha.get('_id'): ''
                 };
-                if (!chat_cha) {
+                if (!chat_cha || !state.vd_settings.use_emotion) {
                     const extra_std = findObjs({ _type: 'card', _deckid: rt[0].get('_id'), name: msg.who});
                     if (extra_std.length > 0) {
                         opt.imgsrc = extra_std[0].get('avatar').replace('med','thumb').replace('max','thumb');
@@ -527,4 +525,4 @@ const arrangeStandings = function(addNew) {
         return addNew ? left + space * (rand == Infinity ? 0 : rand) : false;
     }
 }
-/* (visual_dialogue.js) 210116 코드 종료 */
+/* (visual_dialogue.js) 210130 코드 종료 */
