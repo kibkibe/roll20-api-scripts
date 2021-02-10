@@ -1,5 +1,5 @@
 /* https://github.com/kibkibe/roll20-api-scripts/tree/master/attribute_tracker */
-/* (attribute_tracker.js) 210128 코드 시작 */
+/* (attribute_tracker.js) 210210 코드 시작 */
 // !! 아래의 예시 check_list 중 사용하실 1개만 남기고 삭제하시거나 사용할 룰에 맞춰 새 체크리스트를 생성하세요.
 // CoC 체크리스트
 let check_list = [
@@ -68,9 +68,9 @@ on("chat:message", function(msg)
 if (msg.type == "api" && (msg.playerid == 'API' || playerIsGM(msg.playerid))){
     if (msg.content.indexOf("!at ") === 0) {
         if (msg.content.toLowerCase().includes('hide')) {
-            state.show_tracking = true;
-        } else if (msg.content.toLowerCase().includes('show')) {
             state.show_tracking = false;
+        } else if (msg.content.toLowerCase().includes('show')) {
+            state.show_tracking = true;
         }
 	}
 }
@@ -136,4 +136,4 @@ function check_attribute(obj,prev) {
         sendChat("error","/w gm " + err,null,{noarchive:true});
     }
 }
-/* (attribute_tracker.js) 210128 코드 종료 */
+/* (attribute_tracker.js) 210210 코드 종료 */
