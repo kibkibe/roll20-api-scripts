@@ -1,0 +1,38 @@
+// !! 아래의 예시 check_list 중 사용하실 1개만 코드에 복사해서 붙여넣으세요.
+// CoC 체크리스트
+let check_list = [
+    {attr: "hp", name: "체력", is_static_name: true, is_static_attr: true},
+    {attr: "mp", name: "마력", is_static_name: true, is_static_attr: true},
+    {attr: "san", name: "이성", is_static_name: true, is_static_attr: true},
+    {attr: "luck", name: "행운", is_static_name: true, is_static_attr: true},
+    {attr: "str", name: "근력", is_static_name: true, is_static_attr: true},
+    {attr: "dex", name: "민첩", is_static_name: true, is_static_attr: true},
+    {attr: "pow", name: "정신", is_static_name: true, is_static_attr: true},
+    {attr: "con", name: "건강", is_static_name: true, is_static_attr: true},
+    {attr: "app", name: "외모", is_static_name: true, is_static_attr: true},
+    {attr: "edu", name: "교육", is_static_name: true, is_static_attr: true},
+    {attr: "siz", name: "크기", is_static_name: true, is_static_attr: true},
+    {attr: "int", name: "지능", is_static_name: true, is_static_attr: true},
+    {attr: "cthulhu_mythos", name: "크툴루 신화", is_static_name: true, is_static_attr: true}];
+
+// 인세인 체크리스트
+let check_list = [
+    {attr: "hp", name: "생명력", is_static_name: true, is_static_attr: true},
+    {attr: "san", name: "이성치", is_static_name: true, is_static_attr: true},
+    {attr: "ins_item1", name: "진통제", is_static_name: true, is_static_attr: true},
+    {attr: "ins_item2", name: "무기", is_static_name: true, is_static_attr: true},
+    {attr: "ins_item3", name: "부적", is_static_name: true, is_static_attr: true}];
+
+// 마기카로기아 체크리스트
+let check_list = [
+    {attr: "Magic_*id*_Charge", name: "Magic_*id*_Name", is_static_name: false, is_static_attr: false},
+    {attr: "repeating_acitems_-*id*_Magic_Charge", name: "repeating_acitems_-*id*_Magic_Name", is_static_name: false, is_static_attr: false},
+    {attr: "Magic_*id*_Cost", name: "Magic_*id*_Name", is_static_name: false, is_static_attr: false},
+    {attr: "repeating_acitems_-*id*_Magic_Cost", name: "repeating_acitems_-*id*_Magic_Name", is_static_name: false, is_static_attr: false},
+    {attr: "relation_fate_*id*", name: "relation_name_*id*", is_static_name: false, is_static_attr: false},
+    {attr: "atk", name: "공격력", is_static_name: true, is_static_attr: true},
+    {attr: "def", name: "방어력", is_static_name: true, is_static_attr: true},
+    {attr: "bas", name: "근원력", is_static_name: true, is_static_attr: true},
+    {attr: "mp", name: "마력", is_static_name: true, is_static_attr: true},
+    {attr: "temp_mp", name: "일시적 마력", is_static_name: true, is_static_attr: true},
+    {attr: "mp_max", name: "최대마력", is_static_name: true, is_static_attr: true}];

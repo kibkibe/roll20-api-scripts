@@ -1,5 +1,5 @@
 /* https://github.com/kibkibe/roll20-api-scripts/tree/master/attribute_tracker */
-/* (attribute_tracker.js) 210210 코드 시작 */
+/* (attribute_tracker.js) 210212 코드 시작 */
 // !! 아래의 예시 check_list 중 사용하실 1개만 남기고 삭제하시거나 사용할 룰에 맞춰 새 체크리스트를 생성하세요.
 // CoC 체크리스트
 let check_list = [
@@ -51,12 +51,32 @@ let prior_list = [];
 let ignore_list = ["GM"];
     
 on('ready', function() {
-    on("add:attribute", function(obj) {
-        check_attribute(obj, null);
-    });
     if (!state.show_tracking) {
         state.show_tracking = true;
     }
+    state.new_character = [];
+    on("add:character",function(obj) {
+        state.new_character.push({id:obj._id, time: Date.now()});
+    });
+    on("add:attribute", function(obj) {
+        const now = Date.now();
+        const interval = 3000;
+        let check = true;
+        for (let index = 0; index < state.new_character.length; index++) {
+            const element = state.new_character[index];
+            if (obj._id == element.id) {
+                if (now - element.time > interval) {
+                    state.new_character.splice(index,1);
+                } else {
+                    check = false;
+                }
+                break;
+            }
+        }
+        if (check) {
+            check_attribute(obj, null);
+        }
+    });
 });
     
 on("change:attribute", function(obj, prev) {
@@ -126,8 +146,8 @@ function check_attribute(obj,prev) {
                     }
                     sendChat("character|"+obj.get('_characterid'),
                     (state.show_tracking ? "" : "/w GM ") +
-                        "**" + name + "** / " + (prev == null?"":(check_max? prev.max:prev.current)) + " → " +
-                        (check_max ? obj.get('max'):obj.get('current')),null,{noarchive:!state.show_tracking});
+                        "**" + name + "** / <span style='color:#aaaaaa'>" + (prev == null?"":(check_max? prev.max:prev.current)) + "</span><span style='color:#777777'> → </span><b>" +
+                        (check_max ? obj.get('max'):obj.get('current'))+"</b>",null,{noarchive:!state.show_tracking});
                     break;
                 }
             }
@@ -136,4 +156,4 @@ function check_attribute(obj,prev) {
         sendChat("error","/w gm " + err,null,{noarchive:true});
     }
 }
-/* (attribute_tracker.js) 210210 코드 종료 */
+/* (attribute_tracker.js) 210212 코드 종료 */
