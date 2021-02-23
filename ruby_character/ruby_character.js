@@ -1,11 +1,12 @@
 /* https://github.com/kibkibe/roll20-api-scripts/tree/master/ruby_character */
-/* (ruby_character.js) 210128 코드 시작 */
+/* (ruby_character.js) 210214 코드 시작 */
 on("chat:message", function(msg)
 {
 if (msg.type == "api"){
 	try {
 		if (msg.content.indexOf("!루 ") == 0 || msg.content.indexOf("!r ") == 0) {
 			
+			const api_tag = '<a href="#vd-permitted-api-chat"></a>';
 			let str = msg.content.replace("!루 ",'').replace("!r ",'');
 			const ruby_array = str.match(/\[[^\(\)\[\]]*\]\([^\(\)\[\]]+\)/g);
 			if (ruby_array) {
@@ -13,9 +14,9 @@ if (msg.type == "api"){
 					const split = element.split('](');
 					const rb = split[0].replace('[','');
 					const rt = split[1].replace(')','');
-					str = str.replace(element, '<div style="display:inline-block;vertical-align:bottom;">\
-					<div style="display:table"><div style="display:table-row;text-align:center;font-size:7pt;font-weight:bold;">'
-					+ rt + '</div><div style="display:table-row;text-align:center;">' + rb + '</div></div></div>');
+					str = str.replace(element, '<div style="display:inline-block;vertical-align:bottom;">'
+					+ '<div style="display:table"><div style="display:table-row;text-align:center;font-size:7pt;font-weight:bold;"><span style="display:none">(</span>'
+					+ rt + '<span style="display:none">)</span></div><div style="display:table-row;text-align:center;"><span style="display:none">[</span>' + rb + '<span style="display:none">]</span></div></div></div>');
 				});
 			} else {
 				sendChat('error','/w "' + (msg.who==''?'GM':msg.who) + '" 루비 형식이 올바르지 않습니다.<br>``[아래에 표시될 문장]````(위에 표시될 문장)``의 형식으로 입력해주세요.',null,{noarchive:true});
@@ -41,10 +42,10 @@ if (msg.type == "api"){
 				}
 			}
 
-			sendChat(str.includes('/desc')?'':findCharacterWithName(msg.who),str);
+			sendChat(str.includes('/desc')?'':findCharacterWithName(msg.who),str + api_tag);
 		}
 	} catch (err) {
 		sendChat('error','/w GM '+err,null,{noarchive:true});
 	}
 }});
-/* (ruby_character.js) 210128 코드 종료 */
+/* (ruby_character.js) 210214 코드 종료 */

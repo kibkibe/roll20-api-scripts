@@ -1,5 +1,5 @@
 /* https://github.com/kibkibe/roll20-api-scripts/tree/master/attribute_tracker */
-/* (attribute_tracker.js) 210212 코드 시작 */
+/* (attribute_tracker.js) 210223 코드 시작 */
 // !! 아래의 예시 check_list 중 사용하실 1개만 남기고 삭제하시거나 사용할 룰에 맞춰 새 체크리스트를 생성하세요.
 // CoC 체크리스트
 let check_list = [
@@ -119,12 +119,13 @@ function check_attribute(obj,prev) {
                 var check = false;
                 var item = check_list[i];
                 let item_id = null;
-                let check_max = item.attr.includes('_max');
+                let attr_name = item.attr.replace('attr_');
+                let check_max = attr_name.includes('_max');
                 if (prev == null || check_max && obj.get('current') == prev.current || !check_max && obj.get('current') != prev.current) {
-                    if (item.attr.replace('_max','') == obj.get('name')) {
+                    if (attr_name.replace('_max','') == obj.get('name')) {
                         check = true;
                     } else if (!item.is_static_attr) {
-                        let split_attr = item.attr.split('*id*');
+                        let split_attr = attr_name.split('*id*');
                         if (split_attr.length == 2 && obj.get('name').startsWith(split_attr[0]) && obj.get('name').endsWith(split_attr[1])) {
                             check = true;
                             item_id = obj.get('name').replace(split_attr[0],'').replace(split_attr[1],'');
@@ -156,4 +157,4 @@ function check_attribute(obj,prev) {
         sendChat("error","/w gm " + err,null,{noarchive:true});
     }
 }
-/* (attribute_tracker.js) 210212 코드 종료 */
+/* (attribute_tracker.js) 210223 코드 종료 */

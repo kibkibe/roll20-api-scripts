@@ -1,5 +1,5 @@
 /* https://github.com/kibkibe/roll20-api-scripts/tree/master/visual_dialogue */
-/* (visual_dialogue.js) 210130 코드 시작 */
+/* (visual_dialogue.js) 210223 코드 시작 */
 const api_tag = '<a href="#vd-permitted-api-chat"></a>';
 const vd_divider = 'ℍ';
 on('ready', function() {
@@ -9,6 +9,7 @@ on('ready', function() {
                         // 이 숫자를 넘어가면 엑스트라, 혹은 채팅기록이 가장 오래된 캐릭터의 스탠딩이 삭제되고 그 위치에 새 스탠딩이 추가됩니다.
         width: 420,     // 표시할 스탠딩 이미지들의 가로 사이즈입니다.
         height: 420,    // 표시할 스탠딩 이미지들의 세로 사이즈입니다.
+        fit_width: 200, // 스탠딩 이미지의 가로 너비 중 화면 밖으로 빠져나가지 않도록 보장할 가로 사이즈입니다.
         use_emotion: true,  // 캐릭터들이 여러 감정표현을 사용할지(true) 대표 스탠딩 하나만 사용할지(false) 설정합니다.
                             // false일 경우 deck_name에 설정한 카드 덱에서 모든 캐릭터의 스탠딩 이미지를 가져옵니다.
         show_extra_standing: true,  // /as를 이용해 저널에 없는 캐릭터로 채팅할 경우 엑스트라 전용 스탠딩을 표시할지 (true) 스탠딩을 생략할지(false) 설정합니다.
@@ -186,7 +187,7 @@ const showDialogue = function() {
     for (let index = 1; index < state.vd_stock.length; index++) {
         const element = state.vd_stock[index];
         if (element.who == msg.who && Math.abs(element.time - msg.time) < 100) {
-            msg.content = msg.content + "\n" + element.content;
+            msg.content = msg.content + vd_divider + element.content;
             state.vd_stock.splice(index,1);
             index--;
         } else {
@@ -207,24 +208,28 @@ const showDialogue = function() {
         bg_area = bg_area[0];
     } else {
         sendChat("error","/w gm 플레이어 페이지(" + getObj('page',Campaign().get("playerpageid")).get('name') + ")에 vd_area 토큰이 없습니다.",null,{noarchive:true});
+        showNextDialogue();
         return;
     }
     if (bg_name.length > 0) {
         bg_name = bg_name[0];
     } else {
         sendChat("error","/w gm 플레이어 페이지(" + getObj('page',Campaign().get("playerpageid")).get('name') + ")에 vd_name 토큰이 없습니다.",null,{noarchive:true});
+        showNextDialogue();
         return;
     }
     if (bg_dialogue.length > 0) {
         bg_dialogue = bg_dialogue[0];
     } else {
         sendChat("error","/w gm 플레이어 페이지(" + getObj('page',Campaign().get("playerpageid")).get('name') + ")에 vd_dialogue 토큰이 없습니다.",null,{noarchive:true});
+        showNextDialogue();
         return;
     }
     if (bg_panel.length > 0) {
         bg_panel = bg_panel[0];
     } else {
         sendChat("error","/w gm 플레이어 페이지(" + getObj('page',Campaign().get("playerpageid")).get('name') + ")에 vd_panel 토큰이 없습니다.",null,{noarchive:true});
+        showNextDialogue();
         return;
     }
     const width = bg_dialogue.get('width');
@@ -283,18 +288,27 @@ const showDialogue = function() {
     let filter_word = [
         {regex:/\*.+\*/g,replace:/\*/g}, // *, **, ***
         {regex:/``.+``/g,replace:/``/g}, // ``
-        {regex:/\[.+\]\(.+\)/g,replace:/\[.+\]\(.+\)/g}, // []()
+        {regex:/\[[^\(\)\[\]]*\]\(http[^\(\)\[\]]+\)/g,replace:/\[[^\(\)\[\]]*\]\(http[^\(\)\[\]]+\)/g}, // [](http...)
+        {regex:/<[^>]*>/g,replace:/<[^>]*>/g}, // <html>
         {regex:/\$\[\[.+\]\]/g,replace:/\$\[\[.+\]\]/g}]; // [[]]
-    for (var i=0;i<filter_word.length;i++) {
+    for (let i=0;i<filter_word.length;i++) {
         let match = str.match(filter_word[i].regex);
         if (match) {
-            for (var j=0;j<match.length;j++) {
+            for (let j=0;j<match.length;j++) {
                 str = str.replace(match[j], match[j].replace(filter_word[i].replace,''));
             }
         }
     }
+    let ruby_match = str.match(/\([^\(\)\[\]]+\)\[[^\(\)\[\]]*\]/g);
+    if (ruby_match) {
+        for (let j=0;j<ruby_match.length;j++) {
+            let rubystr_split = ruby_match[j].substring(1,ruby_match[j].length-1).split(')[');
+            str = str.replace(ruby_match[j], rubystr_split[1]+"("+rubystr_split[0]+")");
+        }
+    }
 
     if (str.length == 0){
+        showNextDialogue();
         return;
     }
 
@@ -305,23 +319,29 @@ const showDialogue = function() {
     const thirdchar = ['\'',' ',',','.','!',':',';','"'];
     const halfchar = ['[',']','(',')','*','^','-','~','<','>','+','l','i','1'];
     const arr = thirdchar.concat(halfchar);
-    for (var i=0;i<str.length;i++){
-        var c = str[i];
-        for (var j=0;j<arr.length;j++) {
+    let divided = false;
+    for (let i=0;i<str.length;i++){
+        let c = str[i];
+        length += 3;
+        for (let j=0;j<arr.length;j++) {
             if (c==arr[j]) {
                 length -= (j<thirdchar.length ? 2 : 1);
                 break;
             }
         }
-        length += 3;
         if (length >= amount * desc_ratio || c == vd_divider) {
             let substr = str.substring(idx,i+1).replace(vd_divider,'');
             split.push(is_general || msg.who.length > 0 ? substr:getStringWithMargin(amount,length,desc_ratio,substr));
             idx = i+1;
             length = 0;
+            if ((split.length+1) * font_size * state.vd_settings['letter_spacing']*3 > bg_dialogue.get('height')) {
+                state.vd_stock.splice(1,0,{content:msg.content.substring(idx,str.length),time:msg.time,playerid:msg.playerid,type:msg.type,who:msg.who});
+                divided = true;
+                break;
+            }
         }
     }
-    if (idx < str.length) {
+    if (idx < str.length && !divided) {
         let substr = str.substring(idx,str.length);
         split.push(is_general || msg.who.length > 0 ? substr:getStringWithMargin(amount,length,desc_ratio,substr));
     } 
@@ -510,9 +530,9 @@ const arrangeStandings = function(addNew) {
         final_count = final_count<2? 2: final_count;
         let space = Math.floor(bg_area.get('width')/final_count);
         let left = bg_area.get('left') - Math.floor(bg_area.get('width')/2);
-        if (space < state.vd_settings.width) {
-            left += state.vd_settings.width/2;
-            space = Math.floor((bg_area.get('width')-state.vd_settings.width)/(final_count-1));
+        if (space < state.vd_settings.fit_width) {
+            left += state.vd_settings.fit_width/2;
+            space = Math.floor((bg_area.get('width')-state.vd_settings.fit_width)/(final_count-1));
         } else {
             left += space/2
         }
@@ -525,4 +545,4 @@ const arrangeStandings = function(addNew) {
         return addNew ? left + space * (rand == Infinity ? 0 : rand) : false;
     }
 }
-/* (visual_dialogue.js) 210130 코드 종료 */
+/* (visual_dialogue.js) 210223 코드 종료 */
