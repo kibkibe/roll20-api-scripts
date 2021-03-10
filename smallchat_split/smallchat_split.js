@@ -6,15 +6,15 @@ let ss_setting = {
 	// option: 채팅창의 글씨크기를 지정합니다.
 	font_size: 14,
 	// option: 채팅창의 글씨색을 지정합니다.
-	color:"rgb(255, 255, 255)",
+	color: "rgb(255, 255, 255)",
 	// option: 채팅창의 상하좌우 여백을 설정합니다.
 	margin: 5,
 	// option: 채팅로그에 플레이어/PC 중 어느쪽 이름을 표시할지 지정합니다. (true:플레이어/false:PC)
 	show_player_name: false,
 	// option: 잡담 내역을 저장할 핸드아웃의 이름을 지정합니다.
-	logname: '(잡담로그)',
+	logname: "(잡담로그)",
 	// option: 세션화면 안에 채팅창을 만들지 않고자 할 경우 실시간 채팅을 표시할 별도의 핸드아웃의 이름을 지정합니다.
-	onair_name: '(실시간 잡담채팅)',
+	onair_name: "(실시간 잡담채팅)",
 	// option: 실시간 채팅용 핸드아웃에서 최신순으로 몇개까지 채팅을 표시할지를 지정합니다.
 	onair_lines: 15,
 	// option: 핸드아웃에 저장되는 채팅로그에 플레이어의 고유색상을 적용할지의 여부를 설정합니다
