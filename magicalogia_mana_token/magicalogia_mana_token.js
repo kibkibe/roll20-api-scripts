@@ -64,9 +64,21 @@ on("chat:message", function(msg){
             } else {
                 cha = cha[0];
             }
-            var page = mtGetCurrentPage();
-			if (!page) {
-				return;
+
+            let page;
+
+			const page_list = mt_setting.page_list.replace(/, /g,',').replace(/ ,/g,',').split(',');
+			const playerpage = getObj('page',Campaign().get("playerpageid"));
+			if (page_list.indexOf(playerpage.get('name')) > -1) {
+				page = playerpage;
+			} else {
+				page = findObjs({type:'page',name:page_list[0]});
+				if (page.length > 0) {
+					page = page[0];
+				} else {
+					sendChat("error","/w gm 이름이 **" + page[0] + "**인 페이지가 없습니다.",null,{noarchive:true});
+					return;
+				}
 			}
                 
             var id_list = {};
@@ -235,22 +247,6 @@ on("chat:message", function(msg){
 });
 
 // define: global function
-const mtGetCurrentPage = function() {
-
-	const page_list = mt_setting.page_list.replace(/, /g,',').replace(/ ,/g,',').split(',');
-	const playerpage = getObj('page',Campaign().get("playerpageid"));
-	if (page_list.indexOf(playerpage.get('name')) > -1) {
-		return playerpage;
-	} else {
-		const page = findObjs({type:'page',name:page_list[0]});
-		if (page.length > 0) {
-			return page[0];
-		} else {
-			sendChat("error","/w gm 이름이 **" + page[0] + "**인 페이지가 없습니다.",null,{noarchive:true});
-		}
-	}
-}
-
 function check_charge(obj,prev) {
     try {
         for (var i=0;i<charge_check.length;i++) {
@@ -268,11 +264,9 @@ function check_charge(obj,prev) {
                 }
             }
             if (check) {
-				const page = mtGetCurrentPage();
-                var tokens = findObjs({_type: 'graphic', _subtype: 'token', layer: 'objects', _pageid: page.id,
-                represents: prev._characterid, bar1_link: prev._id});
+                var tokens = findObjs({_type: 'graphic', _subtype: 'token', layer: 'objects', represents: prev._characterid, bar1_link: prev._id});
                 if (tokens.length == 0) {
-                    sendChat("error","/w gm **" + page.get("name") + "** 페이지에 **" + obj.get('name') + "**와 연결된 토큰이 없습니다",null,{noarchive:true});
+                    sendChat("error","/w gm **" + obj.get('name') + "**와 연결된 토큰이 없습니다",null,{noarchive:true});
                     return;
                 }
                 for (var j=0;j<tokens.length;j++) {
@@ -284,7 +278,6 @@ function check_charge(obj,prev) {
                         } else {
                             token.set({imgsrc: unescape(token.get('sides').split('|')[parseInt(obj.get('current'))].replace('max','thumb').replace('med','thumb'))});
                         }
-                        break;
                     }
                 }
                 break;
