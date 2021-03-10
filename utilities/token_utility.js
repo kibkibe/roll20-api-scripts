@@ -1,5 +1,5 @@
-/* https://github.com/kibkibe/roll20-api-scripts/tree/master/get_set_img_url.js */
-/* (get_set_img_url.js) 210306 코드 시작 */
+/* https://github.com/kibkibe/roll20-api-scripts/tree/master/utilities */
+/* (token_utility.js) 210306 코드 시작 */
 
 // define: option
 const gi_setting = {
@@ -48,4 +48,4 @@ if (msg.type == "api"){
 	// /on.chat:message:api
 }
 });
-/* (get_set_img_url.js) 210306 코드 종료 */
+/* (token_utility.js) 210306 코드 종료 */
