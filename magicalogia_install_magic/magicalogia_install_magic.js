@@ -1,15 +1,16 @@
 /* https://github.com/kibkibe/roll20-api-scripts/tree/master/magicalogia_install_magic */
-/* (magicalogia_install_magic.js) 201226 코드 시작 */
+/* (magicalogia_install_magic.js) 210306 코드 시작 */
 on("chat:message", function(msg)
 {
 if (msg.type == "api"){
+	// on.chat:message:api
 if (msg.content.indexOf("!장서 ") === 0) {
     try {
 	    if (msg.selected) {
 	        var tok = getObj("graphic", msg.selected[0]._id);
     	    if (tok && tok.get('represents')) {
     	        try {
-    	        var proc_msg = msg.content.replace("!install_magic ").replace("{{").replace("}}");
+    	        var proc_msg = msg.content.replace("!장서 ","").replace("{{","").replace("}}","");
     	        var cha_id = getObj("character", tok.get('represents')).get('_id');
     	        var list = proc_msg.split("<br/>\n");
     	        var attr_list = [
@@ -87,6 +88,7 @@ if (msg.content.indexOf("!장서 ") === 0) {
         sendChat("error","/w gm "+err,null,{noarchive:true});
     }
     }
+	// /on.chat:message:api
 }
 });
-/* (magicalogia_install_magic.js) 201226 코드 종료 */
+/* (magicalogia_install_magic.js) 210306 코드 종료 */

@@ -1,6 +1,17 @@
 /* https://github.com/kibkibe/roll20-api-scripts/tree/master/token_scripter */
-/* (token_scripter.js) 210128 코드 시작 */
+/* (token_scripter.js) 210306 코드 시작 */
+
+// define: option
+const ts_setting = {
+	// option: 마커토큰이 영역토큰과 약간 어긋나도 인식되도록 오차범위(픽셀단위)를 설정합니다. 숫자가 작을수록 정확하고 엄격하게 판정합니다.
+	margin: 10,
+	// option: 메시지를 표시할 때 사용할 기본 캐릭터를 설정합니다. 공백으로 설정시 채팅에 이름을 표시하지 않습니다.
+	default_character: "GM"
+}
+// /define: option
+
 on("change:graphic", function(obj, prev) {
+	// on.change:graphic
     try {
         if (obj.get('top') === prev.top && obj.get('left') === prev.left) return;
         if (obj.get('name') == 'ts_marker') {  
@@ -8,10 +19,6 @@ on("change:graphic", function(obj, prev) {
             const top = obj.get('top');
             const width = obj.get('width');
             const height = obj.get('height');
-            // option. 마커토큰이 영역토큰과 약간 어긋나도 인식되도록 오차범위(픽셀단위)를 설정합니다. 숫자가 작을수록 정확하고 엄격하게 판정합니다.
-            const margin = 10;
-            // option.  /as,/emas,/desc 명령이 포함되지 않는 메시지를 표시할 기본 캐릭터를 설정합니다. 공백으로 설정시 채팅에 이름을 표시하지 않습니다.
-            const default_character = "GM";
 
             const results = filterObjs(function(area) {    
                 if (area.get('_type') == 'graphic' && area.get('_pageid') == obj.get('_pageid') && area.get('bar3_value') =='ts_trigger' &&
@@ -124,5 +131,6 @@ on("change:graphic", function(obj, prev) {
     } catch(err){
         sendChat("error","/w gm "+err,null,{noarchive:true});
     }
+	// /on.change:graphic
 });
-/* (token_scripter.js) 210128 코드 종료 */
+/* (token_scripter.js) 210306 코드 종료 */

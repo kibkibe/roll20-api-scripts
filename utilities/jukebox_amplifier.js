@@ -2,8 +2,9 @@
 /* (jukebox_amplifier.js) 210128 코드 시작 */
 on("chat:message", function(msg)
 {
-if (msg.type == "api" && (msg.playerid == 'API' || playerIsGM(msg.playerid))){
-    if (msg.content.indexOf("!amplify") === 0) { //명령어를 변경하실 수 있습니다.
+if (msg.type == "api") {
+	// on.chat:message:api
+	if (msg.content.indexOf("!amplify") === 0 && playerIsGM(msg.playerid)) { //명령어를 변경하실 수 있습니다.
 		try {
 			var jukebox = findObjs({_type: "jukeboxtrack"});
 			for (var i=0;i<jukebox.length;i++) {
@@ -17,7 +18,8 @@ if (msg.type == "api" && (msg.playerid == 'API' || playerIsGM(msg.playerid))){
 		} catch(err){
 			sendChat("error","/w gm "+err,null,{noarchive:true});
 		}
-    }
+	}
+	// /on.chat:message:api
 }
 });
 /* (jukebox_amplifier.js) 210128 코드 종료 */

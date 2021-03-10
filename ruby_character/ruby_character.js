@@ -1,12 +1,17 @@
 /* https://github.com/kibkibe/roll20-api-scripts/tree/master/ruby_character */
-/* (ruby_character.js) 210214 코드 시작 */
+/* (ruby_character.js) 210306 코드 시작 */
+
+// define: global constant
+const api_tag = '<a href="#vd-permitted-api-chat"></a>';
+// /define: global constant
+
 on("chat:message", function(msg)
 {
 if (msg.type == "api"){
-	try {
-		if (msg.content.indexOf("!루 ") == 0 || msg.content.indexOf("!r ") == 0) {
+	// on.chat:message:api
+	if (msg.content.indexOf("!루 ") == 0 || msg.content.indexOf("!r ") == 0) {
+		try {
 			
-			const api_tag = '<a href="#vd-permitted-api-chat"></a>';
 			let str = msg.content.replace("!루 ",'').replace("!r ",'');
 			const ruby_array = str.match(/\[[^\(\)\[\]]*\]\([^\(\)\[\]]+\)/g);
 			if (ruby_array) {
@@ -41,11 +46,11 @@ if (msg.type == "api"){
     				}
 				}
 			}
-
 			sendChat(str.includes('/desc')?'':findCharacterWithName(msg.who),str + api_tag);
+		} catch (err) {
+			sendChat('error','/w GM '+err,null,{noarchive:true});
 		}
-	} catch (err) {
-		sendChat('error','/w GM '+err,null,{noarchive:true});
 	}
+	// /on.chat:message:api
 }});
-/* (ruby_character.js) 210214 코드 종료 */
+/* (ruby_character.js) 210306 코드 종료 */
