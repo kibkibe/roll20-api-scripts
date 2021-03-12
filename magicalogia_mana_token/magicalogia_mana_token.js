@@ -1,5 +1,5 @@
 /* https://github.com/kibkibe/roll20-api-scripts/tree/master/magicalogia_mana_token */
-/* (magicalogia_mana_token.js) 210306 코드 시작 */
+/* (magicalogia_mana_token.js) 210312 코드 시작 */
 
 // define: global constant
 const charge_check = [
@@ -76,7 +76,7 @@ on("chat:message", function(msg){
 				if (page.length > 0) {
 					page = page[0];
 				} else {
-					sendChat("error","/w gm 이름이 **" + page[0] + "**인 페이지가 없습니다.",null,{noarchive:true});
+					sendChat("error","/w gm 이름이 **" + page_list[0] + "**인 페이지가 없습니다.",null,{noarchive:true});
 					return;
 				}
 			}
@@ -288,4 +288,4 @@ function check_charge(obj,prev) {
     }
 }
 // /define: global function
-/* (magicalogia_mana_token.js) 210306 코드 종료 */
+/* (magicalogia_mana_token.js) 210312 코드 종료 */

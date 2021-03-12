@@ -1,5 +1,5 @@
 /* https://github.com/kibkibe/roll20-api-scripts/tree/master/visual_dialogue */
-/* (visual_dialogue.js) 210306 코드 시작 */
+/* (visual_dialogue.js) 210312 코드 시작 */
 
 // define: global constant
 const api_tag = "<a href=\"#vd-permitted-api-chat\"></a>";
@@ -222,7 +222,7 @@ const vdGetCurrentPage = function() {
 		if (page.length > 0) {
 			return page[0].get('_id');
 		} else {
-			sendChat("error","/w gm 이름이 **" + page[0] + "**인 페이지가 없습니다.",null,{noarchive:true});
+			sendChat("error","/w gm 이름이 **" + page_list[0] + "**인 페이지가 없습니다.",null,{noarchive:true});
 		}
 	}
 }
@@ -599,4 +599,4 @@ const arrangeStandings = function(addNew) {
     }
 }
 // /define: global function
-/* (visual_dialogue.js) 210306 코드 종료 */
+/* (visual_dialogue.js) 210312 코드 종료 */
