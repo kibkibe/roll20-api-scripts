@@ -1,5 +1,5 @@
 /* https://github.com/kibkibe/roll20-api-scripts/tree/master/token_scripter */
-/* (token_scripter.js) 210306 코드 시작 */
+/* (token_scripter.js) 210317 코드 시작 */
 
 // define: option
 const ts_setting = {
@@ -22,27 +22,27 @@ on("change:graphic", function(obj, prev) {
 
             const results = filterObjs(function(area) {    
                 if (area.get('_type') == 'graphic' && area.get('_pageid') == obj.get('_pageid') && area.get('bar3_value') =='ts_trigger' &&
-                area.get('left')-area.get('width')/2 -margin <=left-width/2 &&
-                area.get('top')-area.get('height')/2 -margin<=top-height/2 &&
-                area.get('top')+area.get('height')/2 +margin>= top+height/2 &&
-                area.get('left')+area.get('width')/2 +margin>= left+width/2) {
+                area.get('left')-area.get('width')/2 -ts_setting.margin <=left-width/2 &&
+                area.get('top')-area.get('height')/2 -ts_setting.margin<=top-height/2 &&
+                area.get('top')+area.get('height')/2 +ts_setting.margin>= top+height/2 &&
+                area.get('left')+area.get('width')/2 +ts_setting.margin>= left+width/2) {
                     return true;
                 } else return false;
             });
 
             const getDefaultName = function() {
-                if (default_character == '') {
+                if (ts_setting.default_character == '') {
                     return '';
                 }
-                let as_who = findObjs({_type: "character", name: default_character});
+                let as_who = findObjs({_type: "character", name: ts_setting.default_character});
                 if (as_who.length > 0) {
                     as_who = "character|" + as_who[0].get('_id');
                 } else {
-                    as_who = findObjs({_type: "player", _displayname: default_character});
+                    as_who = findObjs({_type: "player", _displayname: ts_setting.default_character});
                     if (as_who.length > 0) {
                         as_who = "player|" + as_who[0].get('_id');
                     } else {
-                        as_who = default_character;
+                        as_who = ts_setting.default_character;
                     }
                 }
                 return as_who;
@@ -133,4 +133,4 @@ on("change:graphic", function(obj, prev) {
     }
 	// /on.change:graphic
 });
-/* (token_scripter.js) 210306 코드 종료 */
+/* (token_scripter.js) 210317 코드 종료 */

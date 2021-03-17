@@ -1,5 +1,5 @@
 /* https://github.com/kibkibe/roll20-api-scripts/tree/master/magicalogia_summon */
-/* (magicalogia_summon.js) 210312 코드 시작 */
+/* (magicalogia_summon.js) 210317 코드 시작 */
 
 // define: option
 const ms_setting = {
@@ -14,8 +14,8 @@ const ms_setting = {
 	display_skill: true,
 	// option: 원형의 이펙트를 토큰 마커로 표시할지 (true) 표시하지 않을지 (false) 설정합니다.
 	use_effect_marker: true,
-	// option: ms_setting.use_effect_marker가 true일 때: 이펙트의 숫자를 마커 위에 텍스트로 표시할지(true) 숫자가 포함된 이미지를 불러올지(false) 설정합니다.
-	// ms_setting.use_effect_marker가 false일 때: 원형토큰의 이름에 이펙트를 기재할지(true) 생략할지(false) 설정합니다.
+	// option: use_effect_marker가 true일 때: 이펙트의 숫자를 마커 위에 텍스트로 표시할지(true) 숫자가 포함된 이미지를 불러올지(false) 설정합니다.
+	// use_effect_marker가 false일 때: 원형토큰의 이름에 이펙트를 기재할지(true) 생략할지(false) 설정합니다.
 	use_text: false,
 	// option: 원형토큰의 이름에 이펙트를 기재하는 옵션일 경우, 이펙트 사이를 분리할 문자열을 설정합니다.	
 	div_text: ",",
@@ -30,7 +30,7 @@ const ms_setting = {
 		{marker:'minus',display_name:'-',keyword:'minus,mi,마이너스,-'},
 		{marker:'plus',display_name:'+',keyword:'plus,pl,플러스,플,+'},
 		{marker:'spellguard',display_name:'가',keyword:'spellguard,sp,스펠가드,가,가드,스'}],
-	// option: 원형의 기본 습득 이펙트를 입력합니다. 룰북 내의 데이터이기 때문에 무료 배포하는 코드에 포함할 수 없으므로 해당 내용은 수기입해주시기 바랍니다.
+	// option: 원형의 기본 습득 이펙트를 입력합니다. 룰북 내의 데이터이기 때문에 무료 배포하는 코드에 포함할 수 없으므로 해당 내용은 수기입해주시기 바랍니다. (ex: 'block1,damage1')
 	archetype_list: [
 		{name:'정령', effect:''},
 		{name:'마검', effect:''},
@@ -260,4 +260,4 @@ if (msg.type == "api"){
 	// /on.chat:message:api
 }
 });
-/* (magicalogia_summon.js) 210312 코드 종료 */
+/* (magicalogia_summon.js) 210317 코드 종료 */
