@@ -1,12 +1,13 @@
 /* https://github.com/kibkibe/roll20-api-scripts/tree/master/attribute_tracker */
-/* (attribute_tracker.js) 210306 코드 시작 */
+/* (attribute_tracker.js) 210326 코드 시작 */
 
 // define: option
 const at_setting = {
 	// option: 변경을 감지할 속성을 목록 형태로 지정합니다.
 	// 다른 룰의 샘플리스트: https://github.com/kibkibe/roll20-api-scripts/tree/master/attribute_tracker/check_list_sample
-	check_list: [
-		{attr: "Magic_*id*_Charge", name: "Magic_*id*_Name", is_static_name: false, is_static_attr: false},
+	check_list:
+	/* 체크리스트 시작 */
+	[{attr: "Magic_*id*_Charge", name: "Magic_*id*_Name", is_static_name: false, is_static_attr: false},
 		{attr: "repeating_acitems_-*id*_Magic_Charge", name: "repeating_acitems_-*id*_Magic_Name", is_static_name: false, is_static_attr: false},
 		{attr: "Magic_*id*_Cost", name: "Magic_*id*_Name", is_static_name: false, is_static_attr: false},
 		{attr: "repeating_acitems_-*id*_Magic_Cost", name: "repeating_acitems_-*id*_Magic_Name", is_static_name: false, is_static_attr: false},
@@ -16,7 +17,9 @@ const at_setting = {
 		{attr: "bas", name: "근원력", is_static_name: true, is_static_attr: true},
 		{attr: "mp", name: "마력", is_static_name: true, is_static_attr: true},
 		{attr: "temp_mp", name: "일시적 마력", is_static_name: true, is_static_attr: true},
-		{attr: "mp_max", name: "최대마력", is_static_name: true, is_static_attr: true}],
+		{attr: "mp_max", name: "최대마력", is_static_name: true, is_static_attr: true}]
+	/* 체크리스트 끝*/
+	,
 	// option: 필수적으로 변화를 체크할 캐릭터의 이름을 기입합니다.
 	// 이 값은 ignore_list보다 우선됩니다. (복수입력시 콤마(,)로 구분)
 	prior_list: "",
@@ -143,4 +146,4 @@ function check_attribute(obj,prev) {
     }
 }
 // /define: global function
-/* (attribute_tracker.js) 210306 코드 종료 */
+/* (attribute_tracker.js) 210326 코드 종료 */
