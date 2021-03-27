@@ -4,7 +4,7 @@
 // define: option
 const at_setting = {
 	// option: 변경을 감지할 속성을 목록 형태로 지정합니다.
-	// 다른 룰의 샘플리스트: https://github.com/kibkibe/roll20-api-scripts/tree/master/attribute_tracker/check_list_sample
+	// **다른 룰의 샘플리스트: https://github.com/kibkibe/roll20-api-scripts/tree/master/attribute_tracker/check_list_sample**
 	check_list:
 	/* 체크리스트 시작 */
 	[{attr: "Magic_*id*_Charge", name: "Magic_*id*_Name", is_static_name: false, is_static_attr: false},
