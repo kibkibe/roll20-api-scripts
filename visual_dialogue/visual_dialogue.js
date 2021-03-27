@@ -61,9 +61,7 @@ on('ready', function() {
     state.vd_stock = [];
 	// /on.ready
 	on("add:card", function(obj) {
-		// on.add:card
 		updateMacro(obj);
-		// /on.add:card
 	});
 });
 on("change:card", function(obj,prev) {
