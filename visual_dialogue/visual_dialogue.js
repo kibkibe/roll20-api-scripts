@@ -1,9 +1,10 @@
 /* https://github.com/kibkibe/roll20-api-scripts/tree/master/visual_dialogue */
-/* (visual_dialogue.js) 210312 코드 시작 */
+/* (visual_dialogue.js) 210327 코드 시작 */
 
 // define: global constant
 const api_tag = "<a href=\"#vd-permitted-api-chat\"></a>";
 const vd_divider = "ℍ";
+let last_displayed_time = 0;
 // /define: global constant
 
 // define: option
@@ -59,6 +60,21 @@ on('ready', function() {
 	// on.ready
     state.vd_stock = [];
 	// /on.ready
+	on("add:card", function(obj) {
+		// on.add:card
+		updateMacro(obj);
+		// /on.add:card
+	});
+});
+on("change:card", function(obj,prev) {
+	// on.change:card
+	updateMacro(obj);
+	// /on.change:card
+});
+on("destroy:card", function(obj) {
+	// on.destroy:card
+	updateMacro(obj);
+	// /on.destroy:card
 });
 on("destroy:graphic", function(obj) {
 	// on.destroy:graphic
@@ -79,7 +95,7 @@ on("chat:message", function(msg)
 				msg.content = msg.content.replace(api_tag,'').replace(/<br>/g,vd_divider);
 				msg.time = new Date().getTime();
 				state.vd_stock.push(msg);
-				if (state.vd_stock.length == 1) {
+				if (state.vd_stock.length == 1 || (state.vd_stock.length > 1 && last_displayed_time + 5000 < msg.time)) {
 					setTimeout(showDialogue, 100);
 				}
 			} 
@@ -139,6 +155,38 @@ on("chat:message", function(msg)
 				} else {
 					msg.who = keyword.replace(":","");
 					removeStanding(msg);
+				}
+			}
+
+		} else if (playerIsGM(msg.playerid) && (msg.content == "!@리셋" || msg.content == "!@reset")) {
+			
+			state.vd_stock = [];
+			sendChat("error","/w gm 표시 대기열에 쌓여있던 대사들을 초기화했습니다.",null,{noarchive:true});
+
+		} else if (playerIsGM(msg.playerid) && (msg.content == "!@강제진행" || msg.content == "!@force-progress")) {
+			
+			showNextDialogue();
+
+		} else if (playerIsGM(msg.playerid) && (msg.content.indexOf("!@배경") == 0 || msg.content.indexOf("!@background") == 0)) {
+
+			let bg_background = findObjs({ _type: 'graphic', name:'vd_background', _pageid:current_page_id});
+			if (bg_background.length == 0) {
+				sendChat("error","/w gm **" + getObj('page',current_page_id).get('name') + "** 페이지에 vd_background 토큰이 없습니다.",null,{noarchive:true});
+				return;
+			}
+			bg_background = bg_background[0];
+			const current_url = bg_background.get('imgsrc');
+			const split = msg.content.split("(");
+			if (split.length != 2) {
+				sendChat("error","/w gm 명령어 형식이 올바르지 않습니다. (ex: !@배경 (https://이미지주소...))",null,{noarchive:true});
+				return;
+			} else if (split[1].indexOf('https://') != 0) {
+				sendChat("error","/w gm 이미지 URL이 올바르지 않습니다. (ex: !@배경 (https://이미지주소...))",null,{noarchive:true});
+				return;
+			} else {
+				bg_background.set('imgsrc',split[1].replace(")","").replace('med','thumb').replace('max','thumb').replace(' ',''));
+				if (current_url == bg_background.get('imgsrc')) {
+					sendChat("error","/w gm 배경 이미지가 정상적으로 변경되지 않았습니다. 주소나 명령어 형식이 올바른지 확인해주세요. (ex: !@배경 (https://이미지주소...))",null,{noarchive:true});
 				}
 			}
 
@@ -493,7 +541,43 @@ const showDialogue = function() {
             current_token.set({tint_color:'transparent',gmnotes:Date.now()});
         }
     }
+	last_displayed_time = new Date().getTime();
     setTimeout(showNextDialogue, Math.max(vd_setting.min_showtime, str.length * vd_setting.showtime_ratio));
+}
+
+const updateMacro = function(obj) {
+
+	let background_deck = findObjs({type:'deck',name:'background'});
+	if (background_deck.length > 0 && obj.get('deckid') == background_deck[0].get('id')) {
+		if (background_deck.length > 1) {
+			sendChat("error","/w gm **background** 덱이 **" + background_deck.length + "**개 있습니다. 먼저 생성된 1개 덱을 기준으로 매크로를 생성합니다.",null,{noarchive:true});
+		}
+		let players = findObjs({type:'player'});
+		let bg_images = findObjs({_type:'card',_deckid:background_deck[0].get('id')});
+		let bg_macro = findObjs({_type:'macro',name:"배경전환"});
+		let action_str = "!@배경 ?{배경을 선택하세요";
+		let gm_list = "";
+		for (let index = 0; index < bg_images.length; index++) {
+			const card = bg_images[index];
+			action_str += "|" + card.get('name') + "(" + card.get('avatar') + ")";
+		}
+		for (let index = 0; index < players.length; index++) {
+			const player = players[index];
+			if (playerIsGM(player.id)) {
+				gm_list += player.id + "|";
+			}
+		}
+		gm_list = gm_list.substring(0,gm_list.length - 1);
+		action_str += "}";
+		let options = {name:"배경전환",action:action_str,visibleto:gm_list};
+		if (bg_macro.length > 0) {
+			bg_macro = bg_macro[0];
+			bg_macro.set(options);
+		} else {
+			options.playerid = players[0].get('id');
+			bg_macro = createObj('macro',options);
+		}
+	}
 }
 
 const showHideDecorations = function(name, show) {
@@ -599,4 +683,4 @@ const arrangeStandings = function(addNew) {
     }
 }
 // /define: global function
-/* (visual_dialogue.js) 210312 코드 종료 */
+/* (visual_dialogue.js) 210327 코드 종료 */
