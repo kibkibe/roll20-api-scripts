@@ -1,5 +1,5 @@
 /* https://github.com/kibkibe/roll20-api-scripts/tree/master/token_scripter */
-/* (token_scripter.js) 210317 코드 시작 */
+/* (token_scripter.js) 210327 코드 시작 */
 
 // define: option
 const ts_setting = {
@@ -93,18 +93,28 @@ on("change:graphic", function(obj, prev) {
                             }
                         });
                     }
+					let as_who;
                     if (is_rich_text) {
+                        if (final_str.indexOf("/desc") > -1) {
+							final_str = "/desc " + final_str.replace("/desc","");
+                            as_who = '';
+						} else {
+							as_who = getDefaultName();
+						}
                         if (final_str.indexOf('!...') > -1) {
                             final_str = final_str.replace(/\!\.\.\.\s*/g,"");
-                            final_str = "!..." + final_str;
+                            final_str = "!... " + final_str;
                         }
-                        sendChat(getDefaultName(), final_str);
+                        sendChat(as_who, final_str);
                     } else {
-
-                        let as_who;
                         final_str = final_str.replace(/(<([^>]+)>)/gi, "");
 
-                        if (final_str.indexOf("/desc") == 0) {
+                        if (final_str.indexOf("/desc") > -1) {
+							final_str = "/desc " + final_str.replace("/desc","");
+							if (final_str.indexOf('!...') > -1) {
+								final_str = final_str.replace(/\!\.\.\.\s*/g,"");
+								final_str = "!... " + final_str;
+							}
                             as_who = '';
                         } else if (final_str.indexOf("/as") == 0 || final_str.indexOf("/emas") == 0) {
                             const arr = final_str.split('"');
@@ -133,4 +143,4 @@ on("change:graphic", function(obj, prev) {
     }
 	// /on.change:graphic
 });
-/* (token_scripter.js) 210317 코드 종료 */
+/* (token_scripter.js) 210327 코드 종료 */
