@@ -4,7 +4,7 @@
 // define: option
 const at_setting = {
 	// option: 변경을 감지할 속성을 목록 형태로 지정합니다.
-	// 룰별 check_list코드 공유페이지 https://docs.google.com/spreadsheets/d/1_uTqPs6FQJfjzDotRWqtJn8U6cVw_lVycDRal8vxZb8/edit#gid=609977791
+	// 룰별 check list코드 공유페이지 https://docs.google.com/spreadsheets/d/1_uTqPs6FQJfjzDotRWqtJn8U6cVw_lVycDRal8vxZb8/edit#gid=609977791
 	check_list:
 	/* 체크리스트 시작 */
 	[{attr: "Magic_*id*_Charge", name: "Magic_*id*_Name", is_static_name: false, is_static_attr: false},
