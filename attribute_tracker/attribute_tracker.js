@@ -1,5 +1,5 @@
 /* https://github.com/kibkibe/roll20-api-scripts/tree/master/attribute_tracker */
-/* (attribute_tracker.js) 210326 코드 시작 */
+/* (attribute_tracker.js) 210328 코드 시작 */
 
 // define: option
 const at_setting = {
@@ -146,4 +146,4 @@ function check_attribute(obj,prev) {
     }
 }
 // /define: global function
-/* (attribute_tracker.js) 210326 코드 종료 */
+/* (attribute_tracker.js) 210328 코드 종료 */
