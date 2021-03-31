@@ -25,7 +25,7 @@ let ss_setting = {
 	// option: (고급설정) 각 열이 간격이 font_size 대비 얼마만큼의 픽셀을 차지하는지의 비율을 지정합니다.
 	lineheight: 1.7,
 	// option: (고급설정) 각 글자가 font_size 대비 얼마만큼의 픽셀을 차지하는지의 비율을 지정합니다.
-	letterspacing: 0.9
+	letterspacing: 0.85
 }
 // /define: option
 
