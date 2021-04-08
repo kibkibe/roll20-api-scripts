@@ -1,5 +1,5 @@
 /* https://github.com/kibkibe/roll20-api-scripts/tree/master/attribute_tracker */
-/* (attribute_tracker.js) 210328 코드 시작 */
+/* (attribute_tracker.js) 210409 코드 시작 */
 
 // define: option
 const at_setting = {
@@ -88,14 +88,14 @@ function check_attribute(obj,prev) {
         let cha = getObj('character',obj.get('_characterid'));
 		const prior_list = at_setting.prior_list.split(/\s*,\s*/g);
 		const ignore_list = at_setting.ignore_list.split(/\s*,\s*/g);
-        if (prior_list.indexOf(cha.get('name')) > -1 || ignore_list.length == 0) {
+        if (prior_list.indexOf(cha.get('name')) > -1 || at_setting.ignore_list == 0) {
             check_pl = true;
         } else if (ignore_list.indexOf(cha.get('name')) > -1) {
             check_pl = false;
         } else if (ignore_list.indexOf('GM') > -1) {
             let controller = cha.get('controlledby').split(",");
             for (var i=0;i<controller.length;i++) {
-                if (!playerIsGM(controller[i])) {
+                if (controller[i].length > 0 && !playerIsGM(controller[i])) {
                     check_pl = true;
                     break;
                 }

@@ -35,6 +35,7 @@ on('ready', function() {
     if (!state.smallchatonair) state.smallchatonair = [];
 	// /on.ready
 });
+
 on("chat:message", function(msg)
 {
 if (msg.type == "api"){

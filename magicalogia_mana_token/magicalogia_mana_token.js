@@ -1,5 +1,5 @@
 /* https://github.com/kibkibe/roll20-api-scripts/tree/master/magicalogia_mana_token */
-/* (magicalogia_mana_token.js) 210312 코드 시작 */
+/* (magicalogia_mana_token.js) 210409 코드 시작 */
 
 // define: global constant
 const charge_check = [
@@ -266,8 +266,14 @@ function check_charge(obj,prev) {
             if (check) {
                 var tokens = findObjs({_type: 'graphic', _subtype: 'token', layer: 'objects', represents: prev._characterid, bar1_link: prev._id});
                 if (tokens.length == 0) {
-                    sendChat("error","/w gm **" + obj.get('name') + "**와 연결된 토큰이 없습니다",null,{noarchive:true});
-                    return;
+					const player_ids = obj._characterid.split(",");
+					player_ids.forEach(player_id => {
+						const player = getObj('player',player_id);
+						if (player != undefined && !playerIsGM(player)) {
+							sendChat("error","/w gm **" + obj.get('name') + "**와 연결된 토큰이 없습니다",null,{noarchive:true});
+							return;
+						}
+					});
                 }
                 for (var j=0;j<tokens.length;j++) {
                     let token = tokens[j];
