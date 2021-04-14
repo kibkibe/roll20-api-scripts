@@ -13,7 +13,7 @@ if (msg.type == "api"){
 				obj.set({currentSide:side,imgsrc:img});
 			}
 		} catch(err){
-			sendchat("error","/w gm "+err,null,{noarchive:true});
+			sendChat("error","/w gm "+err,null,{noarchive:true});
 		}
     }
 	// /on.chat:message:api

@@ -91,7 +91,8 @@ on("ready", function() {
                     obj.set({
                         gmnotes:'Dice',
                         left:Math.floor(nearest_area.get('left')-(nearest_area.get('width')/2)+(obj.get('width')/2))+(is_area_landscape?stacked_dice*obj.get('width'):0),
-                        top:Math.floor(nearest_area.get('top')-(nearest_area.get('height')/2)+(obj.get('height')/2))+(!is_area_landscape?stacked_dice*obj.get('height'):0)});
+                        top:Math.floor(nearest_area.get('top')-(nearest_area.get('height')/2)+(obj.get('height')/2))+(!is_area_landscape?stacked_dice*obj.get('height'):0),
+						showname:false,showplayers_name:false});
                 }
             }
         } catch (err) {
@@ -181,16 +182,16 @@ if (msg.type == "api"){
             for (var i=0;i<dice1.length;i++) {
                 for (var j=0;j<dice2.length;j++) {
                     if (dice1[i].get('name') === '0') {
-                        dice1[i].set('name',dice1[i].get('name')+'!');
+                        dice1[i].set({name:dice1[i].get('name')+'!',showplayers_name:false,showname:false});
                         break;
                     } else if (dice2[j].get('name') === '0') {
-                        dice2[j].set('name',dice2[j].get('name')+'!');
+                        dice2[j].set({name:dice2[j].get('name')+'!',showplayers_name:false,showname:false});
                     } else if (dice1[i].get('name')===dice2[j].get('name') && !dice1[i].get('name').includes('!') && !dice2[j].get('name').includes('!')) {
                         if (concentrateIdx != 0) {
-                        dice1[i].set('name',dice1[i].get('name')+'!');
+                        dice1[i].set({name:dice1[i].get('name')+'!',showplayers_name:false,showname:false});
                         }
                         if (concentrateIdx != 2) {
-                        dice2[j].set('name',dice2[j].get('name')+'!');
+                        dice2[j].set({name:dice2[j].get('name')+'!',showplayers_name:false,showname:false});
                         }
                     }
                 }

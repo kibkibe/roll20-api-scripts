@@ -181,10 +181,12 @@ on("chat:message", function(msg){
                             if (j<rt_item.length-1) {
                                 sides += "|";
                             }
+							let num_string = (current_charge.get('current') + "");
+							num_string = num_string == "" ? "0" : num_string;
                             if (mt_setting.use_static_icon && init_idx == -1 && obj.orig_cost && obj.orig_cost.toLowerCase().includes(rt_item[j].get('name').toLowerCase())) {
                                 init_idx = j;
-                            } else if (!mt_setting.use_static_icon && init_idx == -1 && (current_charge.get('current') + "") == rt_item[j].get('name')) {
-                                init_idx = j;
+                            } else if (!mt_setting.use_static_icon && init_idx == -1 && num_string == rt_item[j].get('name')) {
+								init_idx = j;
                             }
                         }
 
