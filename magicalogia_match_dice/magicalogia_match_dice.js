@@ -1,5 +1,5 @@
 /* https://github.com/kibkibe/roll20-api-scripts/tree/master/magicalogia_match_dice */
-/* (magicalogia_match_dice.js) 210504 코드 시작 */
+/* (magicalogia_match_dice.js) 210505 코드 시작 */
 
 // define: option
 let md_setting = {
@@ -124,7 +124,7 @@ if (msg.type == "api"){
                 
                 if (model) {
                     var dname = model.get('name');
-                    if (flip && obj.get('currentSide')===1) {
+                    if (flip && (obj.get('currentSide') == 1 || dname == "?")) {
                         let img = obj.get('sides').split('|')[0].replace('%3A',':').replace('%3F','?').replace('max','thumb').replace('med','thumb');
                         if (dname == "?") {
                             randomDice(obj);
@@ -132,10 +132,14 @@ if (msg.type == "api"){
                             obj.set({currentSide:0,imgsrc:img,showname:false,showplayers_name:false});
                         }
                     }
-                    if (obj.get('currentSide')===0) {
+					
+					if (obj.get('currentSide') == 0) {
                         if (dname != "?") {
                             obj.set('name', dname);
-                        }
+                        } else {
+                            obj.set('name', obj.get('name').replace('!',''));
+						}
+						log(obj.get('name') + "/" + dname);
                         let left = parseInt(obj.get('left'));
                         let top = parseInt(obj.get('top'));
                         let width = parseInt(obj.get('width'));
@@ -234,15 +238,15 @@ function randomDice(obj) {
     if (obj.get('subtype') == 'card') {
         let deck = findObjs({ _type: 'deck', name: 'Dice'})[0];
         let model = findObjs({ _type: "card", _deckid: deck.get('_id'), _id:obj.get('_cardid')})[0];
-        if (model && model.get('name') === "?") {
-			if (obj.get('currentSide') == 1) {
-				obj.set({name:""});
-			} else if (obj.get('name') == "") {
+        if (model && model.get('name') == "?") {
+			//if (obj.get('name') == "") {
 				let dname = "" + Math.floor( Math.random() * 6 + 1 );
 				let new_model = findObjs({ _type: "card", _deckid: deck.get('_id'), name: dname})[0];
 				obj.set({currentSide:0,name:dname,imgsrc:new_model.get('avatar').replace('max','thumb').replace('med','thumb'),showname:false,showplayers_name:false});
-			}
-        }
+			//}
+        } else {
+			log(obj);
+		}
     }
 }
 
@@ -266,4 +270,4 @@ function getPlotAreas() {
 }
 // /define: global function
 
-/* (magicalogia_match_dice.js) 210504 코드 종료 */
+/* (magicalogia_match_dice.js) 210505 코드 종료 */
