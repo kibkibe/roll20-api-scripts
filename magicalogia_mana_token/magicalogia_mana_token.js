@@ -22,8 +22,7 @@ const mt_setting = {
 	// option: 장서 토큰은 고정한 채 별도로 충전량을 보여주는 서브 아이콘을 함께 표시할지를 설정합니다. (true:사용/false:비사용)
 	use_sub_icon: true,
 	// option: 장서 토큰의 아이콘을 속성당 대표이미지 하나만 사용할 경우, 모든 속성의 아이콘을 모아놓은 Rollable table의 이름을 지정합니다.
-	// (이 값은 user_single_icon나 use_sub_icon이 true일 때만 유효합니다.)
-	// (use_sub_icon이 true일 경우 장서 토큰의 아이콘은 collection_name에 지정된 이름의 테이블에서, 충전게이지 아이콘은 각 속성명의 테이블에서 가져옵니다.)
+	// (이 값은 user_single_icon나 use_sub_icon이 true일 때만 유효합니다. use_sub_icon이 true일 경우 장서 토큰의 아이콘은 collection_name에 지정된 이름의 테이블에서, 충전게이지 아이콘은 각 속성명의 테이블에서 가져옵니다.)
 	collection_name: '마소',
 	// option: 생성된 장서 토큰에 이름을 표시할지를 지정합니다. (true:표시/false:숨김)
 	show_name: true,
@@ -39,7 +38,7 @@ const mt_setting = {
 	// (이 값은 use_sub_icon이 true일 때만 유효합니다.)
 	sub_icon_size: '70,35',
 	// option: 서브 아이콘을 장서 토큰의 중심 기준으로 어느 위치에 표시할지를 지정합니다.
-	/// (가로세로 좌표는 콤마(,)로 구분합니다. 중심 기준 왼쪽/상단에 표시할 경우 음수(-)로 표시합니다.)
+	// (가로세로 좌표는 콤마(,)로 구분합니다. 중심 기준 왼쪽/상단에 표시할 경우 음수(-)로 표시합니다.)
 	sub_icon_position: '35,0',
 	// option: 페이지 격자의 가로/세로 크기입니다.
 	grid_size: 70
