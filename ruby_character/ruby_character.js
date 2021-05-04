@@ -1,9 +1,22 @@
 /* https://github.com/kibkibe/roll20-api-scripts/tree/master/ruby_character */
-/* (ruby_character.js) 210306 코드 시작 */
+/* (ruby_character.js) 210505 코드 시작 */
 
 // define: global constant
 const api_tag = '<a href="#vd-permitted-api-chat"></a>';
 // /define: global constant
+
+// define: option
+const rc_setting = {
+	// option: 아래에 표시되는 글자에 기울임(이탤릭체)를 적용할지(true/false)를 설정합니다.
+	text_italic: false,
+	// option: 아래에 표시되는 글자에 굵은 글씨(볼드)를 적용할지(true/false)를 설정합니다.
+	text_bold: false,
+	// option: 위에 표시되는 루비문자에 기울임(이탤릭체)를 적용할지(true/false)를 설정합니다.
+	ruby_italic: false,
+	// option: 위에 표시되는 루비문자에 굵은 글씨(볼드)를 적용할지(true/false)를 설정합니다.
+	ruby_bold: false
+}
+// /define: option
 
 on("chat:message", function(msg)
 {
@@ -20,8 +33,11 @@ if (msg.type == "api"){
 					const rb = split[0].replace('[','');
 					const rt = split[1].replace(')','');
 					str = str.replace(element, '<div style="display:inline-block;vertical-align:bottom;">'
-					+ '<div style="display:table"><div style="display:table-row;text-align:center;font-size:7pt;font-weight:bold;"><span style="display:none">(</span>'
-					+ rt + '<span style="display:none">)</span></div><div style="display:table-row;text-align:center;"><span style="display:none">[</span>' + rb + '<span style="display:none">]</span></div></div></div>');
+					+ '<div style="display:table"><div style="display:table-row;text-align:center;font-size:7pt;'
+					+ (rc_setting.ruby_bold ? 'font-weight:bold;': '') + (rc_setting.ruby_italic ? 'font-style:italic;': '') + '"><span style="display:none">(</span>'
+					+ rt + '<span style="display:none">)</span></div><div style="display:table-row;text-align:center;'
+					+ (rc_setting.text_bold ? 'font-weight:bold;': '') + (rc_setting.text_italic ? 'font-style:italic;': '')
+					+ '"><span style="display:none">[</span>' + rb + '<span style="display:none">]</span></div></div></div>');
 				});
 			} else {
 				sendChat('error','/w "' + (msg.who==''?'GM':msg.who) + '" 루비 형식이 올바르지 않습니다.<br>``[아래에 표시될 문장]````(위에 표시될 문장)``의 형식으로 입력해주세요.',null,{noarchive:true});
