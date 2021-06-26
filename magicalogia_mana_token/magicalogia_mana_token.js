@@ -1,5 +1,5 @@
 /* https://github.com/kibkibe/roll20-api-scripts/tree/master/magicalogia_mana_token */
-/* (magicalogia_mana_token.js) 210504 코드 시작 */
+/* (magicalogia_mana_token.js) 210626 코드 시작 */
 
 // define: global constant
 const charge_check = [
@@ -18,7 +18,7 @@ const mt_setting = {
 	use_single_icon: false,
 	// option: 마소 충전 상태에 따라 아이콘 이미지가 바뀌는 기능을 사용할지(false) 마소 충전치와 무관하게 한 이미지로 고정되는지(true) 지정합니다.
 	// (이 값은 use_single_icon이 false일 때만 유효합니다.)
-	use_static_icon: false,
+	use_static_icon: true,
 	// option: 장서 토큰은 고정한 채 별도로 충전량을 보여주는 서브 아이콘을 함께 표시할지를 설정합니다. (true:사용/false:비사용)
 	use_sub_icon: true,
 	// option: 장서 토큰의 아이콘을 속성당 대표이미지 하나만 사용할 경우, 모든 속성의 아이콘을 모아놓은 Rollable table의 이름을 지정합니다.
@@ -57,6 +57,23 @@ on("change:attribute", function(obj, prev) {
 	// on.change:attribute
     check_charge(obj, prev);
 	// /on.change:attribute
+});
+
+on("change:graphic:bar1_value", function(obj, prev) {
+	// on.change:graphic:bar1_value
+	if (!mt_setting.show_bar) {
+		const attr = getObj('attribute',obj.get('gmnotes'));
+		if (attr) {
+			attr.set('current',obj.get('bar1_value'));
+			check_charge(attr, {current: prev.bar1_value});
+			try {
+				check_attribute(attr, {current: prev.bar1_value, max: attr.get('max')});
+			} catch(err) {
+
+			}
+		}
+	}
+	// /on.change:graphic:bar1_value
 });
 
 on("chat:message", function(msg){
@@ -146,6 +163,7 @@ on("chat:message", function(msg){
                         obj.charge_id = charge_attr.id;
                     }
 
+					let current_cost = findObjs({type:'attribute',name:obj.orig_name.replace('_Name','_Cost'),characterid:cha.id});
                     let current_charge = getObj('attribute',obj.charge_id);
 
                     let rt_item = null;
@@ -189,20 +207,32 @@ on("chat:message", function(msg){
                             sendChat('ERROR','/w GM magicalogia_mana_token.js / \'' + srt[0].get('name') + '\' 영역에 사용할 수 있는 아이콘이 없습니다.',null,{noarchive:true});
                             return;
                         }
+						let num_string;
+						if (mt_setting.use_static_icon && !mt_setting.use_single_icon) {
+							log(current_cost);
+							if (current_cost && current_cost.length > 0) {
+								num_string = current_cost[0].get('current').replace(/[^\d]/g,'');
+								//log(current_cost[0].get('current') + "/" + num_string);
+							} else {
+								num_string = "0";
+							}
+						} else {
+							num_string = current_charge.get('current') + "";
+						}
+						num_string = num_string == "" ? "0" : num_string;
+
                         for (let j=0;j<srt_item.length;j++) {
                             sides += escape(srt_item[j].get('avatar'));
                             if (j<srt_item.length-1) {
                                 sides += "|";
                             }
-							let num_string = (current_charge.get('current') + "");
-							num_string = num_string == "" ? "0" : num_string;
                             if (init_idx == -1 && num_string == srt_item[j].get('name')) {
 								init_idx = j;
                             }
                         }
 
                         if (init_idx == -1) {
-                            sendChat('ERROR','/w GM magicalogia_mana_token.js / \'' + srt[0].get('name') + '\' 영역 중 ' + current_charge.get('current') + '에 대응되는 아이콘이 없습니다. 0번째 아이콘으로 대체합니다.',null,{noarchive:true});
+                            sendChat('ERROR','/w GM magicalogia_mana_token.js / \'' + srt[0].get('name') + '\' 영역 중 \'' + num_string + '\'에 대응되는 아이콘이 없습니다. 0번째 아이콘으로 대체합니다.',null,{noarchive:true});
                             init_idx = 0;
                         }
 
@@ -260,7 +290,7 @@ on("chat:message", function(msg){
                         }
 
                         if (init_idx == -1) {
-                            sendChat('ERROR','/w GM magicalogia_mana_token.js / \'' + rt[0].get('name') + '\' 영역 중 ' + current_charge.get('current') + '에 대응되는 아이콘이 없습니다. 0번째 아이콘으로 대체합니다.',null,{noarchive:true});
+                            sendChat('ERROR','/w GM magicalogia_mana_token.js / \'' + rt[0].get('name') + '\' 영역 중 \'' + current_charge.get('current') + '\'에 대응되는 아이콘이 없습니다. 0번째 아이콘으로 대체합니다.',null,{noarchive:true});
                             init_idx = 0;
                         }
                     }
@@ -294,7 +324,6 @@ on("chat:message", function(msg){
                         sides: mt_setting.use_sub_icon ? '' : sides,
                         currentSide:0,
                         name: obj.name,
-                        bar1_link: obj.charge_id,
                         playersedit_name: false,
                         showname: false,
                         bar1_value: current_charge.get('current'),
@@ -306,8 +335,12 @@ on("chat:message", function(msg){
                         playersedit_bar3: false,
                         playersedit_aura1: false,
                         playersedit_aura2: false,
-                        gmnotes: mt_setting.use_static_icon ? "static" : ""
                     };
+					if (mt_setting.show_bar) {
+						Object.assign(setting, {bar1_link: obj.charge_id});
+					} else {
+						Object.assign(setting, {gmnotes: obj.charge_id});
+					}
                     if (mt_setting.show_name) {
                         Object.assign(setting, {showname: true, showplayers_name: true});
                     }
@@ -338,11 +371,6 @@ on("chat:message", function(msg){
                     if (mt_setting.show_bar) {
                         current_charge.set('max',getAttrByName(cha.id, "bas"));
                         token.set({bar1_max:getAttrByName(cha.id, "bas"), showplayers_bar1: true});
-                    } else {
-                        setTimeout(function(){
-                            current_charge.set('max',"");
-                            token.set({bar1_max:"", showplayers_bar1: false});
-                        },100);
                     }
 
 					count++;
@@ -375,9 +403,15 @@ function check_charge(obj,prev) {
                 }
             }
             if (check) {
-                let tokens = findObjs({_type: 'graphic', _subtype: 'token', layer: 'objects', represents: prev._characterid, bar1_link: prev._id});
+				let condition = {_type: 'graphic', _subtype: 'token', layer: 'objects', represents: obj.get('_characterid')};
+				if (mt_setting.show_bar) {
+					Object.assign(condition, {bar1_link: obj.get('_id')});
+				} else {
+					Object.assign(condition, {gmnotes: obj.get('_id')});
+				}
+                let tokens = findObjs(condition);
                 if (tokens.length == 0) {
-					const player_ids = obj._characterid.split(",");
+					const player_ids = obj.get('_characterid').split(",");
 					player_ids.forEach(player_id => {
 						const player = getObj('player',player_id);
 						if (player != undefined && !playerIsGM(player)) {
@@ -388,8 +422,11 @@ function check_charge(obj,prev) {
                 }
                 for (let j=0;j<tokens.length;j++) {
                     let token = tokens[j];
+					if (!mt_setting.show_bar) {
+						token.set({bar1_value: obj.get('current')});
+					}
 					if (!mt_setting.use_sub_icon || token.get('name').lastIndexOf('*') == token.get('name').length-1) {
-						if (token.get('gmnotes') != 'static' && token.get('bar1_link') == prev._id) {
+						if (!mt_setting.use_static_icon && (token.get('bar1_link') == obj.get('_id') || token.get('gmnotes') == obj.get('_id'))) {
 							if (parseInt(obj.get('current')) >= token.get('sides').split('|').length) {
 								sendChat("error","/w gm " + obj.get('current') + "개의 마소를 표시할 수 있는 아이콘이 없습니다.",null,{noarchive:true});
 								return;
@@ -407,4 +444,4 @@ function check_charge(obj,prev) {
     }
 }
 // /define: global function
-/* (magicalogia_mana_token.js) 210504 코드 종료 */
+/* (magicalogia_mana_token.js) 210626 코드 종료 */
