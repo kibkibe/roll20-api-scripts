@@ -18,9 +18,9 @@ const mt_setting = {
 	use_single_icon: false,
 	// option: 마소 충전 상태에 따라 아이콘 이미지가 바뀌는 기능을 사용할지(false) 마소 충전치와 무관하게 한 이미지로 고정되는지(true) 지정합니다.
 	// (이 값은 use_single_icon이 false일 때만 유효합니다.)
-	use_static_icon: true,
+	use_static_icon: false,
 	// option: 장서 토큰은 고정한 채 별도로 충전량을 보여주는 서브 아이콘을 함께 표시할지를 설정합니다. (true:사용/false:비사용)
-	use_sub_icon: true,
+	use_sub_icon: false,
 	// option: 장서 토큰의 아이콘을 속성당 대표이미지 하나만 사용할 경우, 모든 속성의 아이콘을 모아놓은 Rollable table의 이름을 지정합니다.
 	// (이 값은 user_single_icon나 use_sub_icon이 true일 때만 유효합니다. use_sub_icon이 true일 경우 장서 토큰의 아이콘은 collection_name에 지정된 이름의 테이블에서, 충전게이지 아이콘은 각 속성명의 테이블에서 가져옵니다.)
 	collection_name: '마소',
