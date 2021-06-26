@@ -1,5 +1,5 @@
 /* https://github.com/kibkibe/roll20-api-scripts/tree/master/magicalogia_summon */
-/* (magicalogia_summon.js) 210317 코드 시작 */
+/* (magicalogia_summon.js) 210626 코드 시작 */
 
 // define: option
 const ms_setting = {
@@ -203,7 +203,7 @@ if (msg.type == "api"){
                 ['추억','수수께끼','거짓','불안','잠','우연','환각','광기','기도','희망','미래'],
                 ['심연','부패','배신','방황','나태','왜곡','불행','바보','악의','절망','죽음']
             ];
-            if (msg.selected.length > 0) {
+            if (msg.selected && msg.selected.length > 0) {
                 for (let i = 0; i < msg.selected.length; i++) {
                     const tok = getObj("graphic", msg.selected[i]._id);
                     const gmnotes = unescape(tok.get('gmnotes')).replace(/(<([^>]+)>)/gi, "");
@@ -215,37 +215,42 @@ if (msg.type == "api"){
                     const name = split[0];
                     const type = split[1];
                     const target = msg.content.replace("!저항목표 ",'').replace("!저항 ",'');
-                    if (!name || !target || name.length == 0 || target.length == 0) {
-                        sendChat('error','/w GM 원형의 특기를 가져올 수 없습니다.',null,{noarchive:true});
-                        return;
-                    }
-                    let target_x=-1;
-                    let target_y=-1;
-                    let arche_x=-1;
-                    let arche_y=-1;
-                    for (let i=0;i<table.length;i++) {
-                        for (let j=0;j<table[i].length;j++) {
-                            if (table[i][j] === target) {
-                                target_x = i;
-                                target_y = j;
-                            }
-                            if (table[i][j] === name) {
-                                arche_x = i;
-                                arche_y = j;
-                            }
-                        }
-                    }
-                    if (target_x == -1 || target_y == -1 || arche_x == -1 || arche_y == -1) { sendChat('error','/w GM 원형 혹은 판정할 특기의 이름이 잘못되었습니다.',null,{noarchive:true}); return;}
-                    let res_target = 5 + Math.abs(target_x-arche_x)*2 + Math.abs(target_y-arche_y);
-                    if (target_x != arche_x) { res_target -= 1; }
-					if (res_target > 12) { res_target = 12; }
-					if (msg.content.indexOf("!저항목표 ") > -1) {
-						sendChat(name + "의 " + type, "**<" +target + ">**의 목표치: **" + res_target + "**");
-					} else {
-						if (ms_setting.use_custom_sheet) {
-							sendChat(name + "의 " + type, "&{template:MagiDice} {{name=" + name + "의 " + type + "}} {{spec=" + target + "}}{{target=[[" + res_target + "]]}}{{roll1=[[1d6]]}}{{roll2=[[1d6]]}}");
+                    if (type != "나락문") {
+						if (!name || !target || name.length == 0 || target.length == 0) {
+							sendChat('error','/w GM 원형의 특기를 가져올 수 없습니다.',null,{noarchive:true});
+							return;
+						}
+						let target_x=-1;
+						let target_y=-1;
+						let arche_x=-1;
+						let arche_y=-1;
+						for (let i=0;i<table.length;i++) {
+							for (let j=0;j<table[i].length;j++) {
+								if (table[i][j] === target) {
+									target_x = i;
+									target_y = j;
+								}
+								if (table[i][j] === name) {
+									arche_x = i;
+									arche_y = j;
+								}
+							}
+						}
+						let res_target = 5 + Math.abs(target_x-arche_x)*2 + Math.abs(target_y-arche_y);
+						if (target_x == -1 || target_y == -1 || arche_x == -1 || arche_y == -1) {
+							res_target = 6;
 						} else {
-							sendChat(name + "의 " + type, "&{template:Magic} {{name=" + name + "의 " + type + "}} {{skillname=" + target + "}}{{target=[[" + res_target + "]]}}{{roll=[[1d6]],[[1d6]]}}");
+							if (target_x != arche_x) { res_target -= 1; }
+							if (res_target > 12) { res_target = 12; }
+						}
+						if (msg.content.indexOf("!저항목표 ") > -1) {
+							sendChat(name + "의 " + type, "**<" +target + ">**의 목표치: **" + res_target + "**");
+						} else {
+							if (ms_setting.use_custom_sheet) {
+								sendChat(name + "의 " + type, "&{template:MagiDice} {{name=" + name + "의 " + type + "}} {{spec=" + target + "}}{{target=[[" + res_target + "]]}}{{roll1=[[1d6]]}}{{roll2=[[1d6]]}}");
+							} else {
+								sendChat(name + "의 " + type, "&{template:Magic} {{name=" + name + "의 " + type + "}} {{skillname=" + target + "}}{{target=[[" + res_target + "]]}}{{roll=[[1d6]],[[1d6]]}}");
+							}
 						}
 					}
                 }
@@ -260,4 +265,4 @@ if (msg.type == "api"){
 	// /on.chat:message:api
 }
 });
-/* (magicalogia_summon.js) 210317 코드 종료 */
+/* (magicalogia_summon.js) 210626 코드 종료 */
