@@ -36,7 +36,6 @@ on('ready', function() {
     if (!state.show_tracking) {
         state.show_tracking = at_setting.use_secret_mode;
     }
-	at_msg();
     state.new_character = [];
     on("add:character",function(obj) {
         state.new_character.push({id:obj._id, time: Date.now()});
@@ -81,19 +80,15 @@ if (msg.type == "api" ){
         } else if (msg.content.toLowerCase().includes('show')) {
             state.show_tracking = true;
         }
-		at_msg();
+		sendChat("attribute_tracker.js","/w gm <br>- 코드상의 옵션: **" + (at_setting.use_secret_mode ? "숨김":"표시")
+		+ (at_setting.use_secret_mode != state.show_tracking ? "" : "** / 명령어로 지정된 모드: **" + (state.show_tracking ? "표시" : "숨김"))
+		+ "**<br>- 현재 스테이터스 변동내역이 " + (state.show_tracking ? "모든 사용자에게 공개되고 있습니다." : "GM에게만 귓속말로 전달되고 있습니다."),null,{noarchive:true});
 	}
 	// /on.chat:message:api
 }
 });
 
 // define: global function
-function at_msg() {
-	sendChat("attribute_tracker.js","/w gm <br>- 코드상의 옵션: **" + (at_setting.use_secret_mode ? "숨김":"표시")
-	+ (at_setting.use_secret_mode != state.show_tracking ? "" : "** / 명령어로 지정된 모드: **" + (state.show_tracking ? "표시" : "숨김"))
-	+ "**<br>- 현재 스테이터스 변동내역이 " + (state.show_tracking ? "모든 사용자에게 공개되고 있습니다." : "GM에게만 귓속말로 전달되고 있습니다."),null,{noarchive:true});
-}
-
 function check_attribute(obj,prev) {
     try {
         var check_pl = false;
