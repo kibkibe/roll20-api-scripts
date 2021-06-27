@@ -1,5 +1,5 @@
 /* https://github.com/kibkibe/roll20-api-scripts/tree/master/attribute_tracker */
-/* (attribute_tracker.js) 210409 코드 시작 */
+/* (attribute_tracker.js) 210627 코드 시작 */
 
 // define: option
 const at_setting = {
@@ -25,15 +25,18 @@ const at_setting = {
 	prior_list: "",
 	// option: 로그 표시에서 제외할 캐릭터의 이름을 기입합니다. (복수입력시 콤마(,)로 구분)
 	// "GM"을 넣으면 GM에게만 조작권한이 있는 모든 캐릭터를 일괄적으로 제외합니다.
-	ignore_list: "GM"
+	ignore_list: "GM",
+	// option: 명령어를 이용한 숨김/표시 모드와 관계없이 스테이터스 변경 내역이 GM에게 귓말로만 가도록 설정합니다. (true/false)
+	use_secret_mode: true
 }
 // /define: option
     
 on('ready', function() {
 	// on.ready
     if (!state.show_tracking) {
-        state.show_tracking = true;
+        state.show_tracking = at_setting.use_secret_mode;
     }
+	at_msg();
     state.new_character = [];
     on("add:character",function(obj) {
         state.new_character.push({id:obj._id, time: Date.now()});
@@ -70,18 +73,27 @@ on("chat:message", function(msg)
 {
 if (msg.type == "api" ){
 	// on.chat:message:api
-    if (msg.content.indexOf("!at ") === 0 && (msg.playerid == 'API' || playerIsGM(msg.playerid))) {
-        if (msg.content.toLowerCase().includes('hide')) {
+    if (msg.content.indexOf("!at") === 0 && (msg.playerid == 'API' || playerIsGM(msg.playerid))) {
+		if (msg.content == "!at") {
+			sendChat("attribute_tracker.js","/w gm [ 명령어 ]<br>- **!at show**: 로그 표시하기 / **!at hide**: 로그 숨기기",null,{noarchive:true});
+		} else if (msg.content.toLowerCase().includes('hide')) {
             state.show_tracking = false;
         } else if (msg.content.toLowerCase().includes('show')) {
             state.show_tracking = true;
         }
+		at_msg();
 	}
 	// /on.chat:message:api
 }
 });
 
 // define: global function
+function at_msg() {
+	sendChat("attribute_tracker.js","/w gm <br>- 코드상의 옵션: **" + (at_setting.use_secret_mode ? "숨김":"표시")
+	+ (at_setting.use_secret_mode != state.show_tracking ? "" : "** / 명령어로 지정된 모드: **" + (state.show_tracking ? "표시" : "숨김"))
+	+ "**<br>- 현재 스테이터스 변동내역이 " + (state.show_tracking ? "모든 사용자에게 공개되고 있습니다." : "GM에게만 귓속말로 전달되고 있습니다."),null,{noarchive:true});
+}
+
 function check_attribute(obj,prev) {
     try {
         var check_pl = false;
@@ -134,9 +146,9 @@ function check_attribute(obj,prev) {
                         }
                     }
                     sendChat("character|"+obj.get('_characterid'),
-                    (state.show_tracking ? "" : "/w GM ") +
+                    (state.show_tracking ? "":"/w GM ") +
                         "**" + name + "** / <span style='color:#aaaaaa'>" + (prev == null?"":(check_max? prev.max:prev.current)) + "</span><span style='color:#777777'> → </span><b>" +
-                        (check_max ? obj.get('max'):obj.get('current'))+"</b>",null,{noarchive:!state.show_tracking});
+                        (check_max ? obj.get('max'):obj.get('current'))+"</b>",null,{noarchive:false});
                     break;
                 }
             }
@@ -146,4 +158,4 @@ function check_attribute(obj,prev) {
     }
 }
 // /define: global function
-/* (attribute_tracker.js) 210328 코드 종료 */
+/* (attribute_tracker.js) 210627 코드 종료 */
