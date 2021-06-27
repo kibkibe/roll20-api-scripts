@@ -1,8 +1,8 @@
 /* https://github.com/kibkibe/roll20-api-scripts/tree/master/ruby_character */
-/* (ruby_character.js) 210505 코드 시작 */
+/* (ruby_character.js) 210627 코드 시작 */
 
 // define: global constant
-const api_tag = '<a href="#vd-permitted-api-chat"></a>';
+state.api_tag = '<a href="#vd-permitted-api-chat"></a>';
 // /define: global constant
 
 // define: option
@@ -62,11 +62,11 @@ if (msg.type == "api"){
     				}
 				}
 			}
-			sendChat(str.includes('/desc')?'':findCharacterWithName(msg.who),str + api_tag);
+			sendChat(str.includes('/desc')?'':findCharacterWithName(msg.who),str + state.api_tag);
 		} catch (err) {
 			sendChat('error','/w GM '+err,null,{noarchive:true});
 		}
 	}
 	// /on.chat:message:api
 }});
-/* (ruby_character.js) 210306 코드 종료 */
+/* (ruby_character.js) 210627 코드 종료 */

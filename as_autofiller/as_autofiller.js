@@ -1,8 +1,8 @@
 /* https://github.com/kibkibe/roll20-api-scripts/tree/master/as_autofiller */
-/* (as_autofiller.js) 210306 코드 시작 */
+/* (as_autofiller.js) 210627 코드 시작 */
 
 // define: global constant
-const api_tag = '<a href="#vd-permitted-api-chat"></a>';
+state.api_tag = '<a href="#vd-permitted-api-chat"></a>';
 // /define: global constant
 
 // define: option
@@ -47,7 +47,7 @@ if (msg.type == "api"){
 					}
 					if (nearest_item.idx != false_value) {
 						sendChat("character|"+characters[nearest_item.idx].get('id'),
-						msg.content.substring(aa_command.length+ keyword.length+1, msg.content.length)+(api_tag&&!msg.content.includes(api_tag)?api_tag:""));
+						msg.content.substring(aa_command.length+ keyword.length+1, msg.content.length)+(state.api_tag&&!msg.content.includes(state.api_tag)?state.api_tag:""));
 					} else {
 						sendChat("as_autofiller.js", "/w gm **" + keyword + "**가 이름에 포함된 NPC가 없습니다.",null,{noarchive:true});
 					}
@@ -65,7 +65,7 @@ if (msg.type == "api"){
 							return;
 						}
 					}
-					sendChat(chat_id,msg.content.substring(3) +(!msg.content.includes(api_tag)?api_tag:""));
+					sendChat(chat_id,msg.content.substring(3) +(!msg.content.includes(state.api_tag)?state.api_tag:""));
 				}
 			}
 		} catch (err) {
@@ -75,4 +75,4 @@ if (msg.type == "api"){
 	// /on.chat:message:api
 }
 });
-/* (as_autofiller.js) 210306 코드 종료 */
+/* (as_autofiller.js) 210627 코드 종료 */

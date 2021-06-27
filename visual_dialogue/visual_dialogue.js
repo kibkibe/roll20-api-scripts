@@ -1,10 +1,10 @@
 /* https://github.com/kibkibe/roll20-api-scripts/tree/master/visual_dialogue */
-/* (visual_dialogue.js) 210327 코드 시작 */
+/* (visual_dialogue.js) 210627 코드 시작 */
 
 // define: global constant
-const api_tag = "<a href=\"#vd-permitted-api-chat\"></a>";
-const vd_divider = "ℍ";
-let last_displayed_time = 0;
+state.api_tag = "<a href=\"#vd-permitted-api-chat\"></a>";
+state.vd_divider = "ℍ";
+state.last_displayed_time = 0;
 // /define: global constant
 
 // define: option
@@ -85,15 +85,15 @@ on("chat:message", function(msg)
 {
 	// on.chat:message
 	if ((msg.type == "general" || msg.type == "desc" || msg.type == "emote")
-		&& (msg.playerid != 'API' || msg.content.includes(api_tag))
+		&& (msg.playerid != 'API' || msg.content.includes(state.api_tag))
 		&& !msg.rolltemplate){
 		
 		if (findCharacterWithName(msg.who) || findObjs({_type:'player',_displayname:msg.who.replace(' (GM)','')}).length == 0) {
 			if (msg.content.length > 0) {
-				msg.content = msg.content.replace(api_tag,'').replace(/<br>/g,vd_divider);
+				msg.content = msg.content.replace(state.api_tag,'').replace(/<br>/g,state.vd_divider);
 				msg.time = new Date().getTime();
 				state.vd_stock.push(msg);
-				if (state.vd_stock.length == 1 || (state.vd_stock.length > 1 && last_displayed_time + 5000 < msg.time)) {
+				if (state.vd_stock.length == 1 || (state.vd_stock.length > 1 && state.last_displayed_time + 5000 < msg.time)) {
 					setTimeout(showDialogue, 100);
 				}
 			} 
@@ -135,7 +135,7 @@ on("chat:message", function(msg)
 
 		} else if (msg.content.indexOf("!@퇴장") == 0 || msg.content.indexOf("!@exit") == 0) {
 
-			const keyword = msg.content.replace("!@퇴장","").replace("!@exit","").replace(api_tag,'');
+			const keyword = msg.content.replace("!@퇴장","").replace("!@exit","").replace(state.api_tag,'');
 
 			if (keyword.length == 0) {
 				removeStanding(msg);
@@ -165,33 +165,43 @@ on("chat:message", function(msg)
 			
 			showNextDialogue();
 
-		} else if (playerIsGM(msg.playerid) && (msg.content.indexOf("!@배경") == 0 || msg.content.indexOf("!@background") == 0)) {
+		} else if (playerIsGM(msg.playerid) && (msg.content.indexOf("!@배경 ") == 0 || msg.content.indexOf("!@background ") == 0)) {
 
 			let bg_background = findObjs({ _type: 'graphic', name:'vd_background', _pageid:current_page_id});
+			let bg_deck = findObjs({_type: 'deck', name:'background'});
 			if (bg_background.length == 0) {
 				sendChat("error","/w gm **" + getObj('page',current_page_id).get('name') + "** 페이지에 vd_background 토큰이 없습니다.",null,{noarchive:true});
 				return;
 			}
 			bg_background = bg_background[0];
 			const current_url = bg_background.get('imgsrc');
-			const split = msg.content.split("(");
-			if (split.length != 2) {
-				sendChat("error","/w gm 명령어 형식이 올바르지 않습니다. (ex: !@배경 (https://이미지주소...))",null,{noarchive:true});
-				return;
-			} else if (split[1].indexOf('https://') != 0) {
-				sendChat("error","/w gm 이미지 URL이 올바르지 않습니다. (ex: !@배경 (https://이미지주소...))",null,{noarchive:true});
-				return;
-			} else {
-				bg_background.set('imgsrc',split[1].replace(")","").replace('med','thumb').replace('max','thumb').replace(' ',''));
+			const new_bg = msg.content.replace('!@배경 ','').replace('!@background ','');
+			let is_url_input = (msg.content.indexOf('https://') > -1);
+			if (is_url_input) {
+				bg_background.set('imgsrc',new_bg.replace('med','thumb').replace('max','thumb').replace(' ',''));
 				if (current_url == bg_background.get('imgsrc')) {
-					sendChat("error","/w gm 배경 이미지가 정상적으로 변경되지 않았습니다. 주소나 명령어 형식이 올바른지 확인해주세요. (ex: !@배경 (https://이미지주소...))",null,{noarchive:true});
+					sendChat("error","/w gm 배경 이미지가 정상적으로 변경되지 않았습니다. 주소나 명령어 형식이 올바른지 확인해주세요. (ex: !@배경 https://이미지주소...)",null,{noarchive:true});
+				}
+			} else {
+				if (bg_deck.length == 0) {
+					sendChat("error","/w gm **background** 덱이 콜렉션에 없습니다. 사용할 배경 이미지를 background 덱에 넣거나 !@배경 https://이미지주소... 형식으로 이미지 주소를 직접 입력하세요.",null,{noarchive:true});
+					return;
+				} else {
+					let bg_cards = findObjs({_type:'card', _deckid: bg_deck[0].get('_id'), name: new_bg});
+					if (bg_cards.length == 0) {
+						sendChat("error","/w gm 이름이 '**" + new_bg + "'**인 배경 카드가 **background** 덱에 없습니다.",
+						null,{noarchive:true});
+						return;
+					} else {
+						bg_background.set('imgsrc',bg_cards[0].get('avatar').replace('med','thumb').replace('max','thumb'));
+					}
 				}
 			}
 
 		} else if (vd_setting.use_emotion) {
 
 			let cha_name = msg.who;
-			let content_str = msg.content.replace(api_tag,'').replace('!@','');
+			let content_str = msg.content.replace(state.api_tag,'').replace('!@','');
 			let emot = content_str;
 			if (content_str.lastIndexOf(':') > -1 && (playerIsGM(msg.playerid) || msg.playerid == 'API')) {
 				cha_name = content_str.substring(0,content_str.lastIndexOf(':'));
@@ -280,7 +290,7 @@ const showDialogue = function() {
     for (let index = 1; index < state.vd_stock.length; index++) {
         const element = state.vd_stock[index];
         if (element.who == msg.who && Math.abs(element.time - msg.time) < 100) {
-            msg.content = msg.content + vd_divider + element.content;
+            msg.content = msg.content + state.vd_divider + element.content;
             state.vd_stock.splice(index,1);
             index--;
         } else {
@@ -336,8 +346,8 @@ const showDialogue = function() {
     let blank_dialogue = '';
     let text_name = getObj('text', bg_name.get('gmnotes'));
     let text_dialogue = getObj('text', bg_dialogue.get('gmnotes'));
-    while (name_width > blank_name.length*vd_setting['name_font_size']*vd_setting['letter_spacing']) { blank_name += "ㅤ"; }
-    while (width>blank_dialogue.length*font_size*vd_setting['letter_spacing']) { blank_dialogue += "ㅤ"; }
+    while (name_width > blank_name.length*vd_setting['name_font_size']*vd_setting['letter_spacing']*1.2) { blank_name += " "; }
+    while (width>blank_dialogue.length*font_size*vd_setting['letter_spacing']*1.15) { blank_dialogue += " "; }
 
     if (text_name && text_name.get('_pageid') != current_page_id) {
         text_name.remove();
@@ -427,8 +437,8 @@ const showDialogue = function() {
                 break;
             }
         }
-        if (length >= amount * desc_ratio || c == vd_divider) {
-            let substr = str.substring(idx,i+1).replace(vd_divider,'');
+        if (length >= amount * desc_ratio || c == state.vd_divider) {
+            let substr = str.substring(idx,i+1).replace(state.vd_divider,'');
             split.push(is_general || msg.who.length > 0 ? substr:getStringWithMargin(amount,length,desc_ratio,substr));
             idx = i+1;
             length = 0;
@@ -539,7 +549,7 @@ const showDialogue = function() {
             current_token.set({tint_color:'transparent',gmnotes:Date.now()});
         }
     }
-	last_displayed_time = new Date().getTime();
+	state.last_displayed_time = new Date().getTime();
     setTimeout(showNextDialogue, Math.max(vd_setting.min_showtime, str.length * vd_setting.showtime_ratio));
 }
 
@@ -557,7 +567,7 @@ const updateMacro = function(obj) {
 		let gm_list = "";
 		for (let index = 0; index < bg_images.length; index++) {
 			const card = bg_images[index];
-			action_str += "|" + card.get('name') + "(" + card.get('avatar') + ")";
+			action_str += "|" + card.get('name');
 		}
 		for (let index = 0; index < players.length; index++) {
 			const player = players[index];
@@ -681,4 +691,4 @@ const arrangeStandings = function(addNew) {
     }
 }
 // /define: global function
-/* (visual_dialogue.js) 210327 코드 종료 */
+/* (visual_dialogue.js) 210627 코드 종료 */

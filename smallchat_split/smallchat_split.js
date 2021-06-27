@@ -1,5 +1,5 @@
 /* https://github.com/kibkibe/roll20-api-scripts/tree/master/smallchat_split */
-/* (smallchat_split.js) 210331 코드 시작 */
+/* (smallchat_split.js) 210627 코드 시작 */
 
 // define: option
 let ss_setting = {
@@ -7,8 +7,8 @@ let ss_setting = {
 	font_size: 14,
 	// option: 채팅창의 글씨색을 지정합니다.
 	color: "rgb(255, 255, 255)",
-	// option: 채팅창의 상하좌우 여백을 설정합니다.
-	margin: {top:40,right:30,bottom:40,left:30},
+	// option: 채팅창의 상하좌우 여백을 설정합니다. (글자 크기와 줄 개수에 의존하기 때문에 정확하게 입력한대로 배치되지 않습니다. 의도하는 레이아웃에 맞춰 위치를 조금씩 조정하는데 사용하세요.)
+	margin: {top:40,right:30,bottom:20,left:30},
 	// option: 채팅로그에 플레이어/PC 중 어느쪽 이름을 표시할지 지정합니다. (true:플레이어/false:PC)
 	show_player_name: false,
 	// option: 잡담 내역을 저장할 핸드아웃의 이름을 지정합니다.
@@ -64,7 +64,7 @@ if (msg.type == "api"){
 			}
 			const fillWidthBlank = function() {
 				let str = "";
-				while (bg.get('width')>str.length*ss_setting.font_size) { str += "ㅤ"; }
+				while (bg.get('width')>str.length*ss_setting.font_size*1.2) { str += " "; }
 				return str;
 			}
 			const fillHeightBlank = function(split) {
@@ -194,4 +194,4 @@ if (msg.type == "api"){
 	// /on.chat:message:api
 }
 });
-/* (smallchat_split.js) 210331 코드 종료 */
+/* (smallchat_split.js) 210627 코드 종료 */

@@ -1,8 +1,9 @@
 /* https://github.com/kibkibe/roll20-api-scripts/tree/master/narrator */
-/* (narrator.js) 210306 코드 시작 */
+/* (narrator.js) 210627 코드 시작 */
 
 // define: global constant
-const nt_linebreaker = 'Uk3jmApq-*QzfkMA';
+state.nt_linebreaker = 'Uk3jmApq-*QzfkMA';
+state.api_tag = '<a href="#vd-permitted-api-chat"></a>';
 // /define: global constant
 
 // define: option
@@ -92,7 +93,7 @@ if (msg.type == "api"){
 			} else if (msg.content.indexOf("!. ") == 0) {
 				var str = msg.content.replace("!. ","");
 				if (state.narration.length > 0) {
-					state.narration[state.narration.length-1].msg += nt_linebreaker + str;
+					state.narration[state.narration.length-1].msg += state.nt_linebreaker + str;
 				} else {
 					sendChat('error','/w GM !. 명령어로 줄바꿈을 시도했으나 이전 줄이 없습니다. !...로 첫줄을 먼저 쓰세요.',null,{noarchive:true});
 				}
@@ -108,10 +109,9 @@ if (msg.type == "api"){
 function narrate() {
 	try {
     	if (state.is_narrating == 2 && state.narration.length > 0) {
-			const split = state.narration[0].msg.split(nt_linebreaker);
-			const api_tag = '<a href="#vd-permitted-api-chat"></a>';
+			const split = state.narration[0].msg.split(state.nt_linebreaker);
 			split.forEach(element => {
-				sendChat(state.narration[0].as,element + (!element.includes(api_tag)?api_tag:""));
+				sendChat(state.narration[0].as,element + (!element.includes(state.api_tag)?state.api_tag:""));
 			});
     		state.narration.splice(0,1);
     		if (state.narration.length > 0) {
@@ -127,4 +127,4 @@ function narrate() {
 	}
 }
 // /define: global function
-/* (narrator.js) 210306 코드 종료 */
+/* (narrator.js) 210627 코드 종료 */
