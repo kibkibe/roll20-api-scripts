@@ -26,7 +26,7 @@ const at_setting = {
 	// option: 로그 표시에서 제외할 캐릭터의 이름을 기입합니다. (복수입력시 콤마(,)로 구분)
 	// "GM"을 넣으면 GM에게만 조작권한이 있는 모든 캐릭터를 일괄적으로 제외합니다.
 	ignore_list: "GM",
-	// option: 명령어를 이용한 숨김/표시 모드와 관계없이 스테이터스 변경 내역이 GM에게 귓말로만 가도록 설정합니다. (true/false)
+	// option: !at 명령어를 이용한 숨김/표시 모드를 사용하지 않은 기본상태에서 스테이터스 변경 내역을 모두에게 표시할지(false) GM에게 귓말로만 보낼지(true) 설정합니다.
 	use_secret_mode: true
 }
 // /define: option
