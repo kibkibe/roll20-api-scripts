@@ -1,5 +1,5 @@
 /* https://github.com/kibkibe/roll20-api-scripts/tree/master/attribute_tracker */
-/* (attribute_tracker.js) 210627 코드 시작 */
+/* (attribute_tracker.js) 210629 코드 시작 */
 
 // define: option
 const at_setting = {
@@ -26,16 +26,17 @@ const at_setting = {
 	// option: 로그 표시에서 제외할 캐릭터의 이름을 기입합니다. (복수입력시 콤마(,)로 구분)
 	// "GM"을 넣으면 GM에게만 조작권한이 있는 모든 캐릭터를 일괄적으로 제외합니다.
 	ignore_list: "GM",
-	// option: !at 명령어를 이용한 숨김/표시 모드를 사용하지 않은 기본상태에서 스테이터스 변경 내역을 모두에게 표시할지(false) GM에게 귓말로만 보낼지(true) 설정합니다.
+	// option: !at 명령어를 이용한 숨김/표시 모드를 사용하지 않은 기본상태에서 스테이터스 변경 내역을 GM에게 귓말로만 보낼지(true) 모두에게 표시할지(false) 설정합니다.
 	use_secret_mode: true
 }
 // /define: option
     
 on('ready', function() {
 	// on.ready
-    if (!state.show_tracking) {
-        state.show_tracking = at_setting.use_secret_mode;
-    }
+	if (state.show_tracking == at_setting.use_secret_mode) {
+		state.show_tracking = !at_setting.use_secret_mode;
+		show_current_status();
+	}
     state.new_character = [];
     on("add:character",function(obj) {
         state.new_character.push({id:obj._id, time: Date.now()});
@@ -80,15 +81,20 @@ if (msg.type == "api" ){
         } else if (msg.content.toLowerCase().includes('show')) {
             state.show_tracking = true;
         }
-		sendChat("attribute_tracker.js","/w gm <br>- 코드상의 옵션: **" + (at_setting.use_secret_mode ? "숨김":"표시")
-		+ (at_setting.use_secret_mode != state.show_tracking ? "" : "** / 명령어로 지정된 모드: **" + (state.show_tracking ? "표시" : "숨김"))
-		+ "**<br>- 현재 스테이터스 변동내역이 " + (state.show_tracking ? "모든 사용자에게 공개되고 있습니다." : "GM에게만 귓속말로 전달되고 있습니다."),null,{noarchive:true});
+		show_current_status();
 	}
 	// /on.chat:message:api
 }
 });
 
 // define: global function
+function show_current_status() {
+
+	sendChat("attribute_tracker.js","/w gm <br>- 코드상의 옵션: **" + (at_setting.use_secret_mode ? "숨김":"표시")
+	+ (at_setting.use_secret_mode != state.show_tracking ? "" : "** / 명령어로 지정된 모드: **" + (state.show_tracking ? "표시" : "숨김"))
+	+ "**<br>- 현재 스테이터스 변동내역이 " + (state.show_tracking ? "모든 사용자에게 공개되고 있습니다." : "GM에게만 귓속말로 전달되고 있습니다."),null,{noarchive:true});
+}
+
 function check_attribute(obj,prev) {
     try {
         var check_pl = false;
@@ -153,4 +159,4 @@ function check_attribute(obj,prev) {
     }
 }
 // /define: global function
-/* (attribute_tracker.js) 210627 코드 종료 */
+/* (attribute_tracker.js) 210629 코드 종료 */
