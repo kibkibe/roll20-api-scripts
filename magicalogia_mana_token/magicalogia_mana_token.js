@@ -1,5 +1,5 @@
 /* https://github.com/kibkibe/roll20-api-scripts/tree/master/magicalogia_mana_token */
-/* (magicalogia_mana_token.js) 210626 코드 시작 */
+/* (magicalogia_mana_token.js) 210708 코드 시작 */
 
 // define: global constant
 const charge_check = [
@@ -209,10 +209,8 @@ on("chat:message", function(msg){
                         }
 						let num_string;
 						if (mt_setting.use_static_icon && !mt_setting.use_single_icon) {
-							log(current_cost);
 							if (current_cost && current_cost.length > 0) {
 								num_string = current_cost[0].get('current').replace(/[^\d]/g,'');
-								//log(current_cost[0].get('current') + "/" + num_string);
 							} else {
 								num_string = "0";
 							}
@@ -324,13 +322,13 @@ on("chat:message", function(msg){
                         sides: mt_setting.use_sub_icon ? '' : sides,
                         currentSide:0,
                         name: obj.name,
-                        playersedit_name: false,
+                        playersedit_name: true,
                         showname: false,
                         bar1_value: current_charge.get('current'),
                         showplayers_name: false,
                         showplayers_bar2: false,
                         showplayers_bar3: false,
-                        playersedit_bar1: false,
+                        playersedit_bar1: true,
                         playersedit_bar2: false,
                         playersedit_bar3: false,
                         playersedit_aura1: false,
@@ -444,4 +442,4 @@ function check_charge(obj,prev) {
     }
 }
 // /define: global function
-/* (magicalogia_mana_token.js) 210626 코드 종료 */
+/* (magicalogia_mana_token.js) 210708 코드 종료 */
