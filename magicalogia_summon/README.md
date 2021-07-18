@@ -75,6 +75,7 @@
 - `height`: 소환할 원형 토큰의 세로크기
 - `showname`: 이름표 사용 여부 (`true`/`false`)
 - `showplayers_name`: 플레이어에게 이름표를 보일지 여부 (`true`/`false`)
+- `bar_location`: Bar가 표시될 기본 위치를 지정합니다. (선택: 'top','overlap_top’,‘overlap_bottom’,'below')
 
 ### 매크로 사용
 채팅창에 명령어를 모두 입력하는 것이 불편하다면 매크로를 이용하시는 것도 좋습니다.  

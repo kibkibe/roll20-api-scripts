@@ -82,6 +82,7 @@ TokenMod와 함께 사용할 수 있습니다.
 - `default_position`: 장서 토큰을 자동생성할 기본 위치를 지정합니다. 공백으로 둘 경우 화면 중앙을 기준으로 생성합니다. (가로세로는 콤마(,)로 구분합니다.)
 - `sub_icon_size`: `use_sub_icon`이 true일 경우, 충전량을 보여주는 서브 아이콘의 가로,세로 크기를 지정합니다. (가로세로는 콤마(,)로 구분합니다.)
 - `sub_icon_position`: `use_sub_icon`이 true일 경우, 서브 아이콘을 장서 토큰의 중심 기준으로 어느 위치에 표시할지를 지정합니다. (가로세로 좌표는 콤마(,)로 구분합니다. 중심 기준 왼쪽/상단에 표시할 경우 음수(-)로 표시합니다.)
+- `bar_location`: Bar가 표시될 기본 위치를 지정합니다. (선택: 'top','overlap_top’,‘overlap_bottom’,'below')
 
 #### 예시 스크린샷의 자료출처
 - 이즈님 [https://critical-yz.postype.com/post/7720422](https://critical-yz.postype.com/post/7720422)
