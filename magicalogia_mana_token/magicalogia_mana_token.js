@@ -345,7 +345,7 @@ on("chat:message", function(msg){
                         Object.assign(setting, {showname: true, showplayers_name: true});
                     }
 					if (mt_setting.bar_location == 'overlap_top' || mt_setting.bar_location == 'overlap_bottom' || mt_setting.bar_location == 'below') {
-						Object.assign(setting, {bar_location: tc_setting.bar_location});
+						Object.assign(setting, {bar_location: mt_setting.bar_location});
 					} else {
 						Object.assign(setting, {bar_location: null});
 					}
