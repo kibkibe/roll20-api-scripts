@@ -1,5 +1,5 @@
 /* https://github.com/kibkibe/roll20-api-scripts/tree/master/attribute_tracker */
-/* (attribute_tracker.js) 210629 코드 시작 */
+/* (attribute_tracker.js) 210718 코드 시작 */
 
 // define: option
 const at_setting = {
@@ -7,18 +7,18 @@ const at_setting = {
 	// 룰별 check list코드 공유페이지 https://docs.google.com/spreadsheets/d/1_uTqPs6FQJfjzDotRWqtJn8U6cVw_lVycDRal8vxZb8/edit#gid=609977791
 	check_list:
 	/* 체크리스트 시작 */
-	[{attr: "Magic_*id*_Charge", name: "Magic_*id*_Name", is_static_name: false, is_static_attr: false},
-		{attr: "repeating_acitems_-*id*_Magic_Charge", name: "repeating_acitems_-*id*_Magic_Name", is_static_name: false, is_static_attr: false},
-		{attr: "Magic_*id*_Cost", name: "Magic_*id*_Name", is_static_name: false, is_static_attr: false},
-		{attr: "repeating_acitems_-*id*_Magic_Cost", name: "repeating_acitems_-*id*_Magic_Name", is_static_name: false, is_static_attr: false},
-		{attr: "relation_fate_*id*", name: "relation_name_*id*", is_static_name: false, is_static_attr: false},
-		{attr: "atk", name: "공격력", is_static_name: true, is_static_attr: true},
-		{attr: "def", name: "방어력", is_static_name: true, is_static_attr: true},
-		{attr: "bas", name: "근원력", is_static_name: true, is_static_attr: true},
-		{attr: "mp", name: "마력", is_static_name: true, is_static_attr: true},
-		{attr: "temp_mp", name: "일시적 마력", is_static_name: true, is_static_attr: true},
-		{attr: "mp_max", name: "최대마력", is_static_name: true, is_static_attr: true}]
-	/* 체크리스트 끝*/
+	[{attr: "Magic_*id*_Charge", name: "Magic_*id*_Name"},
+		{attr: "repeating_acitems_-*id*_Magic_Charge", name: "repeating_acitems_-*id*_Magic_Name"},
+		{attr: "Magic_*id*_Cost", name: "Magic_*id*_Name"},
+		{attr: "repeating_acitems_-*id*_Magic_Cost", name: "repeating_acitems_-*id*_Magic_Name"},
+		{attr: "relation_fate_*id*", name: "relation_name_*id*"},
+		{attr: "atk", name: "공격력"},
+		{attr: "def", name: "방어력"},
+		{attr: "bas", name: "근원력"},
+		{attr: "mp", name: "마력"},
+		{attr: "temp_mp", name: "일시적 마력"},
+		{attr: "mp_max", name: "최대마력"}]
+	/* 체크리스트 끝 */
 	,
 	// option: 필수적으로 변화를 체크할 캐릭터의 이름을 기입합니다.
 	// 이 값은 ignore_list보다 우선됩니다. (복수입력시 콤마(,)로 구분)
@@ -125,7 +125,7 @@ function check_attribute(obj,prev) {
                 if (prev == null || check_max && obj.get('current') == prev.current || !check_max && obj.get('current') != prev.current) {
                     if (attr_name.replace('_max','') == obj.get('name')) {
                         check = true;
-                    } else if (!item.is_static_attr) {
+                    } else if (attr_name.indexOf('*id*') > -1) {
                         let split_attr = attr_name.split('*id*');
                         if (split_attr.length == 2 && obj.get('name').startsWith(split_attr[0]) && obj.get('name').endsWith(split_attr[1])) {
                             check = true;
@@ -135,10 +135,8 @@ function check_attribute(obj,prev) {
                 }
                 if (check) {
                     var name = item.name;
-                    if (!item.is_static_name) {
-                        if (!item.is_static_attr) {
-                            name = item.name.replace('*id*',item_id);
-                        }
+                    if (name.indexOf('*id*') > -1) {
+						name = item.name.replace('*id*',item_id);
                         var search_name = findObjs({type: "attribute", name: name, characterid: obj.get('_characterid')});
                         if (search_name.length > 0) {
                             name = search_name[0].get('current');
@@ -159,4 +157,4 @@ function check_attribute(obj,prev) {
     }
 }
 // /define: global function
-/* (attribute_tracker.js) 210629 코드 종료 */
+/* (attribute_tracker.js) 210718 코드 종료 */

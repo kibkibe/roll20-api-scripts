@@ -1,5 +1,5 @@
 /* https://github.com/kibkibe/roll20-api-scripts/tree/master/magicalogia_mana_token */
-/* (magicalogia_mana_token.js) 210708 코드 시작 */
+/* (magicalogia_mana_token.js) 210718 코드 시작 */
 
 // define: global constant
 const charge_check = [
@@ -28,6 +28,8 @@ const mt_setting = {
 	show_name: true,
 	// option: 생성된 장서 토큰에 충전상태를 나타내는 Bar를 표시할지를 지정합니다. (true:표시/false:숨김)
 	show_bar: false,
+	// option: Bar를 표시할 경우 기본적으로 표시될 위치를 지정합니다. (선택: 'top','overlap_top’,‘overlap_bottom’,'below')
+	bar_location: 'below',
 	// option: 기본 아이콘으로 사용할 롤러블 테이블 이름을 지정합니다. (코스트가 없는 경우 등)
 	default_area: '전체',
 	// option: 장서 토큰의 가로,세로 크기를 지정합니다. (가로세로는 콤마(,)로 구분합니다.)
@@ -332,7 +334,7 @@ on("chat:message", function(msg){
                         playersedit_bar2: false,
                         playersedit_bar3: false,
                         playersedit_aura1: false,
-                        playersedit_aura2: false,
+                        playersedit_aura2: false
                     };
 					if (mt_setting.show_bar) {
 						Object.assign(setting, {bar1_link: obj.charge_id});
@@ -342,6 +344,11 @@ on("chat:message", function(msg){
                     if (mt_setting.show_name) {
                         Object.assign(setting, {showname: true, showplayers_name: true});
                     }
+					if (mt_setting.bar_location == 'overlap_top' || mt_setting.bar_location == 'overlap_bottom' || mt_setting.bar_location == 'below') {
+						Object.assign(setting, {bar_location: tc_setting.bar_location});
+					} else {
+						Object.assign(setting, {bar_location: null});
+					}
                     
                     let token = createObj('graphic', setting);
 
@@ -442,4 +449,4 @@ function check_charge(obj,prev) {
     }
 }
 // /define: global function
-/* (magicalogia_mana_token.js) 210708 코드 종료 */
+/* (magicalogia_mana_token.js) 210718 코드 종료 */

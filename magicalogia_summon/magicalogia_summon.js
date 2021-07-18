@@ -44,16 +44,18 @@ const ms_setting = {
 		{name:'마신', effect:''},
 		{name:'나락문', effect:''}
 ],
-	// option: 원형이 소환되면 기본적으로 배치될 가로 위치
+	// option: 원형이 소환되면 기본적으로 배치될 가로 위치를 지정합니다.
 	opt_left: 1000,
-	// option: 원형이 소환되면 기본적으로 배치될 세로 위치
+	// option: 원형이 소환되면 기본적으로 배치될 세로 위치를 지정합니다.
 	opt_top: 200,
-	// option: 소환할 원형 토큰의 가로크기
+	// option: 소환할 원형 토큰의 가로크기를 지정합니다.
 	opt_width: 90,
-	// option: 소환할 원형 토큰의 세로크기
+	// option: 소환할 원형 토큰의 세로크기를 지정합니다.
 	opt_height: 90,
-	// option: 이름표 사용 여부 (true/false)
-	opt_showname: true
+	// option: 이름표 사용 여부(true/false)를 지정합니다.
+	opt_showname: true,
+	// option: Bar가 표시될 기본 위치를 지정합니다. (선택: 'top','overlap_top’,‘overlap_bottom’,'below')
+	bar_location: ''
 };
 // /define: option
 
@@ -114,6 +116,11 @@ if (msg.type == "api"){
 				
 			opt.name = (skill && ms_setting.display_skill ? skill+ (type && ms_setting.display_type ? "의 ":"") : "") + (type && ms_setting.display_type ? type:'');
 			const token_markers = JSON.parse(Campaign().get("token_markers"));
+			if (ms_setting.bar_location == 'overlap_top' || ms_setting.bar_location == 'overlap_bottom' || ms_setting.bar_location == 'below') {
+				opt.bar_location = ms_setting.bar_location;
+			} else {
+				opt.bar_location = null;
+			}
 			
 			if (ms_setting.use_effect_marker || ms_setting.use_text) {
 				split = split.split(/\s*,\s*/g);
@@ -177,7 +184,6 @@ if (msg.type == "api"){
 						str += ms_setting.div_text + effects[j].value;
 					}
 					str = str.substring(1);
-					log(str);
 					opt.name = opt.name + (opt.name.length > 0 ? "/" : "") + str;
 				}				
 			}
