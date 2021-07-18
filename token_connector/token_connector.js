@@ -152,7 +152,7 @@ on("chat:message", function(msg){
 								token.set("gmnotes","");
 								sendChat('ERROR','/w GM token_connector.js / 존재하지 않는 캐릭터와 연결된 토큰이 있어 해당 토큰을 연동 초기화 후 마커(빨강)를 추가했습니다.',null,{noarchive:true});
 							} else {
-								createObj('attribute',{'_characterid':token_json.represents,'name':attr_name, 'current':0, 'max':0});
+								sendChat('ERROR','/w GM token_connector.js / **' + cha.get('name') + '** 캐릭터에 **' + attr_name + '** 속성이 없습니다. 시트에서 값을 입력해주세요.',null,{noarchive:true});
 							}
 						}
 						attrs.forEach(attr => {
