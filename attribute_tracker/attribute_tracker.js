@@ -88,7 +88,6 @@ if (msg.type == "api" ){
 // define: global function
 function show_current_status() {
 
-	log((at_setting.use_secret_mode?"true":"false") + "/" + (state.show_tracking?"true":"false"));
 	sendChat("attribute_tracker.js","/w gm <br>- 코드상의 옵션: **" + (at_setting.use_secret_mode ? "숨김":"표시")
 	+ (at_setting.use_secret_mode != state.show_tracking ? "" : "** / 명령어로 지정된 모드: **" + (state.show_tracking ? "표시" : "숨김"))
 	+ "**<br>- 현재 스테이터스 변동내역이 " + (state.show_tracking ? "모든 사용자에게 공개되고 있습니다." : "GM에게만 귓속말로 전달되고 있습니다."),null,{noarchive:true});
