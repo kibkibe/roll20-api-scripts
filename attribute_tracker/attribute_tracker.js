@@ -1,5 +1,5 @@
 /* https://github.com/kibkibe/roll20-api-scripts/tree/master/attribute_tracker */
-/* (attribute_tracker.js) 210719 코드 시작 */
+/* (attribute_tracker.js) 210720 코드 시작 */
 
 // define: option
 const at_setting = {
@@ -33,8 +33,10 @@ const at_setting = {
     
 on('ready', function() {
 	// on.ready
-	state.show_tracking = !at_setting.use_secret_mode;
-	show_current_status();
+	if (state.hide_tracking != at_setting.use_secret_mode) {
+		state.hide_tracking = at_setting.use_secret_mode;
+		show_current_status();
+	}
     state.new_character = [];
     on("add:character",function(obj) {
         state.new_character.push({id:obj._id, time: Date.now()});
@@ -75,9 +77,9 @@ if (msg.type == "api" ){
 		if (msg.content == "!at") {
 			sendChat("attribute_tracker.js","/w gm [ 명령어 ]<br>- **!at show**: 로그 표시하기 / **!at hide**: 로그 숨기기",null,{noarchive:true});
 		} else if (msg.content.toLowerCase().includes('hide')) {
-            state.show_tracking = false;
+            state.hide_tracking = true;
         } else if (msg.content.toLowerCase().includes('show')) {
-            state.show_tracking = true;
+            state.hide_tracking = false;
         }
 		show_current_status();
 	}
@@ -89,8 +91,8 @@ if (msg.type == "api" ){
 function show_current_status() {
 
 	sendChat("attribute_tracker.js","/w gm <br>- 코드상의 옵션: **" + (at_setting.use_secret_mode ? "숨김":"표시")
-	+ (at_setting.use_secret_mode != state.show_tracking ? "" : "** / 명령어로 지정된 모드: **" + (state.show_tracking ? "표시" : "숨김"))
-	+ "**<br>- 현재 스테이터스 변동내역이 " + (state.show_tracking ? "모든 사용자에게 공개되고 있습니다." : "GM에게만 귓속말로 전달되고 있습니다."),null,{noarchive:true});
+	+ (at_setting.use_secret_mode == state.hide_tracking ? "" : "** / 명령어로 지정된 모드: **" + (state.hide_tracking ? "숨김" : "표시"))
+	+ "**<br>- 현재 스테이터스 변동내역이 " + (state.hide_tracking ? "GM에게만 귓속말로 전달되고 있습니다.":"모든 사용자에게 공개되고 있습니다."),null,{noarchive:true});
 }
 
 function check_attribute(obj,prev) {
@@ -143,7 +145,7 @@ function check_attribute(obj,prev) {
                         }
                     }
                     sendChat("character|"+obj.get('_characterid'),
-                    (state.show_tracking ? "":"/w GM ") +
+                    (state.hide_tracking ? "/w GM ":"") +
                         "**" + name + "** / <span style='color:#aaaaaa'>" + (prev == null?"":(check_max? prev.max:prev.current)) + "</span><span style='color:#777777'> → </span><b>" +
                         (check_max ? obj.get('max'):obj.get('current'))+"</b>",null,{noarchive:false});
                     break;
@@ -155,4 +157,4 @@ function check_attribute(obj,prev) {
     }
 }
 // /define: global function
-/* (attribute_tracker.js) 210719 코드 종료 */
+/* (attribute_tracker.js) 210720 코드 종료 */
