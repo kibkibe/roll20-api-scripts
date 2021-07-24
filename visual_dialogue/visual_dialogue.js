@@ -358,7 +358,6 @@ const showDialogue = function() {
         text_dialogue.remove();
         text_dialogue = null;
     } 
-    
     if (!text_name) {
         text_name = createObj('text', {
             _pageid: bg_area.get('_pageid'),
@@ -374,7 +373,7 @@ const showDialogue = function() {
         });
         bg_name.set({'gmnotes':text_name.get('_id')});
     }
-    if (!text_dialogue) {        
+    if (!text_dialogue) {   
         text_dialogue = createObj('text', {
             _pageid: bg_dialogue.get('_pageid'),
             left: bg_dialogue.get('left'),
@@ -392,33 +391,35 @@ const showDialogue = function() {
 
     // 예외처리할 텍스트 제외
     let name = msg.who + '\n' + blank_name;
-    let str = msg.content;
+    let filtered = msg.content;
     let filter_word = [
         {regex:/\*.+\*/g,replace:/\*/g}, // *, **, ***
         {regex:/``.+``/g,replace:/``/g}, // ``
         {regex:/\[[^\(\)\[\]]*\]\(http[^\(\)\[\]]+\)/g,replace:/\[[^\(\)\[\]]*\]\(http[^\(\)\[\]]+\)/g}, // [](http...)
         {regex:/<[^>]*>/g,replace:/<[^>]*>/g}, // <html>
+		{regex:/\(.{1}\" style=\"[^\)]+\)/g,replace:/\((?:[^)(]+|\((?:[^)(]+|\([^)(]*\))*\))*\)/g}, // [](#" style="...)
         {regex:/\$\[\[.+\]\]/g,replace:/\$\[\[.+\]\]/g}]; // [[]]
     for (let i=0;i<filter_word.length;i++) {
-        let match = str.match(filter_word[i].regex);
+        let match = filtered.match(filter_word[i].regex);
         if (match) {
             for (let j=0;j<match.length;j++) {
-                str = str.replace(match[j], match[j].replace(filter_word[i].replace,''));
+                filtered = filtered.replace(match[j], match[j].replace(filter_word[i].replace,''));
             }
         }
     }
-    let ruby_match = str.match(/\([^\(\)\[\]]+\)\[[^\(\)\[\]]*\]/g);
+    let ruby_match = filtered.match(/\([^\(\)\[\]]+\)\[[^\(\)\[\]]*\]/g);
     if (ruby_match) {
         for (let j=0;j<ruby_match.length;j++) {
             let rubystr_split = ruby_match[j].substring(1,ruby_match[j].length-1).split(')[');
-            str = str.replace(ruby_match[j], rubystr_split[1]+"("+rubystr_split[0]+")");
+            filtered = filtered.replace(ruby_match[j], rubystr_split[1]+"("+rubystr_split[0]+")");
         }
     }
 
-    if (str.length == 0){
+    if (filtered.length == 0){
         showNextDialogue();
         return;
     }
+	let str = filtered;
 
     let desc_ratio = is_general ? 1 : 0.8;
     let amount = Math.ceil(width/font_size/vd_setting['letter_spacing']*3) -3;
@@ -443,7 +444,7 @@ const showDialogue = function() {
             idx = i+1;
             length = 0;
             if ((split.length+1) * font_size * vd_setting['letter_spacing']*3 > bg_dialogue.get('height')) {
-                state.vd_stock.splice(1,0,{content:msg.content.substring(idx,str.length),time:msg.time,playerid:msg.playerid,type:msg.type,who:msg.who});
+                state.vd_stock.splice(1,0,{content:filtered.substring(idx,str.length),time:msg.time,playerid:msg.playerid,type:msg.type,who:msg.who});
                 divided = true;
                 break;
             }

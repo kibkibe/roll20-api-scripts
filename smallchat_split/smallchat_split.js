@@ -1,8 +1,10 @@
 /* https://github.com/kibkibe/roll20-api-scripts/tree/master/smallchat_split */
-/* (smallchat_split.js) 210627 코드 시작 */
+/* (smallchat_split.js) 210724 코드 시작 */
 
 // define: option
 let ss_setting = {
+	// option: 맵에 채팅창을 표시할지(true) 별도의 핸드아웃에 실시간 채팅을 표시할지(false) 설정합니다.
+	show_chat_window: true,
 	// option: 채팅창의 글씨크기를 지정합니다.
 	font_size: 14,
 	// option: 채팅창의 글씨색을 지정합니다.
@@ -13,7 +15,7 @@ let ss_setting = {
 	show_player_name: false,
 	// option: 잡담 내역을 저장할 핸드아웃의 이름을 지정합니다.
 	logname: "(잡담로그)",
-	// option: 세션화면 안에 채팅창을 만들지 않고자 할 경우 실시간 채팅을 표시할 별도의 핸드아웃의 이름을 지정합니다.
+	// option: 실시간 채팅을 표시할 별도의 핸드아웃의 이름을 지정합니다.
 	onair_name: "(실시간 잡담채팅)",
 	// option: 실시간 채팅용 핸드아웃에서 최신순으로 몇개까지 채팅을 표시할지를 지정합니다.
 	onair_lines: 15,
@@ -73,7 +75,29 @@ if (msg.type == "api"){
 					split.splice(1,0,' ');
 				}
 			}
-			if (bg) {
+
+			let filtered = msg.content.substring(2);
+			let filter_word = [
+				{regex:/\*.+\*/g,replace:/\*/g}, // *, **, ***
+				{regex:/``.+``/g,replace:/``/g}, // ``
+				{regex:/\[[^\(\)\[\]]*\]\(http[^\(\)\[\]]+\)/g,replace:/\[[^\(\)\[\]]*\]\(http[^\(\)\[\]]+\)/g}, // [](http...)
+				{regex:/<[^>]*>/g,replace:/<[^>]*>/g}, // <html>
+				{regex:/\(.{1}\" style=\"[^\)]+\)/g,replace:/\((?:[^)(]+|\((?:[^)(]+|\([^)(]*\))*\))*\)/g}, // [](#" style="...)
+				{regex:/\$\[\[.+\]\]/g,replace:/\$\[\[.+\]\]/g}]; // [[]]
+			for (let i=0;i<filter_word.length;i++) {
+				let match = filtered.match(filter_word[i].regex);
+				if (match) {
+					for (let j=0;j<match.length;j++) {
+						filtered = filtered.replace(match[j], match[j].replace(filter_word[i].replace,''));
+					}
+				}
+			}
+
+			if (ss_setting.show_chat_window) {
+				if (!bg) {
+					sendChat('error','/w GM **\'map\'**레이어에 이름이 **\'chat_bg\'**인 토큰이 없습니다.',null,{noarchive:true});
+					return;
+				}
 				let width = bg.get('width') - ss_setting.margin.left - ss_setting.margin.right;
 				if (box.length > 0) {
 					box = box[0];
@@ -110,7 +134,7 @@ if (msg.type == "api"){
 						color: ss_setting.color
 					});
 				}
-				let str = player.get('_displayname') + ": " + msg.content.substring(2);
+				let str = (ss_setting.show_player_name ? player.get('_displayname') : msg.who) + ": " + filtered;
 				let amount = Math.ceil(width/ss_setting.font_size/ss_setting.letterspacing*3);
 				let idx = 0;
 				let length = 0;
@@ -155,8 +179,8 @@ if (msg.type == "api"){
 					+ "</span>" + "<br>"
 					+ (ss_setting.use_personal_color!=0?("<span style='color:"+player.get('color')+";'>"):"") + "<b>"
 					+ (ss_setting.show_player_name ? player.get('_displayname') : msg.who) + "</b>" + (ss_setting.use_personal_color===1?"</span>":"") + ": "
-					+ msg.content.substring(2) + (ss_setting.use_personal_color===2?"</span>":"");
-			if (!bg) {
+					+ filtered + (ss_setting.use_personal_color===2?"</span>":"");
+			if (!ss_setting.show_chat_window) {
 				let oa = findObjs({ _type: 'handout', name:ss_setting.onair_name});
 				if (oa.length > 0) {
 					oa = oa[0];
@@ -194,4 +218,4 @@ if (msg.type == "api"){
 	// /on.chat:message:api
 }
 });
-/* (smallchat_split.js) 210627 코드 종료 */
+/* (smallchat_split.js) 210724 코드 종료 */

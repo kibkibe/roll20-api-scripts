@@ -1,5 +1,5 @@
 /* https://github.com/kibkibe/roll20-api-scripts/tree/master/token_connector */
-/* (token_connector.js) 210718 코드 시작 */
+/* (token_connector.js) 210724 코드 시작 */
 
 // define: option
 const tc_setting = {
@@ -180,9 +180,8 @@ on("chat:message", function(msg){
             sendChat('error','/w GM '+err,null,{noarchive:true});
         }
     }
-
-}
 	// /on.chat:message:api
+}
 });
 
 
@@ -222,4 +221,4 @@ function tc_change_value(obj, prev) {
 }
 // /define: global function
 
-/* (token_connector.js) 210718 코드 종료 */
+/* (token_connector.js) 210724 코드 종료 */
