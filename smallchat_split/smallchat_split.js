@@ -1,5 +1,5 @@
 /* https://github.com/kibkibe/roll20-api-scripts/tree/master/smallchat_split */
-/* (smallchat_split.js) 210724 코드 시작 */
+/* (smallchat_split.js) 210725 코드 시작 */
 
 // define: option
 let ss_setting = {
@@ -44,16 +44,14 @@ if (msg.type == "api"){
 	// on.chat:message:api
     if (msg.content.indexOf("! ") === 0) {
         try {
-			let box = findObjs({ _type: 'text', layer:'map'});
-			let bg = findObjs({ _type: 'graphic', name:'chat_bg', layer:'map'});
+			let bg_array = findObjs({ _type: 'graphic', name:'chat_bg', layer:'map'});
 			let ho = findObjs({ _type: 'handout', name:ss_setting.logname});
 			let player = getObj('player',msg.playerid);
 			
 			let split;
-			if (bg.length > 0) {
-				bg = bg[0];
-			} else {
-				bg = null;
+			if (bg_array.length < 1 && ss_setting.show_chat_window) {
+				sendChat('error','/w GM **\'map\'**레이어에 이름이 **\'chat_bg\'**인 토큰이 없습니다.',null,{noarchive:true});
+				return;
 			}
 			if (ho.length > 0) {
 				ho = ho[0];
@@ -63,17 +61,6 @@ if (msg.type == "api"){
 					inplayerjournals: 'all',
 					name: ss_setting.logname
 				});
-			}
-			const fillWidthBlank = function() {
-				let str = "";
-				while (bg.get('width')>str.length*ss_setting.font_size*1.2) { str += " "; }
-				return str;
-			}
-			const fillHeightBlank = function(split) {
-
-				while (split.length * ss_setting.font_size * ss_setting.lineheight < bg.get('height') - ss_setting.margin.top - ss_setting.margin.bottom) {
-					split.splice(1,0,' ');
-				}
 			}
 
 			let filtered = msg.content.substring(2);
@@ -94,82 +81,95 @@ if (msg.type == "api"){
 			}
 
 			if (ss_setting.show_chat_window) {
-				if (!bg) {
-					sendChat('error','/w GM **\'map\'**레이어에 이름이 **\'chat_bg\'**인 토큰이 없습니다.',null,{noarchive:true});
-					return;
-				}
-				let width = bg.get('width') - ss_setting.margin.left - ss_setting.margin.right;
-				if (box.length > 0) {
-					box = box[0];
-					let str = box.get('text');
-					let sizeChanged = false;
+				for (let i = 0; i < bg_array.length; i++) {
+					const bg = bg_array[i];
+					let rect;
 					try {
-						const rect = JSON.parse(bg.get('gmnotes'));
-						if (rect.left != bg.get('left')+ss_setting.margin.left || rect.top != bg.get('top')+ss_setting.margin.top
-						|| rect.margin_left != ss_setting.margin.left || rect.margin_right != ss_setting.margin.right
-						|| rect.width != bg.get('width') || rect.height != bg.get('height')) {
-							sizeChanged = true;
-							str = str.replace(/ㅤ+/,fillWidthBlank());
-						}
+						rect = JSON.parse(bg.get('gmnotes'));
 					} catch (err) {
+						rect = {};
 					}
-					split = str.split('\n');
-					if (sizeChanged) {
-						fillHeightBlank(split);
+					let box = getObj('text', rect.textid);
+					const fillWidthBlank = function() {
+						let str = "";
+						while (bg.get('width')>str.length*ss_setting.font_size*1.2) { str += " "; }
+						return str;
 					}
-				} else {
-					split = [''];
-					split[0] = fillWidthBlank();
-					fillHeightBlank(split);
-					box = createObj('text', {
-						_pageid: bg.get('_pageid'),
-						left: bg.get('left') + ss_setting.margin.left,
-						top: bg.get('top') + ss_setting.margin.top,
-						width: width,
-						height: bg.get('height'),
-						layer: 'map',
-						font_family: 'Arial',
-						text: '',
-						font_size: ss_setting.font_size,
-						color: ss_setting.color
-					});
-				}
-				let str = (ss_setting.show_player_name ? player.get('_displayname') : msg.who) + ": " + filtered;
-				let amount = Math.ceil(width/ss_setting.font_size/ss_setting.letterspacing*3);
-				let idx = 0;
-				let length = 0;
-
-				const thirdchar = ['\'',' ',',','.','!',':',';','"'];
-				const halfchar = ['[',']','(',')','*','^','-','~','<','>','+','l','i','1'];
-				const arr = thirdchar.concat(halfchar);
-				for (let i=0;i<str.length;i++){
-					let c = str[i];
-					length += 3;
-					for (let j=0;j<arr.length;j++) {
-						if (c==arr[j]) {
-							length -= (j<thirdchar.length ? 2 : 1);
-							break;
+					const fillHeightBlank = function(split) {
+		
+						while (split.length * ss_setting.font_size * ss_setting.lineheight < bg.get('height') - ss_setting.margin.top - ss_setting.margin.bottom) {
+							split.splice(1,0,' ');
 						}
 					}
-					if (length > amount) {
-						split.push(str.substring(idx,i));
-						idx = i;
-						length = 0;
+					let width = bg.get('width') - ss_setting.margin.left - ss_setting.margin.right;
+					if (box) {
+						let str = box.get('text');
+						let sizeChanged = false;
+							if (rect.left != bg.get('left')+ss_setting.margin.left || rect.top != bg.get('top')+ss_setting.margin.top
+							|| rect.margin_left != ss_setting.margin.left || rect.margin_right != ss_setting.margin.right
+							|| rect.width != bg.get('width') || rect.height != bg.get('height')) {
+								sizeChanged = true;
+								str = str.replace(/ㅤ+/,fillWidthBlank());
+							}
+						split = str.split('\n');
+						if (sizeChanged) {
+							fillHeightBlank(split);
+						}
+					} else {
+						split = [''];
+						split[0] = fillWidthBlank();
+						fillHeightBlank(split);
+						box = createObj('text', {
+							_pageid: bg.get('_pageid'),
+							left: bg.get('left') + ss_setting.margin.left,
+							top: bg.get('top') + ss_setting.margin.top,
+							width: width,
+							height: bg.get('height'),
+							layer: 'map',
+							font_family: 'Arial',
+							text: '',
+							font_size: ss_setting.font_size,
+							color: ss_setting.color
+						});
 					}
+					let str = (ss_setting.show_player_name ? player.get('_displayname') : msg.who) + ": " + filtered;
+					let amount = Math.ceil(width/ss_setting.font_size/ss_setting.letterspacing*3);
+					let idx = 0;
+					let length = 0;
+	
+					const thirdchar = ['\'',' ',',','.','!',':',';','"'];
+					const halfchar = ['[',']','(',')','*','^','-','~','<','>','+','l','i','1'];
+					const arr = thirdchar.concat(halfchar);
+					for (let i=0;i<str.length;i++){
+						let c = str[i];
+						length += 3;
+						for (let j=0;j<arr.length;j++) {
+							if (c==arr[j]) {
+								length -= (j<thirdchar.length ? 2 : 1);
+								break;
+							}
+						}
+						if (length > amount) {
+							split.push(str.substring(idx,i));
+							idx = i;
+							length = 0;
+						}
+					}
+					if (idx < str.length) {
+						split.push(str.substring(idx,str.length));
+					}
+					while ((split.length -1) * ss_setting.font_size * ss_setting.lineheight > bg.get('height') - ss_setting.margin.top - ss_setting.margin.bottom) {
+						split.splice(1,1);
+					}
+					let note_str = "{\"left\":"+(bg.get('left')+ss_setting.margin.left)+",\"top\":"+(bg.get('top')+ss_setting.margin.top-ss_setting.font_size)+",\"margin_left\":"
+					+ss_setting.margin.left+",\"margin_right\":"+ss_setting.margin.right+",\"width\":"+bg.get('width')+",\"height\":"+bg.get('height')+",\"textid\":\""
+					+box.get('_id')+"\"}";
+					box.set({text:split.join('\n'),
+					left:bg.get('left')-(bg.get('width')/2)+(bg.get('width')-ss_setting.margin.left-ss_setting.margin.right)/2+ss_setting.margin.left,
+					top:bg.get('top')-(bg.get('height')/2)+(bg.get('height')-ss_setting.margin.top-ss_setting.margin.bottom)/2+ss_setting.margin.top-ss_setting.font_size});
+					bg.set("gmnotes",note_str);
+					toFront(box);
 				}
-				if (idx < str.length) {
-					split.push(str.substring(idx,str.length));
-				}
-				while ((split.length -1) * ss_setting.font_size * ss_setting.lineheight > bg.get('height') - ss_setting.margin.top - ss_setting.margin.bottom) {
-					split.splice(1,1);
-				}
-				let note_str = "{\"left\":"+(bg.get('left')+ss_setting.margin.left)+",\"top\":"+(bg.get('top')+ss_setting.margin.top-ss_setting.font_size)+",\"margin_left\":"
-				+ss_setting.margin.left+",\"margin_right\":"+ss_setting.margin.right+",\"width\":"+bg.get('width')+",\"height\":"+bg.get('height')+"}";
-				box.set({text:split.join('\n'),
-				left:bg.get('left')-(bg.get('width')/2)+(bg.get('width')-ss_setting.margin.left-ss_setting.margin.right)/2+ss_setting.margin.left,
-				top:bg.get('top')-(bg.get('height')/2)+(bg.get('height')-ss_setting.margin.top-ss_setting.margin.bottom)/2+ss_setting.margin.top-ss_setting.font_size});
-				bg.set("gmnotes",note_str);
-				toFront(box);
 			}
 			let d = new Date();
 			let tz = d.getTime() + (d.getTimezoneOffset() * 60000) + (ss_setting.timezone * 3600000);
@@ -218,4 +218,4 @@ if (msg.type == "api"){
 	// /on.chat:message:api
 }
 });
-/* (smallchat_split.js) 210724 코드 종료 */
+/* (smallchat_split.js) 210725 코드 종료 */
