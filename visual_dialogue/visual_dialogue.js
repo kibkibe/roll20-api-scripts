@@ -213,14 +213,9 @@ on("chat:message", function(msg)
 				current_token = findTokenWithCharacter(chat_cha?chat_cha.get('_id'):'', cha_name);
 			}
 			if (current_token) {
-				let nm = chat_cha?cha_name:vd_setting.extra_name;
-				let rt = findObjs({ _type: 'deck', name: !vd_setting.use_emotion?vd_setting.deck_name:nm});
+				let rt = findObjs({ _type: 'deck', name: vd_setting.deck_name});
 				if (rt.length == 0) {
-					if (!vd_setting.use_emotion) {
-						sendChat("error","/w gm 이름이 **" + vd_setting.deck_name +"**인 카드 덱이 없습니다.",null,{noarchive:true});
-					} else {
-						sendChat("error","/w gm 이름이 **" + nm + "**인 카드 덱이 없습니다.",null,{noarchive:true});
-					}
+					sendChat("error","/w gm 이름이 **" + vd_setting.deck_name +"**인 카드 덱이 없습니다.",null,{noarchive:true});
 					return;
 				} else {
 
@@ -237,26 +232,20 @@ on("chat:message", function(msg)
 						represents: chat_cha? chat_cha.get('_id'): '',
 						tint_color: current_token.get('tint_color')
 					};
-					if (emot.length == 0) {
-						opt.imgsrc = rt[0].get('avatar').replace('med','thumb').replace('max','thumb');
+					let search_opt = { _type: 'card', _deckid: rt[0].get('_id')};
+					if (!vd_setting.use_emotion) {
+						search_opt.name = chat_cha ? cha_name : vd_setting.extra_name;
+					} else if (emot.length > 0) {
+						search_opt.name = cha_name + "-" + emot;
 					} else {
-						let search_opt = { _type: 'card', _deckid: rt[0].get('_id')};
-						if (!vd_setting.use_emotion) {
-							search_opt.name = chat_cha ? cha_name : vd_setting.extra_name;
-						} else if (emot.length > 0) {
-							search_opt.name = emot;
-						}
-						let rt_items = findObjs(search_opt);
-						if (rt_items.length > 0) {
-							opt.imgsrc = rt_items[0].get('avatar').replace('med','thumb').replace('max','thumb');
-						} else {
-							if (!vd_setting.use_emotion) {
-								sendChat("error","/w gm **"+ vd_setting.deck_name + "** 카드 덱에 이름이 **" + opt.name + "**인 카드가 없습니다.",null,{noarchive:true});
-							} else {
-								sendChat("error","/w gm **" + rt[0].get('name') + "** 카드 덱에 이름이 **" + emot + "**인 카드가 없습니다.",null,{noarchive:true});
-							}
-							return;
-						}
+						search_opt.name = cha_name;
+					}
+					let rt_items = findObjs(search_opt);
+					if (rt_items.length > 0) {
+						opt.imgsrc = rt_items[0].get('avatar').replace('med','thumb').replace('max','thumb');
+					} else {
+						sendChat("error","/w gm **"+ vd_setting.deck_name + "** 카드 덱에 이름이 **" + search_opt.name + "**인 카드가 없습니다.",null,{noarchive:true});
+						return;
 					}
 					current_token.set(opt);
 				}
@@ -500,13 +489,9 @@ const showDialogue = function() {
 
         if (current_token == null && (chat_cha || vd_setting.show_extra_standing)) {
             let nm = chat_cha?msg.who:vd_setting.extra_name;
-            let rt = findObjs({ _type: 'deck', name: !vd_setting.use_emotion? vd_setting.deck_name :nm});
+            let rt = findObjs({ _type: 'deck', name: vd_setting.deck_name});
             if (rt.length == 0) {
-                if (!vd_setting.use_emotion) {
-                    sendChat("error","/w gm 이름이 **"+ vd_setting.deck_name + "**인 카드 덱이 없습니다.",null,{noarchive:true});
-                } else {
-                    sendChat("error","/w gm 이름이 **" + msg.who + "**인 카드 덱이 없습니다.",null,{noarchive:true});
-                }
+				sendChat("error","/w gm 이름이 **"+ vd_setting.deck_name + "**인 카드 덱이 없습니다.",null,{noarchive:true});
                 showNextDialogue();
                 return;
             } else {
@@ -520,12 +505,10 @@ const showDialogue = function() {
                     imgsrc: rt[0].get('avatar').replace('med','thumb').replace('max','thumb'),
                     represents: chat_cha? chat_cha.get('_id'): ''
                 };
-                if (!chat_cha || !vd_setting.use_emotion) {
-                    const extra_std = findObjs({ _type: 'card', _deckid: rt[0].get('_id'), name: msg.who});
-                    if (extra_std.length > 0) {
-                        opt.imgsrc = extra_std[0].get('avatar').replace('med','thumb').replace('max','thumb');
-                    }
-                }
+				const std = findObjs({ _type: 'card', _deckid: rt[0].get('_id'), name: msg.who});
+				if (std.length > 0) {
+					opt.imgsrc = std[0].get('avatar').replace('med','thumb').replace('max','thumb');
+				}
         
                 if (tokens.length >= vd_setting.max_number) {
                     opt.left = lowest_priority.get('left');

@@ -16,12 +16,11 @@ if (msg.type == "api"){
 		let tok = getObj("graphic", msg.selected[0]._id);
 		sendChat(msg.who,"/w gm "+tok.get('imgsrc'));
 	} else if (msg.content.indexOf("!replace ") === 0) {
-		let tok = getObj("graphic", msg.selected[0]._id);
+		let tok = getObj(msg.selected[0]._type, msg.selected[0]._id);
 		tok.set('imgsrc',msg.content.substring(9).replace("max","thumb").replace("med","thumb"));
 	} else if (msg.content.indexOf("!log") === 0) {
 		for (let i=0;i<msg.selected.length;i++) {
 			let tok = getObj("graphic", msg.selected[i]._id);
-			log(tok);
 		}
 	} else if (msg.content.indexOf("!batch") === 0 && msg.selected.length > 0) {
 		let highest = getObj("graphic", msg.selected[0]._id);
@@ -44,6 +43,20 @@ if (msg.type == "api"){
 				token.set({aura1_radius:"",aura1_color:"",aura1_square:false});
 			}
 		});
+	} else if (msg.content.indexOf("!remove_all ") == 0) {
+		let name = msg.content.replace('!remove_all ','');
+		let search_opt = {_pageid:Campaign().get("playerpageid")};
+		if (name.indexOf('\'') > -1 || name.indexOf('"') > -1) {
+			search_opt.type = 'graphic';
+			search_opt.name = name.replace(/\'/g,'').replace(/\"/g,'');
+		} else {
+			search_opt.type = name;
+		}
+		let objs = findObjs(search_opt);
+		for (let i=0;i<objs.length;i++) {
+			let obj = objs[i];
+			obj.remove();
+		}
 	}
 	// /on.chat:message:api
 }
