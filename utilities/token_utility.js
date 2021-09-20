@@ -1,5 +1,5 @@
 /* https://github.com/kibkibe/roll20-api-scripts/tree/master/utilities */
-/* (token_utility.js) 210306 코드 시작 */
+/* (token_utility.js) 210920 코드 시작 */
 
 // define: option
 const gi_setting = {
@@ -18,9 +18,10 @@ if (msg.type == "api"){
 	} else if (msg.content.indexOf("!replace ") === 0) {
 		let tok = getObj(msg.selected[0]._type, msg.selected[0]._id);
 		tok.set('imgsrc',msg.content.substring(9).replace("max","thumb").replace("med","thumb"));
-	} else if (msg.content.indexOf("!log") === 0) {
+	} else if (msg.content.indexOf("!log") === 0 && msg.selected) {
 		for (let i=0;i<msg.selected.length;i++) {
 			let tok = getObj("graphic", msg.selected[i]._id);
+			log(tok);
 		}
 	} else if (msg.content.indexOf("!batch") === 0 && msg.selected.length > 0) {
 		let highest = getObj("graphic", msg.selected[0]._id);
@@ -61,4 +62,4 @@ if (msg.type == "api"){
 	// /on.chat:message:api
 }
 });
-/* (token_utility.js) 210306 코드 종료 */
+/* (token_utility.js) 210920 코드 종료 */

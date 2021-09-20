@@ -1,5 +1,5 @@
 /* https://github.com/kibkibe/roll20-api-scripts/tree/master/magicalogia_mana_token */
-/* (magicalogia_mana_token.js) 210718 코드 시작 */
+/* (magicalogia_mana_token.js) 210920 코드 시작 */
 
 // define: global constant
 const charge_check = [
@@ -432,9 +432,10 @@ function check_charge(obj,prev) {
 					}
 					if (!mt_setting.use_sub_icon || token.get('name').lastIndexOf('*') == token.get('name').length-1) {
 						if (!mt_setting.use_static_icon && (token.get('bar1_link') == obj.get('_id') || token.get('gmnotes') == obj.get('_id'))) {
-							if (parseInt(obj.get('current')) >= token.get('sides').split('|').length) {
-								sendChat("error","/w gm " + obj.get('current') + "개의 마소를 표시할 수 있는 아이콘이 없습니다.",null,{noarchive:true});
-								return;
+							if (token.get('imgsrc').length == 0) {
+								token.remove();
+							} else if (parseInt(obj.get('current')) >= token.get('sides').split('|').length) {
+								sendChat("error","/w gm '" + token.get('name') + "' 토큰에 '" + obj.get('current') + "'개의 마소를 표시할 수 있는 아이콘이 없습니다.",null,{noarchive:true});
 							} else {
 								token.set({imgsrc: unescape(token.get('sides').split('|')[parseInt(obj.get('current'))].replace('max','thumb').replace('med','thumb'))});
 							}
@@ -449,4 +450,4 @@ function check_charge(obj,prev) {
     }
 }
 // /define: global function
-/* (magicalogia_mana_token.js) 210718 코드 종료 */
+/* (magicalogia_mana_token.js) 210920 코드 종료 */
