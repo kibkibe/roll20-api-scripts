@@ -1,10 +1,10 @@
-/* https://github.com/kibkibe/roll20-api-scripts/tree/master/import_spec */
-/* (import_spec.js) 210928 코드 시작 */
+/* https://github.com/kibkibe/roll20-api-scripts/tree/master/spec_importer */
+/* (spec_importer.js) 210928 코드 시작 */
 
 // define: option
 const is_setting = {
 	// option: 변경을 감지할 속성을 목록 형태로 지정합니다.
-	// 룰별 check list코드 공유페이지 https://docs.google.com/spreadsheets/d/1_uTqPs6FQJfjzDotRWqtJn8U6cVw_lVycDRal8vxZb8/edit#gid=609977791
+	// 룰별 db_list코드 공유페이지 https://docs.google.com/spreadsheets/d/1_uTqPs6FQJfjzDotRWqtJn8U6cVw_lVycDRal8vxZb8/edit#gid=609977791
 	db_list:
 	/* 체크리스트 시작 */
 	//이름---타입---지정특기---목표---코스트---효과---주구
@@ -89,4 +89,4 @@ function check_spec(obj) {
 	}
 }
 // /define: global function
-/* (import_spec.js) 210928 코드 종료 */
+/* (spec_importer.js) 210928 코드 종료 */
