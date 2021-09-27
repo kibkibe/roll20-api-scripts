@@ -1,0 +1,78 @@
+## 소개
+캐릭터 시트의 특정 입력란에 항목명을 적으면 데이터가 수록된 핸드아웃에서 나머지 내용을 가져와 시트에 자동으로 기입해주는 스크립트입니다.
+
+## 사용법
+
+import_spec.js를 사용하기 위해서는 2가지를 설정해야 합니다.
+
+`db_list`는 스크립트에 직접 입력하는 옵션으로서 JSON 형식의 코드입니다. 어느 DB로부터 어떤 값을 가져와서 시트상의 어느 `attribute`에 집어넣을지를 지정합니다.   
+`DB핸드아웃`은 저널에 생성하는 핸드아웃입니다. 데이터들을 지정된 형식에 맞춰 하나의 문자열로 만든 뒤 핸드아웃에 넣으면 코드에서는 그 핸드아웃으로부터 데이터를 가져와 `db_list`에서 지정한대로 시트에 값을 삽입합니다.
+
+![](https://github.com/kibkibe/roll20-api-scripts/blob/master/wiki_image/is_1.png)
+`db_list`과 `DB핸드아웃`은 서로 대응되는 값을 가집니다. DB핸드아웃의 한 항목 내의 요소는 db_list의 input_attr에 입력된 1개 요소와 output_attrs에 입력된 요소들에 대응됩니다. 자세한 사항은 아래의 도움말을 참조하세요.
+
+**준비1. db_list 적용**
+1. [[ import_spec.js ]](https://github.com/kibkibe/roll20-api-scripts/blob/master/import_spec/import_spec.js)의 코드를 복사하거나 [[ 통합 배포 페이지 ]](https://kibkibe.github.io)에서 다른 스크립트와 합쳐진 코드를 가져옵니다.
+2. 코드 내 옵션인 is_setting에서 db_list를 수정합니다. 아래와 같은 형식으로 작성합니다.
+      [{data_handout:"DB핸드아웃이름", input_attr:"Item_*id*_Name", output_attrs:["Item_*id*_Type","Item_*id*_Level","Item_*id*_Target","Item_*id*_Effect"]},
+      {data_handout:'마법일람', input_attr:"repeating_acitems_*id*_Magic_Name", output_attrs:["repeating_acitems_*id*_Magic_Types","repeating_acitems_*id*_Magic_Assigned_Skill",      "repeating_acitems_*id*_Magic_Target","repeating_acitems_*id*_Magic_Cost","repeating_acitems_*id*_Magic_Effect","repeating_acitems_*id*_Magic_Recite"]}]
+
+**준비2. DB핸드아웃 작성**
+1. DB로 사용할 데이터를 수기입하거나 [데이터 변환 스프레드 시트](https://...)를 이용해서 지정된 형식으로 작성합니다.   
+각 항목은 `========`(=표시 8개)로 구분하며, 항목 내의 세부요소들은 `---`(-표시 3개)로 구분합니다.
+
+      항목1---항목1요소1---항목1요소2---항목1요소3
+	  ========
+	  항목2---항목2요소1---항목2요소2---항목2요소3
+	  ========
+	  ...
+
+> 형식이 올바르지 않거나 항목 내의 요소의 개수가 [옵션](#옵션)의 `db_list`에 지정된 숫자와 맞지 않을 경우 오류메시지를 표시합니다.
+
+2. 핸드아웃을 신규 작성하고 note에 1의 문자열을 삽입한 후 저장합니다.
+
+**준비3. 스크립트 적용**
+1. 세션방의 대문에 해당하는 페이지에서 [설정]->[API 스크립트]를 선택해 스크립트 수정 페이지로 들어갑니다. (PRO 계정에서만 이 메뉴가 보입니다.)
+2. New Script에 아래의 코드들을 복사해 붙여놓습니다.
+3. [옵션](#옵션) 파트를 참조하여 세션방에 적용할 옵션을 설정합니다.
+4. [Save Script]로 저장합니다.
+5. 페이지 아래쪽의 API Output Console에 에러 메시지가 표시되지 않는다면 정상적으로 적용된 것입니다.
+
+**준비4. 테스트**
+1. 캐릭터 시트를 열고 [옵션](#옵션)의 `db_list`에서 `input_attr`에 기입한 속성에 해당되는 입력란에 임의의 항목명을 기입합니다.
+2. `output_attr`에 지정된 입력란에 자동으로 값이 채워지는지 확인합니다.
+> DB에 수록되지 않은 항목명을 입력한 경우 값이 채워지지 않습니다.
+
+## 옵션
+#### 체크리스트
+`check_list` 옵션을 통해 변경을 감지할 속성을 목록 형태로 지정합니다.  
+[check list 코드 공유페이지](https://docs.google.com/spreadsheets/d/1_uTqPs6FQJfjzDotRWqtJn8U6cVw_lVycDRal8vxZb8/edit#gid=609977791)에서 사용할 룰에 맞춰 코드를 복사하거나 아래 설명을 참고해 변경을 체크할 수치들의 목록을 check_list로 작성합니다.
+- `attr`: 캐릭터 시트상에서 해당 속성을 저장하는데 쓰이는 고유한 식별명입니다. (예: 체력 -mp, 이성 -san)
+- `name`: 해당 속성을 일컬을 때 실제 사용되는 이름을 지정합니다. 이 값은 로그에 표시됩니다. (예: 체력,이성,행운 등등)  
+만약 속성의 이름이 다른 속성에 담겨있는 경우 속성명을 담고 있는 속성의 식별명을 입력해주세요.  
+(예: 마기카로기아에서 '기사소환' 장서에 마소를 충전할 경우 차지된 마소량은 Magic_02_Charge에서, 장서의 이름은 Magic_02_Name로부터 가져오는 식입니다.)
+
+      [{"attr": "hp", "name": "생명력"},
+	  {"attr": "mp", "name": "마력"},
+	  {"attr": "san", "name": "이성"}]
+
+> 반복되거나 자동생성되는 속성(아이템, 스킬 등)일 경우 자동생성되는 부분을 `*id*`로 교체해서 입력합니다.
+
+      [{"attr": "item_*id*_count", "name": "item_*id*_name"}]
+
+
+#### 기본 옵션
+- `prior_list`: 필수적으로 변화를 체크할 캐릭터의 이름을 기입합니다. 이 값은 ignore_list보다 우선됩니다. (복수입력시 콤마(,)로 구분)
+- `ignore_list`: 로그 표시에서 제외할 캐릭터의 이름을 기입합니다. (복수입력시 콤마(,)로 구분)
+- `use_secret_mode`: !at 명령어를 이용한 숨김/표시 모드를 사용하지 않은 기본상태에서 스테이터스 변경 내역을 모두에게 표시할지(false) GM에게 귓말로만 보낼지(true) 설정합니다.
+
+
+## 명령어
+
+- 명령어를 이용해 로그의 숨김/표시 모드를 전환할 수 있습니다.
+
+      !at       - 현재 설정모드 및 명령어 확인
+      !at show  - 로그 표시모드로 전환
+      !at hide  - 로그 숨김모드로 전환
+
+> !at를 사용한 명령어의 설정이 더 우선됩니다. use_secret_mode로 기본 표시옵션을 설정한 뒤, 세션 진행 도중 일시적으로 스탯 변동내역을 숨김/표시해야 할 때 !at 명령어를 사용하세요. (ex: 에너미 스펙을 중간에 고칠 경우 등)
