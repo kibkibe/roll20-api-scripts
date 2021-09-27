@@ -5,27 +5,38 @@
 
 import_spec.js를 사용하기 위해서는 2가지를 설정해야 합니다.
 
-`db_list`는 스크립트에 직접 입력하는 옵션으로서 JSON 형식의 코드입니다. 어느 DB로부터 어떤 값을 가져와서 시트상의 어느 `attribute`에 집어넣을지를 지정합니다.   
-`DB핸드아웃`은 저널에 생성하는 핸드아웃입니다. 데이터들을 지정된 형식에 맞춰 하나의 문자열로 만든 뒤 핸드아웃에 넣으면 코드에서는 그 핸드아웃으로부터 데이터를 가져와 `db_list`에서 지정한대로 시트에 값을 삽입합니다.
+#### - db_list
+스크립트에 직접 입력하는 옵션으로서 JSON 형식의 코드입니다. 어느 DB로부터 어떤 값을 가져와서 시트상의 어느 `attribute`에 집어넣을지를 지정합니다.   
+#### - DB핸드아웃
+저널에 생성하는 핸드아웃입니다. 데이터들을 지정된 형식에 맞춰 하나의 문자열로 만든 뒤 핸드아웃에 넣으면 코드에서는 그 핸드아웃으로부터 데이터를 가져와 `db_list`에서 지정한대로 시트에 값을 삽입합니다.
 
 ![](https://github.com/kibkibe/roll20-api-scripts/blob/master/wiki_image/is_1.png)
-`db_list`과 `DB핸드아웃`은 서로 대응되는 값을 가집니다. DB핸드아웃의 한 항목 내의 요소는 db_list의 input_attr에 입력된 1개 요소와 output_attrs에 입력된 요소들에 대응됩니다. 자세한 사항은 아래의 도움말을 참조하세요.
+
+`db_list`과 `DB핸드아웃`은 서로 대응되는 값을 가집니다. DB핸드아웃에서 하나의 항목에 들어간 요소들은 db_list의 input_attr에 입력된 1개 요소와 output_attrs에 입력된 요소들에 각각 순서대로 대응됩니다. 자세한 사항은 아래의 도움말을 참조하세요.
 
 **준비1. db_list 적용**
 1. [[ import_spec.js ]](https://github.com/kibkibe/roll20-api-scripts/blob/master/import_spec/import_spec.js)의 코드를 복사하거나 [[ 통합 배포 페이지 ]](https://kibkibe.github.io)에서 다른 스크립트와 합쳐진 코드를 가져옵니다.
-2. 코드 내 옵션인 is_setting에서 db_list를 수정합니다. 아래와 같은 형식으로 작성합니다.
-      [{data_handout:"DB핸드아웃이름", input_attr:"Item_*id*_Name", output_attrs:["Item_*id*_Type","Item_*id*_Level","Item_*id*_Target","Item_*id*_Effect"]},
-      {data_handout:'마법일람', input_attr:"repeating_acitems_*id*_Magic_Name", output_attrs:["repeating_acitems_*id*_Magic_Types","repeating_acitems_*id*_Magic_Assigned_Skill",      "repeating_acitems_*id*_Magic_Target","repeating_acitems_*id*_Magic_Cost","repeating_acitems_*id*_Magic_Effect","repeating_acitems_*id*_Magic_Recite"]}]
+2. 코드 내 옵션인 is_setting에서 db_list를 수정합니다. 아래는 아이템의 이름을 기입하면 `아이템목록`이라는 이름의 핸드아웃으로부터 해당 아이템의 유형, 등급, 대상, 효과를 가져오는 코드의 예시입니다.
+
+       [{data_handout:"아이템목록",
+         input_attr:"Item_*id*_Name",
+         output_attrs:["Item_*id*_Type","Item_*id*_Level","Item_*id*_Target","Item_*id*_Effect"]},
+        {data_handout:"아이템목록",
+         input_attr:"repeating_acitems_*id*_Item_Name",
+         output_attrs:["repeating_acitems_*id*_Item_Type","repeating_acitems_*id*_Item_Level",
+         "repeating_acitems_*id*_Item_Target","repeating_acitems_*id*_Item_Effect"]}]
 
 **준비2. DB핸드아웃 작성**
 1. DB로 사용할 데이터를 수기입하거나 [데이터 변환 스프레드 시트](https://...)를 이용해서 지정된 형식으로 작성합니다.   
 각 항목은 `========`(=표시 8개)로 구분하며, 항목 내의 세부요소들은 `---`(-표시 3개)로 구분합니다.
 
-      항목1---항목1요소1---항목1요소2---항목1요소3
-	  ========
-	  항목2---항목2요소1---항목2요소2---항목2요소3
-	  ========
-	  ...
+       항목1---항목1요소1---항목1요소2---항목1요소3
+       ========
+       항목2---항목2요소1---항목2요소2---항목2요소3
+       ========
+       항목3---항목3요소1---항목3요소2---항목3요소3
+       ========
+       ...
 
 > 형식이 올바르지 않거나 항목 내의 요소의 개수가 [옵션](#옵션)의 `db_list`에 지정된 숫자와 맞지 않을 경우 오류메시지를 표시합니다.
 
@@ -53,8 +64,8 @@ import_spec.js를 사용하기 위해서는 2가지를 설정해야 합니다.
 (예: 마기카로기아에서 '기사소환' 장서에 마소를 충전할 경우 차지된 마소량은 Magic_02_Charge에서, 장서의 이름은 Magic_02_Name로부터 가져오는 식입니다.)
 
       [{"attr": "hp", "name": "생명력"},
-	  {"attr": "mp", "name": "마력"},
-	  {"attr": "san", "name": "이성"}]
+      {"attr": "mp", "name": "마력"},
+      {"attr": "san", "name": "이성"}]
 
 > 반복되거나 자동생성되는 속성(아이템, 스킬 등)일 경우 자동생성되는 부분을 `*id*`로 교체해서 입력합니다.
 
