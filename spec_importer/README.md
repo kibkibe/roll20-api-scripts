@@ -20,12 +20,17 @@ spec_importer.js를 사용하기 위해서는 2가지를 설정해야 합니다.
 
 `db_list`과 `DB핸드아웃`은 서로 대응되는 값을 가집니다. DB핸드아웃에서 하나의 항목에 들어간 요소들은 db_list의 input_attr에 입력된 1개 요소와 output_attrs에 입력된 요소들에 각각 순서대로 대응됩니다. 자세한 사항은 아래의 도움말을 참조하세요.
 
-**준비1. db_list 적용**
-1. [[ import_spec.js ]](https://github.com/kibkibe/roll20-api-scripts/blob/master/spec_importer/spec_importer.js)의 코드를 복사하거나 [[ 통합 배포 페이지 ]](https://kibkibe.github.io)에서 다른 스크립트와 합쳐진 코드를 가져옵니다.
+## 준비1. db_list 적용
+1. [[ import_spec.js ]](https://github.com/kibkibe/roll20-api-scripts/blob/master/spec_importer/spec_importer.js)의 코드를 복사하거나 [[ 통합 배포 페이지 ]](https://kibkibe.github.io/roll20/)에서 다른 스크립트와 합쳐진 코드를 가져옵니다.
 2. 코드 내 옵션인 is_setting에서 db_list를 수정합니다. 
+
+#### 옵션
+`data_handout`: 
+
 ![](https://github.com/kibkibe/roll20-api-scripts/blob/master/wiki_image/si_4.png)
 
-3. 아래는 아이템의 이름을 기입하면 `아이템목록`이라는 이름의 핸드아웃으로부터 해당 아이템의 유형, 등급, 대상, 효과를 가져오는 코드의 예시입니다.
+
+아래는 아이템의 이름을 기입하면 `아이템목록`이라는 이름의 핸드아웃으로부터 해당 아이템의 유형, 등급, 대상, 효과를 가져오는 코드의 예시입니다.
 
        [
         {
