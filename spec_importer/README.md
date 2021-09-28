@@ -18,13 +18,25 @@ spec_importer.js를 사용하기 위해서는 2가지를 설정해야 합니다.
 1. [[ import_spec.js ]](https://github.com/kibkibe/roll20-api-scripts/blob/master/spec_importer/spec_importer.js)의 코드를 복사하거나 [[ 통합 배포 페이지 ]](https://kibkibe.github.io)에서 다른 스크립트와 합쳐진 코드를 가져옵니다.
 2. 코드 내 옵션인 is_setting에서 db_list를 수정합니다. 아래는 아이템의 이름을 기입하면 `아이템목록`이라는 이름의 핸드아웃으로부터 해당 아이템의 유형, 등급, 대상, 효과를 가져오는 코드의 예시입니다.
 
-       [{data_handout:"아이템목록",
+       [
+        {
+         data_handout:"아이템목록",
          input_attr:"Item_*id*_Name",
-         output_attrs:["Item_*id*_Type","Item_*id*_Level","Item_*id*_Target","Item_*id*_Effect"]},
-        {data_handout:"아이템목록",
+         output_attrs:
+          [
+            "Item_*id*_Type","Item_*id*_Level","Item_*id*_Target","Item_*id*_Effect"
+          ]
+         },
+        {
+         data_handout:"아이템목록",
          input_attr:"repeating_acitems_*id*_Item_Name",
-         output_attrs:["repeating_acitems_*id*_Item_Type","repeating_acitems_*id*_Item_Level",
-         "repeating_acitems_*id*_Item_Target","repeating_acitems_*id*_Item_Effect"]}]
+         output_attrs:
+          [
+           "repeating_acitems_*id*_Item_Type","repeating_acitems_*id*_Item_Level",
+           "repeating_acitems_*id*_Item_Target","repeating_acitems_*id*_Item_Effect"
+          ]
+        }
+       ]
 
 **준비2. DB핸드아웃 작성**
 1. DB로 사용할 데이터를 수기입하거나 [데이터 변환 스프레드 시트](https://...)를 이용해서 지정된 형식으로 작성합니다.   
