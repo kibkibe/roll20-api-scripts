@@ -13,7 +13,7 @@ spec_importer.js를 사용하기 위해서는 2가지를 설정해야 합니다.
 #### - DB핸드아웃
 ![](https://github.com/kibkibe/roll20-api-scripts/blob/master/wiki_image/si_2.png)
 
-저널에 생성하는 핸드아웃입니다. 데이터들을 지정된 형식에 맞춰 하나의 문자열로 만든 뒤 핸드아웃에 넣으면 코드에서는 그 핸드아웃으로부터 데이터를 가져와 `db_list`에서 지정한대로 시트에 값을 삽입합니다.
+저널에 생성하는 핸드아웃입니다. 스크립트는 이 핸드아웃으로부터 데이터를 가져와 `db_list`에 지정한대로 시트에 값을 삽입합니다. 데이터들은 핸드아웃의 note에 지정된 형식에 맞춰 나열된 형태로 기입됩니다.
 
 
 ![](https://github.com/kibkibe/roll20-api-scripts/blob/master/wiki_image/si_3.png)
@@ -22,10 +22,12 @@ spec_importer.js를 사용하기 위해서는 2가지를 설정해야 합니다.
 
 ## 준비1. db_list 적용
 1. [[ import_spec.js ]](https://github.com/kibkibe/roll20-api-scripts/blob/master/spec_importer/spec_importer.js)의 코드를 복사하거나 [[ 통합 배포 페이지 ]](https://kibkibe.github.io/roll20/)에서 다른 스크립트와 합쳐진 코드를 가져옵니다.
-2. 코드 내 옵션인 is_setting에서 db_list를 수정합니다. 
+2. 코드 내 옵션인 `is_setting`에서 `db_list`를 수정합니다. `db_list`는 사용할 검색조건을 나열하여 기입한 JSON 형식의 코드입니다. (도움말: [TCP School -JSON 구조](http://tcpschool.com/json/json_basic_structure))
 
 #### 옵션
-`data_handout`: 
+각각의 검색조건들은 `{ }`(대괄호)안에 쓰이며, 아래와 같은 설정값을 가집니다.
+`data_handout`: 이 검색조건이 값을 가져올 핸드아웃의 이름을 지정합니다. 문자열 (" ")
+`input_attr`: 
 
 ![](https://github.com/kibkibe/roll20-api-scripts/blob/master/wiki_image/si_4.png)
 
@@ -36,19 +38,22 @@ spec_importer.js를 사용하기 위해서는 2가지를 설정해야 합니다.
         {
          data_handout:"아이템목록",
          input_attr:"Item_*id*_Name",
-         output_attrs:
-          [
-            "Item_*id*_Type","Item_*id*_Level","Item_*id*_Target","Item_*id*_Effect"
-          ]
+         output_attrs:"Item_*id*_Type,Item_*id*_Level,Item_*id*_Target,Item_*id*_Effect"
+         }
+       ]
+
+한번에 여러가지 검색조건을 함께 기입할 수 있습니다. 아래의 예시는 반복생성된 입력란도 검색조건에 추가한 코드입니다. 기존의 검색조건이 쓰인 `{ }`(대괄호) 아래에 또다른 `{ }`구문을 추가하고 쉼표로 구분했습니다. 여러 검색조건을 `[ ]`(중괄호)로 표현되는 목록 안에 차례로 집어넣습니다.
+
+       [
+        {
+         data_handout:"아이템목록",
+         input_attr:"Item_*id*_Name",
+         output_attrs:"Item_*id*_Type,Item_*id*_Level,Item_*id*_Target,Item_*id*_Effect"
          },
         {
          data_handout:"아이템목록",
          input_attr:"repeating_acitems_*id*_Item_Name",
-         output_attrs:
-          [
-           "repeating_acitems_*id*_Item_Type","repeating_acitems_*id*_Item_Level",
-           "repeating_acitems_*id*_Item_Target","repeating_acitems_*id*_Item_Effect"
-          ]
+         output_attrs:"repeating_acitems_*id*_Item_Type,repeating_acitems_*id*_Item_Level,repeating_acitems_*id*_Item_Target,repeating_acitems_*id*_Item_Effect"
         }
        ]
 
