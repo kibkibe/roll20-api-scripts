@@ -18,7 +18,7 @@ spec_importer.js를 사용하기 위해서는 2가지를 설정해야 합니다.
 
 ## 준비1. db_list 적용
 1. [[ import_spec.js ]](https://github.com/kibkibe/roll20-api-scripts/blob/master/spec_importer/spec_importer.js)의 코드를 복사하거나 [[ 통합 배포 페이지 ]](https://kibkibe.github.io/roll20/)에서 다른 스크립트와 합쳐진 코드를 가져옵니다.
-2. 코드 내 옵션인 `is_setting`에서 `db_list`를 수정합니다. `db_list`는 사용할 검색조건을 나열하여 기입한 JSON 형식의 코드입니다. (도움말: [TCP School -JSON 구조](http://tcpschool.com/json/json_basic_structure))
+2. 코드 내 옵션인 `si_setting`에서 `db_list`를 수정합니다. `db_list`는 사용할 검색조건을 나열하여 기입한 JSON 형식의 코드입니다. (도움말: [TCP School -JSON 구조](http://tcpschool.com/json/json_basic_structure))
 
 #### 옵션
 각각의 검색조건들은 `{ }`(대괄호)안에 쓰이며, 아래와 같은 설정값을 가집니다.
