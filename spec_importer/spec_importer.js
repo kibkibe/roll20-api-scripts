@@ -5,13 +5,12 @@
 const si_setting = {
 	// option: 검색에 사용할 조건들과 검색결과를 적용할 속성들을 형식에 맞춰 입력합니다.
 	// 룰별 db_list코드 공유페이지 https://docs.google.com/spreadsheets/d/1GXRU2gXd7rhXyf60cvU9OYC8vGGxOO8Iwm0XNO0hRms/edit#gid=5872866
-	db_list:[
+	db_list:
 	/* DB리스트 시작 */
-	{data_handout:'아이템일람', input_attr:"relation_name_01", output_attrs:"relation_01"},
+	[{data_handout:'아이템일람', input_attr:"relation_name_01", output_attrs:"relation_01"},
 	{data_handout:'마법일람', input_attr:"Magic_*id*_Name", output_attrs:"Magic_*id*_Types,Magic_*id*_Assigned_Skill,Magic_*id*_Target,Magic_*id*_Cost,Magic_*id*_Effect,Magic_*id*_Recite"},
-	{data_handout:'마법일람', input_attr:"repeating_acitems_*id*_Magic_Name", output_attrs:"repeating_acitems_*id*_Magic_Types,repeating_acitems_*id*_Magic_Assigned_Skill,repeating_acitems_*id*_Magic_Target,repeating_acitems_*id*_Magic_Cost,repeating_acitems_*id*_Magic_Effect,repeating_acitems_*id*_Magic_Recite"}
+	{data_handout:'마법일람', input_attr:"repeating_acitems_*id*_Magic_Name", output_attrs:"repeating_acitems_*id*_Magic_Types,repeating_acitems_*id*_Magic_Assigned_Skill,repeating_acitems_*id*_Magic_Target,repeating_acitems_*id*_Magic_Cost,repeating_acitems_*id*_Magic_Effect,repeating_acitems_*id*_Magic_Recite"}]
 	/* DB리스트 끝 */
-	]
 }
 // /define: option
     
