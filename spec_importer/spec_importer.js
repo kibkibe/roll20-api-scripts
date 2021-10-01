@@ -3,7 +3,7 @@
 
 // define: option
 const si_setting = {
-	// option: 변경을 감지할 속성을 목록 형태로 지정합니다.
+	// option: 검색에 사용할 조건들과 검색결과를 적용할 속성들을 형식에 맞춰 입력합니다.
 	// 룰별 db_list코드 공유페이지 https://docs.google.com/spreadsheets/d/1GXRU2gXd7rhXyf60cvU9OYC8vGGxOO8Iwm0XNO0hRms/edit#gid=5872866
 	db_list:[
 	/* DB리스트 시작 */
