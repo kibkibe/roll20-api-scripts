@@ -1,5 +1,5 @@
 /* https://github.com/kibkibe/roll20-api-scripts/tree/master/spec_importer */
-/* (spec_importer.js) 211003 코드 시작 */
+/* (spec_importer.js) 211006 코드 시작 */
 
 // define: option
 const si_setting = {
@@ -7,7 +7,7 @@ const si_setting = {
 	// 룰별 db_list코드 공유페이지 https://docs.google.com/spreadsheets/d/1GXRU2gXd7rhXyf60cvU9OYC8vGGxOO8Iwm0XNO0hRms/edit#gid=5872866
 	db_list:
 	/* DB리스트 시작 */
-	[{data_handout:'아이템일람', input_attr:"relation_name_01", output_attrs:"relation_01"},
+	[{data_handout:'아이템일람', input_attr:"relation_name_*id*", output_attrs:"relation_*id*"},
 	{data_handout:'마법일람', input_attr:"Magic_*id*_Name", output_attrs:"Magic_*id*_Types,Magic_*id*_Assigned_Skill,Magic_*id*_skillTarget,Magic_*id*_Cost,Magic_*id*_Effect,Magic_*id*_Recite"},
 	{data_handout:'마법일람', input_attr:"repeating_acitems_*id*_Magic_Name", output_attrs:"repeating_acitems_*id*_Magic_Types,repeating_acitems_*id*_Magic_Assigned_Skill,repeating_acitems_*id*_Magic_skillTarget,repeating_acitems_*id*_Magic_Cost,repeating_acitems_*id*_Magic_Effect,repeating_acitems_*id*_Magic_Recite"}]
 	/* DB리스트 끝 */
@@ -91,4 +91,4 @@ function check_spec(obj) {
 	}
 }
 // /define: global function
-/* (spec_importer.js) 211003 코드 종료 */
+/* (spec_importer.js) 211006 코드 종료 */
