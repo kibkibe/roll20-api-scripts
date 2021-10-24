@@ -166,68 +166,68 @@ if (msg.type == "api"){
                         }
                     }
                 }
-        }
+        	}
 
-        if (dice[0].length < 1 && dice[2].length < 1) {
-            sendChat('error','/w GM 대표 플롯 영역 내에 공개된 다이스가 없습니다.',null,{noarchive:true});
-            return;
-        }
-            
-        for (var s=0;s<dice.length;s++) {
-            
-            dice[s].sort(function (a, b) { 
-                return a.get('name') < b.get('name') ? -1 : a.get('name') > b.get('name') ? 1 : 0;
-            });
-        }
-        
-        var match_dice = function(dice1,dice2,concentrateIdx) {
-            
-            for (var i=0;i<dice1.length;i++) {
-                for (var j=0;j<dice2.length;j++) {
-                    if (dice1[i].get('name') === '0') {
-                        dice1[i].set({name:dice1[i].get('name')+'!',showplayers_name:false,showname:false});
-                        break;
-                    } else if (dice2[j].get('name') === '0') {
-                        dice2[j].set({name:dice2[j].get('name')+'!',showplayers_name:false,showname:false});
-                    } else if (dice1[i].get('name')===dice2[j].get('name') && !dice1[i].get('name').includes('!') && !dice2[j].get('name').includes('!')) {
-                        if (concentrateIdx != 0) {
-                        dice1[i].set({name:dice1[i].get('name')+'!',showplayers_name:false,showname:false});
-                        }
-                        if (concentrateIdx != 2) {
-                        dice2[j].set({name:dice2[j].get('name')+'!',showplayers_name:false,showname:false});
-                        }
-                    }
-                }
-            }
-        }
-            
-        match_dice(dice[0],dice[2],concentrateIdx); //d1 vs d2
-        match_dice(dice[0],dice[3],concentrateIdx!=0?-1:0) //d1 vs o2
-        match_dice(dice[2],dice[1],concentrateIdx!=2?-1:0) //d2 vs o1
-        match_dice(dice[1],dice[3],-1) //o1 vs o2
-        
-        let result = "";
-        
-        for (var i=0;i<4;i++) {
-            if (dice[i].length > 0) {
-                result += "<div>";
-                result += (i%2==0 ? "" : "+");
-                dice[i].forEach(die => {
-                    result += "<img src='" + die.get('imgsrc') + "' style='";
-                    result += (i%2==0 ? md_setting.style_delegate :  md_setting.style_observer);
-                    result += (die.get('name').includes('!') ? md_setting.style_broken : "") +"'>";
-                });
-                result += "</div>";
-            }
-            result += (i==1? "<div style='margin:10px 0px 10px 0px;'>vs</div>":"");
-        }
-        
-        sendChat("",result);
+			if (dice[0].length < 1 && dice[2].length < 1) {
+				sendChat('error','/w GM 대표 플롯 영역 내에 공개된 다이스가 없습니다.',null,{noarchive:true});
+				return;
+			}
+				
+			for (var s=0;s<dice.length;s++) {
+				
+				dice[s].sort(function (a, b) { 
+					return a.get('name') < b.get('name') ? -1 : a.get('name') > b.get('name') ? 1 : 0;
+				});
+			}
+			
+			var match_dice = function(dice1,dice2,concentrateIdx) {
+				
+				for (var i=0;i<dice1.length;i++) {
+					for (var j=0;j<dice2.length;j++) {
+						if (dice1[i].get('name') === '0') {
+							dice1[i].set({name:dice1[i].get('name')+'!',showplayers_name:false,showname:false});
+							break;
+						} else if (dice2[j].get('name') === '0') {
+							dice2[j].set({name:dice2[j].get('name')+'!',showplayers_name:false,showname:false});
+						} else if (dice1[i].get('name')===dice2[j].get('name') && !dice1[i].get('name').includes('!') && !dice2[j].get('name').includes('!')) {
+							if (concentrateIdx != 0) {
+							dice1[i].set({name:dice1[i].get('name')+'!',showplayers_name:false,showname:false});
+							}
+							if (concentrateIdx != 2) {
+							dice2[j].set({name:dice2[j].get('name')+'!',showplayers_name:false,showname:false});
+							}
+						}
+					}
+				}
+			}
+				
+			match_dice(dice[0],dice[2],concentrateIdx); //d1 vs d2
+			match_dice(dice[0],dice[3],concentrateIdx!=0?-1:0) //d1 vs o2
+			match_dice(dice[2],dice[1],concentrateIdx!=2?-1:0) //d2 vs o1
+			match_dice(dice[1],dice[3],-1) //o1 vs o2
+			
+			let result = "";
+			
+			for (var i=0;i<4;i++) {
+				if (dice[i].length > 0) {
+					result += "<div>";
+					result += (i%2==0 ? "" : "+");
+					dice[i].forEach(die => {
+						result += "<img src='" + die.get('imgsrc') + "' style='";
+						result += (i%2==0 ? md_setting.style_delegate :  md_setting.style_observer);
+						result += (die.get('name').includes('!') ? md_setting.style_broken : "") +"'>";
+					});
+					result += "</div>";
+				}
+				result += (i==1? "<div style='margin:10px 0px 10px 0px;'>vs</div>":"");
+			}
+			
+			sendChat("",result);
 
-    } catch (err) {
-        sendChat('error','/w GM '+err,null,{noarchive:true});
-    }
-}
+		} catch (err) {
+			sendChat('error','/w GM '+err,null,{noarchive:true});
+		}
+	}
 	// /on.chat:message:api
 }});
 
