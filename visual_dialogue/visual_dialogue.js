@@ -544,8 +544,7 @@ const clearTextWithout = function(name_txt, dial_txt) {
 		(Math.abs(obj.get("left") - dial_txt.get('left')) < 100 && Math.abs(obj.get("top") - dial_txt.get('top')) < 100)));
 	});
 	filtered_txt.forEach(txt => {
-		log(txt);
-		//txt.remove();
+		txt.remove();
 	});
 }
 
