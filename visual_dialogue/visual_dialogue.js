@@ -1,5 +1,5 @@
 /* https://github.com/kibkibe/roll20-api-scripts/tree/master/visual_dialogue */
-/* (visual_dialogue.js) 210627 코드 시작 */
+/* (visual_dialogue.js) 211031 코드 시작 */
 
 // define: global constant
 state.api_tag = "<a href=\"#vd-permitted-api-chat\"></a>";
@@ -342,8 +342,7 @@ const showDialogue = function() {
         text_name.remove();
         text_name = null;
     }
-    if ((text_dialogue && (text_dialogue.get('font_size') != font_size || text_dialogue.get('color') != font_color))
-    || (text_dialogue && text_dialogue.get('_pageid') != current_page_id)) {
+    if (text_dialogue && text_dialogue.get('_pageid') != current_page_id) {
         text_dialogue.remove();
         text_dialogue = null;
     } 
@@ -452,23 +451,23 @@ const showDialogue = function() {
         split.splice(0,0,' ');
     }
     split.push(blank_dialogue);
-    text_name.set({text:name,left:bg_name.get('left'),
+    text_name.set({text:name,left:bg_name.get('left'),font_size: vd_setting['name_font_size'],color: vd_setting['name_font_color'],
     top:bg_name.get('top')+vd_setting['name_font_size']*vd_setting['line_height']/2});
-    text_dialogue.set({text:split.join('\n'),
+    text_dialogue.set({text:split.join('\n'),font_size: font_size, color: font_color,
     left: msg.type == 'desc' ? bg_panel.get('left'):bg_dialogue.get('left'),
     top: msg.type == 'desc'? bg_panel.get('top'):bg_dialogue.get('top')});
 
-    showHideDecorations('vd_deco',msg.type != 'desc');
-    showHideDecorations('vd_panel',true);
-
-    toFront(bg_panel);
     toFront(text_name);
     toFront(text_dialogue);
     setTimeout(() => {
-        toFront(bg_panel);
+
+		showHideDecorations('vd_panel',true);
+		showHideDecorations('vd_deco',msg.type != 'desc');
         toFront(text_name);
         toFront(text_dialogue);
     }, 100);
+
+	clearTextWithout(text_name, text_dialogue);
 
     const ignore_list = vd_setting.ignore_list.replace(/, /g,',').replace(/ ,/g,',').split(',');
     if (msg.type != "desc" && ignore_list.indexOf(msg.who) < 0) {
@@ -528,13 +527,26 @@ const showDialogue = function() {
                     current_token.set({tint_color:'transparent',gmnotes:Date.now(),layer:"map"});
                 }, 100);
             }
-        } else {
+        } else if (current_token) {
             toFront(current_token);
             current_token.set({tint_color:'transparent',gmnotes:Date.now()});
         }
     }
 	state.last_displayed_time = new Date().getTime();
     setTimeout(showNextDialogue, Math.max(vd_setting.min_showtime, str.length * vd_setting.showtime_ratio));
+}
+
+const clearTextWithout = function(name_txt, dial_txt) {
+	let filtered_txt = filterObjs(function(obj) {
+		return (obj.get('_type') == 'text' && obj.get("_pageid") == name_txt.get('_pageid')
+		&& obj.get("_id") != name_txt.get('_id') && obj.get("_id") != dial_txt.get('_id')
+		&& ((Math.abs(obj.get("left") - name_txt.get('left')) < 100 && Math.abs(obj.get("top") - name_txt.get('top')) < 100) ||
+		(Math.abs(obj.get("left") - dial_txt.get('left')) < 100 && Math.abs(obj.get("top") - dial_txt.get('top')) < 100)));
+	});
+	filtered_txt.forEach(txt => {
+		log(txt);
+		//txt.remove();
+	});
 }
 
 const updateMacro = function(obj) {
@@ -582,6 +594,7 @@ const showHideDecorations = function(name, show) {
                 const wh = itm.get('gmnotes').split('/');
                 itm.set({width:parseInt(wh[0]),height:parseInt(wh[1]),layer:'objects'});
             }
+			toFront(itm);
         } else {
             if (itm.get('gmnotes').length == 0) {
                 itm.set({gmnotes:itm.get('width')+"/"+itm.get('height')});
@@ -675,4 +688,4 @@ const arrangeStandings = function(addNew) {
     }
 }
 // /define: global function
-/* (visual_dialogue.js) 210627 코드 종료 */
+/* (visual_dialogue.js) 211031 코드 종료 */
