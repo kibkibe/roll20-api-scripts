@@ -68,11 +68,12 @@ function check_spec(obj) {
 								const attr = output_attrs[j];
 								let condition = {type:'attribute',name:id?attr.replace('*id*',id):attr,characterid:obj.get('_characterid')};
 								let attr_obj = findObjs(condition);
-								condition.current = item[j+1];
 								if (attr_obj.length == 0) {
 									let attr = createObj('attribute',condition);
+									condition.current = item[j+1];
 									attr.setWithWorker(condition);
 								} else {
+									condition.current = item[j+1];
 									attr_obj[0].setWithWorker(condition);
 									for (let k = 1; k < attr_obj.length; k++) {
 										attr_obj[k].remove();
