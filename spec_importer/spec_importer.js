@@ -1,5 +1,5 @@
 /* https://github.com/kibkibe/roll20-api-scripts/tree/master/spec_importer */
-/* (spec_importer.js) 211006 코드 시작 */
+/* (spec_importer.js) 211119 코드 시작 */
 
 // define: option
 const si_setting = {
@@ -68,12 +68,12 @@ function check_spec(obj) {
 								const attr = output_attrs[j];
 								let condition = {type:'attribute',name:id?attr.replace('*id*',id):attr,characterid:obj.get('_characterid')};
 								let attr_obj = findObjs(condition);
-								console.log(attr_obj);
 								condition.current = item[j+1];
 								if (attr_obj.length == 0) {
-									createObj('attribute',condition);
+									let attr = createObj('attribute',condition);
+									attr.setWithWorker(condition);
 								} else {
-									attr_obj[0].set(condition);
+									attr_obj[0].setWithWorker(condition);
 									for (let k = 1; k < attr_obj.length; k++) {
 										attr_obj[k].remove();
 									}
@@ -86,9 +86,7 @@ function check_spec(obj) {
 		}
 									
 	} catch (error) {
-		log(error);
-		log(target);
 	}
 }
 // /define: global function
-/* (spec_importer.js) 211006 코드 종료 */
+/* (spec_importer.js) 211119 코드 종료 */
