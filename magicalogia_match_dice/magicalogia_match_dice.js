@@ -1,5 +1,5 @@
 /* https://github.com/kibkibe/roll20-api-scripts/tree/master/magicalogia_match_dice */
-/* (magicalogia_match_dice.js) 210505 코드 시작 */
+/* (magicalogia_match_dice.js) 211121 코드 시작 */
 
 // define: option
 let md_setting = {
@@ -11,7 +11,7 @@ let md_setting = {
 	style_observer: "width:30px;height:30px;",
 	// option: 대표/입회인 주사위 중 상쇄되어 파괴된 주사위의 표시 스타일(CSS)을 설정합니다.
 	style_broken: "opacity:0.3;",
-	// option: 매칭을 GM만 실행할 수 있게 할지 (true) 플레이어도 할 수 있게 할지 (false) 설정합니다.
+	// option: 이 명령어를 GM만 실행할 수 있게 할지 (true) 플레이어도 사용할 수 있게 할지 (false) 설정합니다.
 	is_gm_only: true
 };
 // /define: option
@@ -105,7 +105,7 @@ on("chat:message", function(msg)
 {
 if (msg.type == "api"){
 	// on.chat:message:api
-    if (msg.content.indexOf("!match_dice") === 0 && (!md_setting.is_gm_only || (msg.playerid == 'API' || playerIsGM(msg.playerid)))) {
+    if ((msg.content.indexOf("!match_dice") === 0 || msg.content.indexOf("!clear_dice") === 0) && (!md_setting.is_gm_only || (msg.playerid == 'API' || playerIsGM(msg.playerid)))) {
         try {
             let deck = findObjs({ _type: 'deck', name: 'Dice'})[0];
             if (!deck) {
@@ -123,106 +123,115 @@ if (msg.type == "api"){
                 let model = findObjs({ _type: "card", _deckid: deck.get('_id'), _id:obj.get('_cardid')})[0];
                 
                 if (model) {
-                    var dname = model.get('name');
-                    if (flip && (obj.get('currentSide') == 1 || dname == "?")) {
-                        let img = obj.get('sides').split('|')[0].replace('%3A',':').replace('%3F','?').replace('max','thumb').replace('med','thumb');
-                        if (dname == "?") {
-                            randomDice(obj);
-                        } else {
-                            obj.set({currentSide:0,imgsrc:img,showname:false,showplayers_name:false});
-                        }
-                    }
-					
-					if (obj.get('currentSide') == 0) {
-                        if (dname != "?") {
-                            obj.set('name', dname);
-                        } else {
-                            obj.set('name', obj.get('name').replace('!',''));
+					if (msg.content.indexOf("!match_dice") === 0) {
+
+						var dname = model.get('name');
+						if (flip && (obj.get('currentSide') == 1 || dname == "?")) {
+							let img = obj.get('sides').split('|')[0].replace('%3A',':').replace('%3F','?').replace('max','thumb').replace('med','thumb');
+							if (dname == "?") {
+								randomDice(obj);
+							} else {
+								obj.set({currentSide:0,imgsrc:img,showname:false,showplayers_name:false});
+							}
 						}
-                        let left = parseInt(obj.get('left'));
-                        let top = parseInt(obj.get('top'));
-                        let width = parseInt(obj.get('width'));
-                        let height = parseInt(obj.get('height'));
-                        const margin = 10;
-                        let stop = false;
-                        for (var z=0;z<areas.length;z++) {
-                            for(var x=0;x<areas[z].length;x++) {
-                                let area = areas[z][x];
-                                if (area.get('left')-area.get('width')/2-margin<=left-width/2 &&
-                                area.get('top')-area.get('height')/2-margin<=top-height/2 &&
-                                area.get('top')+area.get('height')/2+margin>= top+height/2 &&
-                                area.get('left')+area.get('width')/2+margin>= left+width/2) {
-                                    if (obj.get('name') === '0') {
-                                        concentrateIdx = z;
-                                    }
-                                    dice[z].push(obj);
-                                    stop = true;
-                                    break;
-                                }
-                            }
-                            if (stop) {
-                                break;
-                            }
-                        }
-                    }
+						
+						if (obj.get('currentSide') == 0) {
+							if (dname != "?") {
+								obj.set('name', dname);
+							} else {
+								obj.set('name', obj.get('name').replace('!',''));
+							}
+							let left = parseInt(obj.get('left'));
+							let top = parseInt(obj.get('top'));
+							let width = parseInt(obj.get('width'));
+							let height = parseInt(obj.get('height'));
+							const margin = 10;
+							let stop = false;
+							for (var z=0;z<areas.length;z++) {
+								for(var x=0;x<areas[z].length;x++) {
+									let area = areas[z][x];
+									if (area.get('left')-area.get('width')/2-margin<=left-width/2 &&
+									area.get('top')-area.get('height')/2-margin<=top-height/2 &&
+									area.get('top')+area.get('height')/2+margin>= top+height/2 &&
+									area.get('left')+area.get('width')/2+margin>= left+width/2) {
+										if (obj.get('name') === '0') {
+											concentrateIdx = z;
+										}
+										dice[z].push(obj);
+										stop = true;
+										break;
+									}
+								}
+								if (stop) {
+									break;
+								}
+							}
+						}
+					} else if (msg.content.indexOf("!clear_dice") === 0)  {
+						if (obj.get('controlledby') == 'all' || !msg.content.includes('remain_gm_dice')) {
+							obj.remove();
+						}
+					}
                 }
         	}
+			if (msg.content.indexOf("!match_dice") === 0) {
 
-			if (dice[0].length < 1 && dice[2].length < 1) {
-				sendChat('error','/w GM 대표 플롯 영역 내에 공개된 다이스가 없습니다.',null,{noarchive:true});
-				return;
-			}
+				if (dice[0].length < 1 && dice[2].length < 1) {
+					sendChat('error','/w GM 대표 플롯 영역 내에 공개된 다이스가 없습니다.',null,{noarchive:true});
+					return;
+				}
+					
+				for (var s=0;s<dice.length;s++) {
+					
+					dice[s].sort(function (a, b) { 
+						return a.get('name') < b.get('name') ? -1 : a.get('name') > b.get('name') ? 1 : 0;
+					});
+				}
 				
-			for (var s=0;s<dice.length;s++) {
-				
-				dice[s].sort(function (a, b) { 
-					return a.get('name') < b.get('name') ? -1 : a.get('name') > b.get('name') ? 1 : 0;
-				});
-			}
-			
-			var match_dice = function(dice1,dice2,concentrateIdx) {
-				
-				for (var i=0;i<dice1.length;i++) {
-					for (var j=0;j<dice2.length;j++) {
-						if (dice1[i].get('name') === '0') {
-							dice1[i].set({name:dice1[i].get('name')+'!',showplayers_name:false,showname:false});
-							break;
-						} else if (dice2[j].get('name') === '0') {
-							dice2[j].set({name:dice2[j].get('name')+'!',showplayers_name:false,showname:false});
-						} else if (dice1[i].get('name')===dice2[j].get('name') && !dice1[i].get('name').includes('!') && !dice2[j].get('name').includes('!')) {
-							if (concentrateIdx != 0) {
-							dice1[i].set({name:dice1[i].get('name')+'!',showplayers_name:false,showname:false});
-							}
-							if (concentrateIdx != 2) {
-							dice2[j].set({name:dice2[j].get('name')+'!',showplayers_name:false,showname:false});
+				var match_dice = function(dice1,dice2,concentrateIdx) {
+					
+					for (var i=0;i<dice1.length;i++) {
+						for (var j=0;j<dice2.length;j++) {
+							if (dice1[i].get('name') === '0') {
+								dice1[i].set({name:dice1[i].get('name')+'!',showplayers_name:false,showname:false});
+								break;
+							} else if (dice2[j].get('name') === '0') {
+								dice2[j].set({name:dice2[j].get('name')+'!',showplayers_name:false,showname:false});
+							} else if (dice1[i].get('name')===dice2[j].get('name') && !dice1[i].get('name').includes('!') && !dice2[j].get('name').includes('!')) {
+								if (concentrateIdx != 0) {
+								dice1[i].set({name:dice1[i].get('name')+'!',showplayers_name:false,showname:false});
+								}
+								if (concentrateIdx != 2) {
+								dice2[j].set({name:dice2[j].get('name')+'!',showplayers_name:false,showname:false});
+								}
 							}
 						}
 					}
 				}
-			}
+					
+				match_dice(dice[0],dice[2],concentrateIdx); //d1 vs d2
+				match_dice(dice[0],dice[3],concentrateIdx!=0?-1:0) //d1 vs o2
+				match_dice(dice[2],dice[1],concentrateIdx!=2?-1:0) //d2 vs o1
+				match_dice(dice[1],dice[3],-1) //o1 vs o2
 				
-			match_dice(dice[0],dice[2],concentrateIdx); //d1 vs d2
-			match_dice(dice[0],dice[3],concentrateIdx!=0?-1:0) //d1 vs o2
-			match_dice(dice[2],dice[1],concentrateIdx!=2?-1:0) //d2 vs o1
-			match_dice(dice[1],dice[3],-1) //o1 vs o2
-			
-			let result = "";
-			
-			for (var i=0;i<4;i++) {
-				if (dice[i].length > 0) {
-					result += "<div>";
-					result += (i%2==0 ? "" : "+");
-					dice[i].forEach(die => {
-						result += "<img src='" + die.get('imgsrc') + "' style='";
-						result += (i%2==0 ? md_setting.style_delegate :  md_setting.style_observer);
-						result += (die.get('name').includes('!') ? md_setting.style_broken : "") +"'>";
-					});
-					result += "</div>";
+				let result = "";
+				
+				for (var i=0;i<4;i++) {
+					if (dice[i].length > 0) {
+						result += "<div>";
+						result += (i%2==0 ? "" : "+");
+						dice[i].forEach(die => {
+							result += "<img src='" + die.get('imgsrc') + "' style='";
+							result += (i%2==0 ? md_setting.style_delegate :  md_setting.style_observer);
+							result += (die.get('name').includes('!') ? md_setting.style_broken : "") +"'>";
+						});
+						result += "</div>";
+					}
+					result += (i==1? "<div style='margin:10px 0px 10px 0px;'>vs</div>":"");
 				}
-				result += (i==1? "<div style='margin:10px 0px 10px 0px;'>vs</div>":"");
+				
+				sendChat("",result);
 			}
-			
-			sendChat("",result);
 
 		} catch (err) {
 			sendChat('error','/w GM '+err,null,{noarchive:true});
@@ -265,4 +274,4 @@ function getPlotAreas() {
 }
 // /define: global function
 
-/* (magicalogia_match_dice.js) 210505 코드 종료 */
+/* (magicalogia_match_dice.js) 211121 코드 종료 */
