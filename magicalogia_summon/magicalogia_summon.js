@@ -1,5 +1,5 @@
 /* https://github.com/kibkibe/roll20-api-scripts/tree/master/magicalogia_summon */
-/* (magicalogia_summon.js) 210626 코드 시작 */
+/* (magicalogia_summon.js) 211121 코드 시작 */
 
 // define: option
 const ms_setting = {
@@ -8,18 +8,17 @@ const ms_setting = {
 	// option: 원형을 소환할 페이지의 이름을 기입해주세요. 여러곳에서 사용할 경우 콤마(,)로 구분해서 입력합니다.
 	// 페이지가 여럿일 경우 Player 북마크가 설정된 페이지에 우선적으로 소환됩니다.
 	page_list: "spellbound",
-	// option: 원형의 타입명을 표시할지 (true) 생략할지 (false) 설정합니다.
-	display_type: true,
-	// option: 원형의 특기를 표시할지 (true) 생략할지 (false) 설정합니다.
-	display_skill: true,
+	// option: 토큰의 이름표에 표시할 내용들을 설정합니다. 이름표를 표시하지 않으려면 공백("")으로 설정합니다. (#skill:특기 #type:타입 #effect:보유 이펙트)
+	name_format: "#skill의 #type",
+	// option: 토큰의 툴팁에 표시할 내용들을 설정합니다. 툴팁을 사용하지 않으려면 공백("")으로 설정합니다. (#skill:특기 #type:타입 #effect:보유 이펙트)
+	tooltip_format: "#effect",
 	// option: 원형의 이펙트를 토큰 마커로 표시할지 (true) 표시하지 않을지 (false) 설정합니다.
 	use_effect_marker: true,
-	// option: use_effect_marker가 true일 때: 이펙트의 숫자를 마커 위에 텍스트로 표시할지(true) 숫자가 포함된 이미지를 불러올지(false) 설정합니다.
-	// use_effect_marker가 false일 때: 원형토큰의 이름에 이펙트를 기재할지(true) 생략할지(false) 설정합니다.
-	use_text: false,
-	// option: 원형토큰의 이름에 이펙트를 기재하는 옵션일 경우, 이펙트 사이를 분리할 문자열을 설정합니다.	
+	// option: 이펙트의 숫자를 마커 위에 텍스트로 표시할지(true) 숫자가 포함된 이미지를 불러올지(false) 설정합니다. (use_effect_marker가 true일 때만 유효)
+	use_text_marker: false,
+	// option: 원형토큰의 이름이나 툴팁에 이펙트를 기재할 경우, 이펙트 사이를 분리할 문자열을 설정합니다.	
 	div_text: ",",
-	// option: 사용할 이펙트 목록을 설정합니다.
+	// option: 사용할 이펙트 목록을 설정합니다. (자세한 옵션은 매뉴얼 페이지를 참조해주세요)
 	effect_list: [ 
 		{marker:'block',display_name:'블',keyword:'block,bl,블록,블',use_bar:true},
 		{marker:'damage',display_name:'추댐',keyword:'damage,da,추가대미지,대미지,추가데미지,데미지,추댐,추뎀,추'},
@@ -32,16 +31,16 @@ const ms_setting = {
 		{marker:'spellguard',display_name:'가',keyword:'spellguard,sp,스펠가드,가,가드,스'}],
 	// option: 원형의 기본 습득 이펙트를 입력합니다. 룰북 내의 데이터이기 때문에 무료 배포하는 코드에 포함할 수 없으므로 해당 내용은 수기입해주시기 바랍니다. (ex: 'block1,damage1')
 	archetype_list: [
-		{name:'정령', effect:''},
-		{name:'마검', effect:''},
-		{name:'악몽', effect:''},
-		{name:'기사', effect:''},
-		{name:'처녀', effect:''},
-		{name:'전차', effect:''},
-		{name:'마왕', effect:''},
-		{name:'군단', effect:''},
-		{name:'왕국', effect:''},
-		{name:'마신', effect:''},
+		{name:'정령', effect:'block2'},
+		{name:'마검', effect:'damage1'},
+		{name:'악몽', effect:'minus2'},
+		{name:'기사', effect:'block1,damage1,boost1'},
+		{name:'처녀', effect:'block1,cast,word7'},
+		{name:'전차', effect:'block2,mana1,plus2'},
+		{name:'마왕', effect:'block2,damage2,boost1'},
+		{name:'군단', effect:'block3,damage1,word6'},
+		{name:'왕국', effect:'block3,mana1,cast,boost2'},
+		{name:'마신', effect:'block4,damage3,plus3,minus3,cast'},
 		{name:'나락문', effect:''}
 ],
 	// option: 원형이 소환되면 기본적으로 배치될 가로 위치를 지정합니다.
@@ -52,8 +51,6 @@ const ms_setting = {
 	opt_width: 90,
 	// option: 소환할 원형 토큰의 세로크기를 지정합니다.
 	opt_height: 90,
-	// option: 이름표 사용 여부(true/false)를 지정합니다.
-	opt_showname: true,
 	// option: Bar가 표시될 기본 위치를 지정합니다. (선택: 'top','overlap_top’,‘overlap_bottom’,'below')
 	bar_location: ''
 };
@@ -84,7 +81,7 @@ if (msg.type == "api"){
 				top: ms_setting.opt_top+Math.random()*70,
 				width: ms_setting.opt_width,
 				height: ms_setting.opt_height,
-				showname: ms_setting.opt_showname,
+				showname: ms_setting.name_format ? true: false,
 				showplayers_name: true,
 				bar1_value: 0,
 				controlledby:"all",
@@ -113,17 +110,20 @@ if (msg.type == "api"){
 					split += "," + section[3]
 				}
 			}
+
+			var archetype_deck = findObjs({ _type: 'deck', name: 'archetype'})[0];
+			var archetype = findObjs({ _type: "card", _deckid: archetype_deck.get('_id'), name:type});
+			if (archetype.length > 0) {
+
+				const token_markers = JSON.parse(Campaign().get("token_markers"));
+				if (ms_setting.bar_location == 'overlap_top' || ms_setting.bar_location == 'overlap_bottom' || ms_setting.bar_location == 'below') {
+					opt.bar_location = ms_setting.bar_location;
+				} else {
+					opt.bar_location = null;
+				}
 				
-			opt.name = (skill && ms_setting.display_skill ? skill+ (type && ms_setting.display_type ? "의 ":"") : "") + (type && ms_setting.display_type ? type:'');
-			const token_markers = JSON.parse(Campaign().get("token_markers"));
-			if (ms_setting.bar_location == 'overlap_top' || ms_setting.bar_location == 'overlap_bottom' || ms_setting.bar_location == 'below') {
-				opt.bar_location = ms_setting.bar_location;
-			} else {
-				opt.bar_location = null;
-			}
-			
-			if (ms_setting.use_effect_marker || ms_setting.use_text) {
 				split = split.split(/\s*,\s*/g);
+				let effect_str = "";
 				for (let index = 0; index < split.length; index++) {
 					const element = split[index];
 					const effect = element.replace(/\d/g,'');
@@ -149,21 +149,21 @@ if (msg.type == "api"){
 								opt.showplayers_bar1 = true;
 							} else if (fx.non_numbering || (number && number.length > 0)) {
 								if (ms_setting.use_effect_marker) {
-									let marker = token_markers.find(mark => mark.name == fx.marker+(ms_setting.use_text?'':number));
+									let marker = token_markers.find(mark => mark.name == fx.marker+(ms_setting.use_text_marker?'':number));
 									if (!marker) {
 										if (default_tokens.indexOf(fx.marker) > -1) {
 											marker = {tag:fx.marker};
 										} else {
-											sendChat('error',"/w GM 사용할 수 있는 마커 중 이름이 **"+fx.marker+(ms_setting.use_text?'':number)+"**인 항목이 없습니다.",null,{noarchive:true});
+											sendChat('error',"/w GM 사용할 수 있는 마커 중 이름이 **"+fx.marker+(ms_setting.use_text_marker?'':number)+"**인 항목이 없습니다.",null,{noarchive:true});
 											return;
 										}
 									}
-									fx_obj.value = (ms_setting.use_text ?
+									fx_obj.value = (ms_setting.use_text_marker ?
 										(marker.tag + (number.length>0?"@":'') + number) :
 										marker.tag);
-								} else if (ms_setting.use_text) {
-									fx_obj.value = fx.display_name+number;
 								}
+								effect_str += (effect_str.length>0?ms_setting.div_text:'') + fx.display_name+number;
+								
 								if (duplicated_index > -1) {
 									effects.splice(duplicated_index,1,fx_obj);
 								} else {
@@ -178,18 +178,11 @@ if (msg.type == "api"){
 						opt.statusmarkers += "," + element.value;
 					});
 					opt.statusmarkers = opt.statusmarkers.length > 0 ? opt.statusmarkers.substring(1) : '';
-				} else if (ms_setting.use_text) {
-					let str = "";
-					for (let j = 0; j < effects.length; j++) {
-						str += ms_setting.div_text + effects[j].value;
-					}
-					str = str.substring(1);
-					opt.name = opt.name + (opt.name.length > 0 ? "/" : "") + str;
-				}				
-			}
-			var archetype_deck = findObjs({ _type: 'deck', name: 'archetype'})[0];
-			var archetype = findObjs({ _type: "card", _deckid: archetype_deck.get('_id'), name:type});
-			if (archetype.length > 0) {
+				}
+				opt.name = ms_setting.name_format.replace("#skill",skill).replace("#type",type).replace("#effect",effect_str);
+				opt.tooltip = ms_setting.tooltip_format.replace("#skill",skill).replace("#type",type).replace("#effect",effect_str);
+				log("tooltip:"+ms_setting.tooltip_format+"/"+opt.tooltip);
+				
 				opt.imgsrc = archetype[0].get('avatar').replace("med","thumb").replace("max","thumb");
 				opt.gmnotes = (skill ? skill : '') + "," + type;
 				createObj("graphic", opt);
@@ -271,4 +264,4 @@ if (msg.type == "api"){
 	// /on.chat:message:api
 }
 });
-/* (magicalogia_summon.js) 210626 코드 종료 */
+/* (magicalogia_summon.js) 211121 코드 종료 */
