@@ -1,5 +1,5 @@
 /* https://github.com/kibkibe/roll20-api-scripts/tree/master/spec_importer */
-/* (spec_importer.js) 211119 코드 시작 */
+/* (spec_importer.js) 211121 코드 시작 */
 
 // define: option
 const si_setting = {
@@ -31,22 +31,35 @@ on("change:attribute", function(obj, prev) {
 // define: global function
 function check_spec(obj) {
 	try {
-		if (obj.get('current')) {
-			let name = obj.get('name');
-			let target;
-			let id;
-			si_setting.db_list.forEach(item => {
-				const split = item.input_attr.split("*id*");
-				if (split.length != 2 && name == item.input_attr) {
-					id = null;
-					target = item;
-				} else if (name.startsWith(split[0]) && name.endsWith(split[1])) {
-					id = name.replace(split[0],'').replace(split[1],'');
-					target = item;
+		let name = obj.get('name');
+		let target;
+		let id;
+		si_setting.db_list.forEach(item => {
+			const split = item.input_attr.split("*id*");
+			if (split.length != 2 && name == item.input_attr) {
+				id = null;
+				target = item;
+			} else if (name.startsWith(split[0]) && name.endsWith(split[1])) {
+				id = name.replace(split[0],'').replace(split[1],'');
+				target = item;
+			}
+		});
+		if (target) {
+			const output_attrs = target.output_attrs.split(/\s*,\s*/);
+			if (!obj.get('current') || obj.get('current').length == 0) {
+				for (let j = 0; j < output_attrs.length; j++) {
+					const attr = output_attrs[j];
+					let condition = {type:'attribute',name:id?attr.replace('*id*',id):attr,characterid:obj.get('_characterid')};
+					let attr_obj = findObjs(condition);
+					if (attr_obj.length > 0) {
+						condition.current = "";
+						attr_obj[0].setWithWorker(condition);
+						for (let k = 1; k < attr_obj.length; k++) {
+							attr_obj[k].remove();
+						}
+					}
 				}
-			});
-			if (target) {
-				const output_attrs = target.output_attrs.split(/\s*,\s*/);
+			} else {
 				let dataset = findObjs({type:'handout',name:target.data_handout});
 				if (dataset.length == 0) {
 					sendChat("error","/w gm 저널에 이름이 '"+target.data_handout+"'인 핸드아웃이 없습니다.",null,{noarchive:true});
@@ -90,4 +103,4 @@ function check_spec(obj) {
 	}
 }
 // /define: global function
-/* (spec_importer.js) 211119 코드 종료 */
+/* (spec_importer.js) 211121 코드 종료 */
