@@ -1,5 +1,5 @@
 /* https://github.com/kibkibe/roll20-api-scripts/tree/master/magicalogia_mana_token */
-/* (magicalogia_mana_token.js) 210920 코드 시작 */
+/* (magicalogia_mana_token.js) 211121 코드 시작 */
 
 // define: global constant
 const charge_check = [
@@ -24,8 +24,10 @@ const mt_setting = {
 	// option: 장서 토큰의 아이콘을 속성당 대표이미지 하나만 사용할 경우, 모든 속성의 아이콘을 모아놓은 Rollable table의 이름을 지정합니다.
 	// (이 값은 user_single_icon나 use_sub_icon이 true일 때만 유효합니다. use_sub_icon이 true일 경우 장서 토큰의 아이콘은 collection_name에 지정된 이름의 테이블에서, 충전게이지 아이콘은 각 속성명의 테이블에서 가져옵니다.)
 	collection_name: '마소',
-	// option: 생성된 장서 토큰에 이름을 표시할지를 지정합니다. (true:표시/false:숨김)
-	show_name: true,
+	// option: 생성된 장서 토큰의 이름표에 장서의 이름을 표시할지를 지정합니다. (true:표시/false:숨김)
+	show_name: false,
+	// option: 생성된 장서 토큰의 툴팁에 장서의 이름을 표시할지를 지정합니다. (true:표시/false:숨김)
+	show_tooltip: true,
 	// option: 생성된 장서 토큰에 충전상태를 나타내는 Bar를 표시할지를 지정합니다. (true:표시/false:숨김)
 	show_bar: false,
 	// option: Bar를 표시할 경우 기본적으로 표시될 위치를 지정합니다. (선택: 'top','overlap_top’,‘overlap_bottom’,'below')
@@ -324,6 +326,7 @@ on("chat:message", function(msg){
                         sides: mt_setting.use_sub_icon ? '' : sides,
                         currentSide:0,
                         name: obj.name,
+						tooltip: mt_setting.show_tooltip ? obj.name : '',
                         playersedit_name: true,
                         showname: false,
                         bar1_value: current_charge.get('current'),
@@ -372,7 +375,6 @@ on("chat:message", function(msg){
 						});
 						let guage_token = createObj('graphic', setting);
 					}
-                    
                     if (mt_setting.show_bar) {
                         current_charge.set('max',getAttrByName(cha.id, "bas"));
                         token.set({bar1_max:getAttrByName(cha.id, "bas"), showplayers_bar1: true});
@@ -450,4 +452,4 @@ function check_charge(obj,prev) {
     }
 }
 // /define: global function
-/* (magicalogia_mana_token.js) 210920 코드 종료 */
+/* (magicalogia_mana_token.js) 211121 코드 종료 */
