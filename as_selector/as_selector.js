@@ -2,8 +2,8 @@
 /* (as_selector.js) 211122 코드 시작 */
 
 on("chat:message", function(msg){
-	// on.chat:message:api
     if (msg.type == "api"){
+		// on.chat:message:api
         if (msg.content.startsWith('!!') && playerIsGM(msg.playerid)) {
             const player = getObj('player',msg.playerid);
             const keyword = msg.content.replace('!!','');
@@ -25,7 +25,7 @@ on("chat:message", function(msg){
                 player.set('speakingas','character|'+cha[lastCheckedIdx].get('_id'));
             }
         }
+		// /on.chat:message:api
     }
-	// /on.chat:message:api
 });
 /* (as_selector.js) 211122 코드 종료 */
