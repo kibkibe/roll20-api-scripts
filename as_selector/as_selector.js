@@ -1,6 +1,5 @@
 /* https://github.com/kibkibe/roll20-api-scripts/tree/master/as_selector */
 /* (as_selector.js) 211122 코드 시작 */
-
 on("chat:message", function(msg){
     if (msg.type == "api"){
 		// on.chat:message:api
