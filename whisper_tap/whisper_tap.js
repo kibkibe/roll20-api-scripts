@@ -27,8 +27,8 @@ on('ready', function() {
 });
 
 on("chat:message", function(msg){
-	// on.chat:message:whisper
     if (msg.type == "whisper"){
+		// on.chat:message:whisper
 		const player = getObj('player',msg.playerid);
 		if (player && (playerIsGM(msg.playerid) || msg.target == 'gm')) {
 			const cha_name = playerIsGM(msg.playerid) ? msg.target_name : msg.who;
@@ -95,8 +95,8 @@ on("chat:message", function(msg){
 				},100);
 			});
 		}
+		// /on.chat:message:whisper
 	}
-	// /on.chat:message:whisper
 });
 
 // define: global function
