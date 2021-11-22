@@ -1,5 +1,5 @@
 /* https://github.com/kibkibe/roll20-api-scripts/tree/master/smallchat_split */
-/* (smallchat_split.js) 210725 코드 시작 */
+/* (smallchat_split.js) 211122 코드 시작 */
 
 // define: option
 let ss_setting = {
@@ -30,13 +30,6 @@ let ss_setting = {
 	letterspacing: 0.85
 }
 // /define: option
-
-on('ready', function() {
-	// on.ready
-    if (!state.smallchatlog) state.smallchatlog = [];
-    if (!state.smallchatonair) state.smallchatonair = [];
-	// /on.ready
-});
 
 on("chat:message", function(msg)
 {
@@ -197,19 +190,15 @@ if (msg.type == "api"){
 					if (final_split.length > ss_setting.onair_lines) {
 						final_split.splice(0,1);
 					}
-					state.smallchatonair.push(final_split.join("<br><i></i>"));
-					if (state.smallchatonair.length > 0) {
-						oa.set({notes: state.smallchatonair[0]});
-						state.smallchatonair.splice(0,1);
-					}
+					setTimeout(function(){
+						oa.set({notes: final_split.join("<br><i></i>")});
+					},100);
 				});
 			}
 			ho.get('notes',function(text) {
-				state.smallchatlog.push((text.length > 0 && text != 'null' ? text : "") + "<br><i></i>" + final_str);
-				if (state.smallchatlog.length > 0) {
-					ho.set({notes: state.smallchatlog[0]});
-					state.smallchatlog.splice(0,1);
-				}
+				setTimeout(function(){
+					ho.set({notes: (text.length > 0 && text != 'null' ? text : "") + "<br><i></i>" + final_str});
+				},100);
 			});
 		} catch (err) {
 			sendChat('error','/w GM '+err,null,{noarchive:true});
@@ -218,4 +207,4 @@ if (msg.type == "api"){
 	// /on.chat:message:api
 }
 });
-/* (smallchat_split.js) 210725 코드 종료 */
+/* (smallchat_split.js) 211122 코드 종료 */

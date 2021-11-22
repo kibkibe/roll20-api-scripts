@@ -7,7 +7,7 @@ state.api_tag = '<a href="#vd-permitted-api-chat"></a>';
 
 // define: option
 const aa_setting = {
-	// option: 토큰을 선택하지 않고 명령어를 사용했을 때 기본적으로 표시될 캐릭터의 이름을 설정합니다.
+	// option: 키워드 없이 명령어를 사용했을 때 기본적으로 표시될 캐릭터의 이름을 설정합니다.
 	master_name: "GM",
 	// option: 플레이어에게 권한이 있는 캐릭터도 자동선택의 대상에 포함할지(true) 제외할지(false) 설정합니다.
 	use_to_playable_character: false
