@@ -40,7 +40,7 @@ on("chat:message", function(msg){
 					ho[i].remove();
 				}
 			} else {
-				const cha = findObjs({type:'character',name:cha_name});
+				let cha = findObjs({type:'character',name:cha_name});
 				ho = createObj('handout',condition);
 				if (cha.length > 0) {
 					if (cha.length > 1) {
