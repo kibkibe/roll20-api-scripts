@@ -1,5 +1,5 @@
 /* https://github.com/kibkibe/roll20-api-scripts/tree/master/whisper_tap */
-/* (whisper_tap.js) 211122 코드 시작 */
+/* (whisper_tap.js) 211123 코드 시작 */
 
 // define: option
 const wt_setting = {
@@ -29,10 +29,21 @@ on('ready', function() {
 on("chat:message", function(msg){
     if (msg.type == "whisper"){
 		// on.chat:message:whisper
-		const player = getObj('player',msg.playerid);
-		if (player && (playerIsGM(msg.playerid) || msg.target == 'gm')) {
-			const cha_name = playerIsGM(msg.playerid) ? msg.target_name : msg.who;
-			let condition = {type:'handout',name:'귓속말('+cha_name+')'};
+		let sender = getObj('player',msg.playerid);
+		let cha = findObjs({type:'character',name:msg.who});
+		if ((sender || cha.length > 0) && (playerIsGM(msg.playerid) || msg.target == 'gm')) {
+			if (msg.playerid == 'API') {
+				const controller = cha[0].get('controlledby');
+				if (controller == 'all' || controller.split(',').length > 1) {
+					sendChat("error","/w gm " + msg.who + ' 캐릭터의 권한을 가진 플레이어가 2명 이상입니다. 이 채팅을 어느 귓속말 핸드아웃에 저장할지를 특정할 수 없습니다.',null,{noarchive:true});
+					return;
+				} else {
+					msg.playerid = cha[0].get('controlledby');
+					sender = getObj('player',msg.playerid);
+				}
+			}
+			const player = playerIsGM(msg.playerid) ? getObj('player',msg.target) : sender;
+			let condition = {type:'handout',controlledby:player.get('_id').substring(1,player.get('_id').length)};
 			let ho = findObjs(condition);
 			if (ho.length > 0) {
 				ho = ho[0];
@@ -40,20 +51,9 @@ on("chat:message", function(msg){
 					ho[i].remove();
 				}
 			} else {
-				let cha = findObjs({type:'character',name:cha_name});
+				condition.name = '귓속말(' + player.get('_displayname') + ')';
+				condition.inplayerjournals = player.get('_id');
 				ho = createObj('handout',condition);
-				if (cha.length > 0) {
-					if (cha.length > 1) {
-						sendChat('warning','/w "' + msg.who + '" 이름이 **' + cha_name + '**인 캐릭터가 ' + cha.length + '명 있습니다. 임의의 한 캐릭터를 기준으로 귓속말 핸드아웃의 권한을 부여합니다.',null,{noarchive:true});
-						if (!playerIsGM(msg.playerid)) {
-							sendChat('warning','/w gm 이름이 **' + cha_name + '**인 캐릭터가 ' + cha.length + '명 있습니다. 임의의 한 캐릭터를 기준으로 귓속말 핸드아웃의 권한을 부여합니다.',null,{noarchive:true});
-						}
-					}
-					cha = cha[0];
-					ho.set('inplayerjournals',cha.get('controlledby'));
-				} else {
-					ho.set('inplayerjournals',playerIsGM(msg.playerid)?msg.target:msg.playerid);
-				}
 			}
 
 			let filtered = msg.content;
@@ -79,7 +79,7 @@ on("chat:message", function(msg){
 			let final_str = "<span style='color:#aaaaaa;font-size:7pt;'>"
 					+ d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds()
 					+ "</span>" + "<br>"
-					+ (wt_setting.use_personal_color!=0?("<span style='color:"+player.get('color')+";'>"):"") + "<b>"
+					+ (wt_setting.use_personal_color!=0?("<span style='color:"+sender.get('color')+";'>"):"") + "<b>"
 					+ (playerIsGM(msg.playerid)?'GM':msg.who) + "</b>" + (wt_setting.use_personal_color===1?"</span>":"") + ": "
 					+ filtered + (wt_setting.use_personal_color===2?"</span>":"");
 
@@ -120,4 +120,4 @@ function reverseWhisper() {
 	}
 }
 // /define: global function
-/* (whisper_tap.js) 211122 코드 종료 */
+/* (whisper_tap.js) 211123 코드 종료 */
