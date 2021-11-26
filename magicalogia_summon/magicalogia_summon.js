@@ -1,5 +1,5 @@
 /* https://github.com/kibkibe/roll20-api-scripts/tree/master/magicalogia_summon */
-/* (magicalogia_summon.js) 211121 코드 시작 */
+/* (magicalogia_summon.js) 211127 코드 시작 */
 
 // define: option
 const ms_setting = {
@@ -31,16 +31,16 @@ const ms_setting = {
 		{marker:'spellguard',display_name:'가',keyword:'spellguard,sp,스펠가드,가,가드,스'}],
 	// option: 원형의 기본 습득 이펙트를 입력합니다. 룰북 내의 데이터이기 때문에 무료 배포하는 코드에 포함할 수 없으므로 해당 내용은 수기입해주시기 바랍니다. (ex: 'block1,damage1')
 	archetype_list: [
-		{name:'정령', effect:'block2'},
-		{name:'마검', effect:'damage1'},
-		{name:'악몽', effect:'minus2'},
-		{name:'기사', effect:'block1,damage1,boost1'},
-		{name:'처녀', effect:'block1,cast,word7'},
-		{name:'전차', effect:'block2,mana1,plus2'},
-		{name:'마왕', effect:'block2,damage2,boost1'},
-		{name:'군단', effect:'block3,damage1,word6'},
-		{name:'왕국', effect:'block3,mana1,cast,boost2'},
-		{name:'마신', effect:'block4,damage3,plus3,minus3,cast'},
+		{name:'정령', effect:''},
+		{name:'마검', effect:''},
+		{name:'악몽', effect:''},
+		{name:'기사', effect:''},
+		{name:'처녀', effect:''},
+		{name:'전차', effect:''},
+		{name:'마왕', effect:''},
+		{name:'군단', effect:''},
+		{name:'왕국', effect:''},
+		{name:'마신', effect:''},
 		{name:'나락문', effect:''}
 ],
 	// option: 원형이 소환되면 기본적으로 배치될 가로 위치를 지정합니다.
@@ -264,4 +264,4 @@ if (msg.type == "api"){
 	// /on.chat:message:api
 }
 });
-/* (magicalogia_summon.js) 211121 코드 종료 */
+/* (magicalogia_summon.js) 211127 코드 종료 */
