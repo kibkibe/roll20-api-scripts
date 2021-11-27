@@ -105,7 +105,7 @@ on("chat:message", function(msg)
 {
 if (msg.type == "api"){
 	// on.chat:message:api
-    if ((msg.content.indexOf("!match_dice") === 0 || msg.content.indexOf("!clear_dice") === 0) && (!md_setting.is_gm_only || (msg.playerid == 'API' || playerIsGM(msg.playerid)))) {
+    if ((msg.content.startsWith("!match_dice") || msg.content.startsWith("!clear_dice")) && (!md_setting.is_gm_only || (msg.playerid == 'API' || playerIsGM(msg.playerid)))) {
         try {
             let deck = findObjs({ _type: 'deck', name: 'Dice'})[0];
             if (!deck) {
@@ -123,7 +123,7 @@ if (msg.type == "api"){
                 let model = findObjs({ _type: "card", _deckid: deck.get('_id'), _id:obj.get('_cardid')})[0];
                 
                 if (model) {
-					if (msg.content.indexOf("!match_dice") === 0) {
+					if (msg.content.startsWith("!match_dice")) {
 
 						var dname = model.get('name');
 						if (flip && (obj.get('currentSide') == 1 || dname == "?")) {
@@ -167,14 +167,14 @@ if (msg.type == "api"){
 								}
 							}
 						}
-					} else if (msg.content.indexOf("!clear_dice") === 0)  {
+					} else if (msg.content.startsWith("!clear_dice"))  {
 						if (obj.get('controlledby') == 'all' || !msg.content.includes('remain_gm_dice')) {
 							obj.remove();
 						}
 					}
                 }
         	}
-			if (msg.content.indexOf("!match_dice") === 0) {
+			if (msg.content.startsWith("!match_dice")) {
 
 				if (dice[0].length < 1 && dice[2].length < 1) {
 					sendChat('error','/w GM 대표 플롯 영역 내에 공개된 다이스가 없습니다.',null,{noarchive:true});

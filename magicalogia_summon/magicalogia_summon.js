@@ -60,7 +60,7 @@ on("chat:message", function(msg)
 {
 if (msg.type == "api"){
 	// on.chat:message:api
-	if (msg.content.indexOf("!소환") == 0) { 
+	if (msg.content.startsWith("!소환")) { 
 		try {
 			let current_page;
 			const page_list = ms_setting.page_list.replace(/, /g,',').replace(/ ,/g,',').split(',');
@@ -192,7 +192,7 @@ if (msg.type == "api"){
 		} catch (err) {
 			sendChat('error','/w GM '+err,null,{noarchive:true});
 		}
-	} else if (msg.content.indexOf("!저항 ") == 0 || msg.content.indexOf("!저항목표 ") == 0) {
+	} else if (msg.content.startsWith("!저항 ") || msg.content.startsWith("!저항목표 ")) {
         try {
             const table = [
                 ['황금','대지','숲','길','바다','정적','비','폭풍','태양','천공','이계'],
@@ -260,7 +260,17 @@ if (msg.type == "api"){
         } catch (err) {
             sendChat('error','/w GM '+err,null,{noarchive:true});
         }
-    }
+    } else if (msg.content.startsWith("!원형삭제")) {
+
+		const archetype_deck = findObjs({ _type: 'deck', name: 'archetype'})[0];
+		const cards = findObjs({ _type: "card", _deckid: archetype_deck.get('_id'), name:type});
+		cards.forEach(card =>{
+			const archetypes = findObjs({type:"graphic",_cardid: card.id});
+			archetypes.forEach(archetype=>{
+				archetype.remove();
+			});
+		});
+	}
 	// /on.chat:message:api
 }
 });
