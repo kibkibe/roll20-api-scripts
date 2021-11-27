@@ -263,7 +263,7 @@ if (msg.type == "api"){
     } else if (msg.content.startsWith("!원형삭제")) {
 
 		const archetype_deck = findObjs({ _type: 'deck', name: 'archetype'})[0];
-		const cards = findObjs({ _type: "card", _deckid: archetype_deck.get('_id'), name:type});
+		const cards = findObjs({ _type: "card", _deckid: archetype_deck.get('_id')});
 		cards.forEach(card =>{
 			const archetypes = findObjs({type:"graphic",_cardid: card.id});
 			archetypes.forEach(archetype=>{

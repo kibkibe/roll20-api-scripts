@@ -1,5 +1,5 @@
 /* https://github.com/kibkibe/roll20-api-scripts/tree/master/magicalogia_match_dice */
-/* (magicalogia_match_dice.js) 211121 코드 시작 */
+/* (magicalogia_match_dice.js) 211127 코드 시작 */
 
 // define: option
 let md_setting = {
@@ -274,4 +274,4 @@ function getPlotAreas() {
 }
 // /define: global function
 
-/* (magicalogia_match_dice.js) 211121 코드 종료 */
+/* (magicalogia_match_dice.js) 211127 코드 종료 */
