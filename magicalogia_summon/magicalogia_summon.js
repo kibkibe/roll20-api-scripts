@@ -1,5 +1,5 @@
 /* https://github.com/kibkibe/roll20-api-scripts/tree/master/magicalogia_summon */
-/* (magicalogia_summon.js) 211127 코드 시작 */
+/* (magicalogia_summon.js) 211204 코드 시작 */
 
 // define: option
 const ms_setting = {
@@ -162,11 +162,11 @@ if (msg.type == "api"){
 										(marker.tag + (number.length>0?"@":'') + number) :
 										marker.tag);
 								}
-								effect_str += (effect_str.length>0?ms_setting.div_text:'') + fx.display_name+number;
-								
 								if (duplicated_index > -1) {
 									effects.splice(duplicated_index,1,fx_obj);
+									effect_str = effect_str.replace(fx.display_name+(number -parseInt(effects[duplicated_index].number)), fx.display_name+number);
 								} else {
+									effect_str += (effect_str.length>0?ms_setting.div_text:'') + fx.display_name+number;
 									effects.push(fx_obj);
 								}
 							}
@@ -179,9 +179,19 @@ if (msg.type == "api"){
 					});
 					opt.statusmarkers = opt.statusmarkers.length > 0 ? opt.statusmarkers.substring(1) : '';
 				}
-				opt.name = ms_setting.name_format.replace("#skill",skill).replace("#type",type).replace("#effect",effect_str);
-				opt.tooltip = ms_setting.tooltip_format.replace("#skill",skill).replace("#type",type).replace("#effect",effect_str);
-				log("tooltip:"+ms_setting.tooltip_format+"/"+opt.tooltip);
+				if (ms_setting.name_format.indexOf('#skill') > -1 && ms_setting.name_format.indexOf('#type') > -1 && 
+				(!skill || skill.length == 0)) {
+					opt.name = type;
+				} else {
+					opt.name = ms_setting.name_format.replace("#skill",skill).replace("#type",type).replace("#effect",effect_str);
+				}
+				if (ms_setting.tooltip_format.indexOf('#skill') > -1 &&
+				ms_setting.tooltip_format.indexOf('#type') > -1 && 
+				(!skill || skill.length == 0)) {
+					opt.tooltip = type;
+				} else {
+					opt.tooltip = ms_setting.tooltip_format.replace("#skill",skill).replace("#type",type).replace("#effect",effect_str);
+				}
 				
 				opt.imgsrc = archetype[0].get('avatar').replace("med","thumb").replace("max","thumb");
 				opt.gmnotes = (skill ? skill : '') + "," + type;
@@ -274,4 +284,4 @@ if (msg.type == "api"){
 	// /on.chat:message:api
 }
 });
-/* (magicalogia_summon.js) 211127 코드 종료 */
+/* (magicalogia_summon.js) 211204 코드 종료 */
