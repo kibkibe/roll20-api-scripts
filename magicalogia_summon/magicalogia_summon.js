@@ -270,12 +270,26 @@ if (msg.type == "api"){
         } catch (err) {
             sendChat('error','/w GM '+err,null,{noarchive:true});
         }
-    } else if (msg.content.startsWith("!원형삭제")) {
+    } else if (msg.content == "!원형삭제") {
 
 		const archetype_deck = findObjs({ _type: 'deck', name: 'archetype'})[0];
 		const cards = findObjs({ _type: "card", _deckid: archetype_deck.get('_id')});
 		cards.forEach(card =>{
-			const archetypes = findObjs({type:"graphic",_cardid: card.id});
+			const archetypes = filterObjs(function(obj){
+				try {
+					let imgsrc = obj.get('imgsrc');
+					let avatar = card.get('avatar');
+					if (!imgsrc || imgsrc.length == 0 || !avatar || avatar.length == 0) { return false; }
+					imgsrc = imgsrc.split('/');
+					avatar = avatar.split('/');
+					if (imgsrc.length < 8 || avatar.length < 8) { return false; }
+					imgsrc = imgsrc[6];
+					avatar = avatar[6];
+					return (obj.get('type') == 'graphic' && imgsrc == avatar);
+				} catch (err){
+					return false;
+				}
+			});
 			archetypes.forEach(archetype=>{
 				archetype.remove();
 			});
