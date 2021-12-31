@@ -4,7 +4,9 @@
 // define: option
 let ss_setting = {
 	// option: 맵에 채팅창을 표시할지(true) 별도의 핸드아웃에 실시간 채팅을 표시할지(false) 설정합니다.
-	show_chat_window: true,
+	show_chat_window: false,
+	// option: 세션 진행 중 채팅창에 흐린 색의 잡담을 일시적으로 표시할지(true) 표시하지 않을지(false) 설정합니다. 일시적으로 표시한 내용은 채팅 기록엔 남지 않습니다.
+	show_chat_log: false,
 	// option: 채팅창의 글씨크기를 지정합니다.
 	font_size: 14,
 	// option: 채팅창의 글씨색을 지정합니다.
@@ -163,6 +165,18 @@ if (msg.type == "api"){
 					bg.set("gmnotes",note_str);
 					toFront(box);
 				}
+			}
+			if (ss_setting.show_chat_log) {
+				const style = "color:#aaaaaa";
+				let chat_id = "";
+				if (!ss_setting.show_player_name) {
+					let character = findObjs({type:'character',name:msg.who});
+					if (character.length > 0) {
+						chat_id = "character|" + character[0].get('_id');
+					}
+				}
+				chat_id = chat_id ? chat_id : "player|"+msg.playerid;
+				sendChat(chat_id,"<span style='" + style + "'>"+msg.content.substring(2, msg.content.length)+"</span>",null,{noarchive:true});
 			}
 			let d = new Date();
 			let tz = d.getTime() + (d.getTimezoneOffset() * 60000) + (ss_setting.timezone * 3600000);

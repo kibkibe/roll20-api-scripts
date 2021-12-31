@@ -1,8 +1,10 @@
 /* https://github.com/kibkibe/roll20-api-scripts/tree/master/magicalogia_match_dice */
-/* (magicalogia_match_dice.js) 211127 코드 시작 */
+/* (magicalogia_match_dice.js) 211231 코드 시작 */
 
 // define: option
 let md_setting = {
+	// option: 다이스 이미지가 들어있는 카드덱의 이름을 지정합니다.
+	dice_name: 'Dice',
 	// option: 다이스를 플롯 시에 자동배치 기능을 사용할지(true) 사용하지 않을지(false)의 여부를 설정합니다.
 	use_snap_dice: true,
 	// option: 대표 주사위의 표시 스타일(CSS)을 설정합니다.
@@ -29,7 +31,11 @@ on("ready", function() {
     on("add:graphic", function(obj) {
         try {
             if (md_setting.use_snap_dice && obj.get('subtype') == 'card') {
-                let deck = findObjs({ _type: 'deck', name: 'Dice'})[0];
+                let deck = findObjs({ _type: 'deck', name: md_setting.dice_name})[0];
+				if (!deck){
+					sendChat('magicalogia_match_dice.js','/w GM 이름이 **'+ md_setting.dice_name+'**인 덱이 없습니다.',null,{noarchive:true});
+					return;
+				}
                 let model = findObjs({ _type: "card", _deckid: deck.get('_id'), _id:obj.get('_cardid')})[0];
                 if (model) {
                     state.current_plot_page = obj.get('_pageid');
@@ -107,7 +113,7 @@ if (msg.type == "api"){
 	// on.chat:message:api
     if ((msg.content.startsWith("!match_dice") || msg.content.startsWith("!clear_dice")) && (!md_setting.is_gm_only || (msg.playerid == 'API' || playerIsGM(msg.playerid)))) {
         try {
-            let deck = findObjs({ _type: 'deck', name: 'Dice'})[0];
+            let deck = findObjs({ _type: 'deck', name: md_setting.dice_name})[0];
             if (!deck) {
                 sendChat("matchDice", "/w gm Dice 덱이 Card에 없습니다.",null,{noarchive:true});
                 return false;
@@ -177,7 +183,7 @@ if (msg.type == "api"){
 			if (msg.content.startsWith("!match_dice")) {
 
 				if (dice[0].length < 1 && dice[2].length < 1) {
-					sendChat('error','/w GM 대표 플롯 영역 내에 공개된 다이스가 없습니다.',null,{noarchive:true});
+					sendChat('error','/w GM 대표 플롯 영역 내에 뒷면이 공개된 다이스가 없습니다.',null,{noarchive:true});
 					return;
 				}
 					
@@ -244,7 +250,7 @@ if (msg.type == "api"){
 function randomDice(obj) {
 
     if (obj.get('subtype') == 'card') {
-        let deck = findObjs({ _type: 'deck', name: 'Dice'})[0];
+        let deck = findObjs({ _type: 'deck', name: md_setting.dice_name})[0];
         let model = findObjs({ _type: "card", _deckid: deck.get('_id'), _id:obj.get('_cardid')})[0];
         if (model && model.get('name') == "?") {
 			let dname = "" + Math.floor( Math.random() * 6 + 1 );
@@ -274,4 +280,4 @@ function getPlotAreas() {
 }
 // /define: global function
 
-/* (magicalogia_match_dice.js) 211127 코드 종료 */
+/* (magicalogia_match_dice.js) 211231 코드 종료 */
