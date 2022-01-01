@@ -1,5 +1,5 @@
 /* https://github.com/kibkibe/roll20-api-scripts/tree/master/image_switcher */
-/* (image_switcher.js) 211231 코드 시작 */
+/* (image_switcher.js) 220101 코드 시작 */
 
 // define: option
 const is_setting = {
@@ -33,9 +33,9 @@ on("chat:message", function(msg)
 {
 	if (msg.type == "api") {
 		// on.chat:message:api
-		if (playerIsGM(msg.playerid) && msg.content.startsWith("!!@"+is_setting.keyword)) {
+		if (playerIsGM(msg.playerid) && msg.content.startsWith("!#"+is_setting.keyword)) {
 
-			const deck_name = msg.content.split(' ')[0].replace('!!@','');
+			const deck_name = msg.content.split(' ')[0].replace('!#','');
 			let bg_background = findObjs({ _type: 'graphic', name:deck_name});
 			let bg_deck = findObjs({ _type: 'deck', name:deck_name});
 			if (bg_background.length == 0) {
@@ -45,18 +45,18 @@ on("chat:message", function(msg)
 				sendChat("error","/w gm 이름이 **" + deck_name +"**인 덱이 캠페인에 없습니다.",null,{noarchive:true});
 				return;
 			} else if (msg.content.split(' ').length != 2) {
-				sendChat("error","/w gm 명령어 형식이 올바르지 않습니다. (ex: *!!@토큰이름 카드이름* or *!!@토큰이름 이미지주소*)",null,{noarchive:true});
+				sendChat("error","/w gm 명령어 형식이 올바르지 않습니다. (ex: *!#토큰이름 카드이름* or *!#토큰이름 이미지주소*)",null,{noarchive:true});
 				return;
 			}
 			for (let i = 0; i < bg_background.length; i++) {
 				const token = bg_background[i];
 				const current_url = token.get('imgsrc');
-				const new_bg = msg.content.replace('!!@'+deck_name + ' ','');
+				const new_bg = msg.content.replace('!#'+deck_name + ' ','');
 				let is_url_input = (msg.content.indexOf('https://') > -1);
 				if (is_url_input) {
 					token.set('imgsrc',new_bg.replace('med','thumb').replace('max','thumb').replace(' ',''));
 					if (current_url == token.get('imgsrc')) {
-						sendChat("error","/w gm 배경 이미지가 정상적으로 변경되지 않았습니다. 주소나 명령어 형식이 올바른지 확인해주세요. (ex: !@토큰이름 이미지주소)",null,{noarchive:true});
+						sendChat("error","/w gm 배경 이미지가 정상적으로 변경되지 않았습니다. 주소나 명령어 형식이 올바른지 확인해주세요. (ex: !#토큰이름 이미지주소)",null,{noarchive:true});
 					}
 				} else {
 					let bg_cards = findObjs({_type:'card', _deckid: bg_deck[0].get('_id'), name: new_bg});
@@ -86,7 +86,7 @@ const updateImageMacro = function(obj) {
 			const cards = findObjs({_type:'card',_deckid:deck.get('id')});
 			for (let j = 0; j < cards.length; j++) {
 				const card = cards[j];
-				action_str += "\&\#124;" + card.get('name') + "\&\#44;!!@" + deck.get('name') + " " + card.get('name');
+				action_str += "\&\#124;" + card.get('name') + "\&\#44;!#" + deck.get('name') + " " + card.get('name');
 			}
 			action_str += "\&\#125;";
 		}
@@ -112,4 +112,4 @@ const updateImageMacro = function(obj) {
 	}
 }
 // /define: global function
-/* (image_switcher.js) 211231 코드 종료 */
+/* (image_switcher.js) 220101 코드 종료 */
