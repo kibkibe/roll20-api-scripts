@@ -1,5 +1,5 @@
 /* https://github.com/kibkibe/roll20-api-scripts/tree/master/narrator */
-/* (narrator.js) 210627 코드 시작 */
+/* (narrator.js) 220111 코드 시작 */
 
 // define: global constant
 state.nt_linebreaker = 'Uk3jmApq-*QzfkMA';
@@ -31,6 +31,12 @@ if (msg.type == "api"){
 	if ((msg.content == "!," || msg.content == "!/" || msg.content.indexOf("!... ") == 0 || msg.content.indexOf("!,,, ") == 0 ||
 	msg.content.indexOf("!. ") == 0) && (msg.playerid == 'API' || playerIsGM(msg.playerid))) {
 		try {
+
+			if (msg.inlinerolls) {
+				msg.inlinerolls.reduce(function(m,v,k){
+					msg.content = msg.content.replace('$[['+k+']]', "[[" + v.expression + "]]");
+				},{});
+			}
 			if (msg.content == "!,") { //일시정지/재시작
 				if (state.is_narrating == 2) {
 					state.is_narrating = 1;
@@ -127,4 +133,4 @@ function narrate() {
 	}
 }
 // /define: global function
-/* (narrator.js) 210627 코드 종료 */
+/* (narrator.js) 220111 코드 종료 */
