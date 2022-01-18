@@ -1,5 +1,5 @@
 /* https://github.com/kibkibe/roll20-api-scripts/tree/master/visual_dialogue */
-/* (visual_dialogue.js) 211031 코드 시작 */
+/* (visual_dialogue.js) 220118 코드 시작 */
 
 // define: global constant
 state.api_tag = "<a href=\"#vd-permitted-api-chat\"></a>";
@@ -567,7 +567,7 @@ const updateMacro = function(obj) {
 		for (let index = 0; index < players.length; index++) {
 			const player = players[index];
 			if (playerIsGM(player.id)) {
-				gm_list += player.id + "|";
+				gm_list += player.id + ",";
 			}
 		}
 		gm_list = gm_list.substring(0,gm_list.length - 1);
@@ -687,4 +687,4 @@ const arrangeStandings = function(addNew) {
     }
 }
 // /define: global function
-/* (visual_dialogue.js) 211031 코드 종료 */
+/* (visual_dialogue.js) 220118 코드 종료 */
