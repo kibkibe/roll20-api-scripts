@@ -11,7 +11,7 @@
 4. [Save Script]를 눌러 저장합니다. 페이지 아래쪽의 API Output Console에 에러 메시지가 표시되지 않는다면 정상적으로 적용된 것입니다.
 	
 ### 준비2. 사용할 이미지 등록
-![](https://github.com/kibkibe/roll20-api-scripts/blob/master/wiki_image/vd/layout_2.jpg)
+![](https://github.com/kibkibe/roll20-api-scripts/blob/master/wiki_image/is_1.jpg)
 ##### 카드덱과 그래픽의 이름 설정 예시
 1. 컬렉션에서 새 카드덱을 생성하고 [옵션](#옵션)의 `keyword`에 삽입된 글자로 시작하는 이름을 입력합니다.
 2. 덱 안에 사용할 이미지 개수만큼 카드를 생성하고 원하는 이미지와 이름을 설정합니다.
