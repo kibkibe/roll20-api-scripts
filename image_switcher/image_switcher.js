@@ -1,5 +1,5 @@
 /* https://github.com/kibkibe/roll20-api-scripts/tree/master/image_switcher */
-/* (image_switcher.js) 220101 코드 시작 */
+/* (image_switcher.js) 220118 코드 시작 */
 
 // define: option
 const is_setting = {
@@ -17,6 +17,13 @@ on('ready', function() {
 		updateImageMacro(obj);
 	});
 	// /on.ready
+});
+on("destroy:deck", function(obj) {
+	// on.destroy:card
+	setTimeout(function() {
+		updateImageMacro();
+	},100);
+	// /on.destroy:card
 });
 on("change:card", function(obj,prev) {
 	// on.change:card
@@ -73,22 +80,33 @@ on("chat:message", function(msg)
 	}
 });
 // define: global function
-const updateImageMacro = function(obj) {
+const updateImageMacro = function() {
 
 	let background_deck = filterObjs(function(obj){
 		return obj.get('_type') == 'deck' && obj.get('name').startsWith(is_setting.keyword);
 	});
-	let action_str = "?{변경할 토큰 이름을 선택하세요";
 	if (background_deck.length > 0) {
-		for (let i = 0; i < background_deck.length; i++) {
-			const deck = background_deck[i];
-			action_str += "|" + deck.get('name') + ",?{"+deck.get('name');
+		let action_str;
+		let getCardStr = function(deck, is_sole) {
 			const cards = findObjs({_type:'card',_deckid:deck.get('id')});
+			let card_str = "";
 			for (let j = 0; j < cards.length; j++) {
 				const card = cards[j];
-				action_str += "\&\#124;" + card.get('name') + "\&\#44;!#" + deck.get('name') + " " + card.get('name');
+				card_str += (is_sole?"|":"\&\#124;") + card.get('name') + (is_sole?",!#":"\&\#44;!#") + deck.get('name') + " " + card.get('name');
 			}
-			action_str += "\&\#125;";
+			return card_str;
+		}
+		if (background_deck.length > 1) {
+			action_str = "?{변경할 토큰 이름을 선택하세요";
+			for (let i = 0; i < background_deck.length; i++) {
+				const deck = background_deck[i];
+				action_str += "|" + deck.get('name') + ",?{변경할 이미지를 선택하세요";
+				action_str += getCardStr(deck, false);
+				action_str += "\&\#125;";
+			}
+		} else {
+			action_str = "?{변경할 이미지를 선택하세요";
+			action_str += getCardStr(background_deck[0], true);
 		}
 		action_str += "}";
 		let players = findObjs({type:'player'});
@@ -96,7 +114,7 @@ const updateImageMacro = function(obj) {
 		for (let index = 0; index < players.length; index++) {
 			const player = players[index];
 			if (playerIsGM(player.id)) {
-				gm_list += player.id + "|";
+				gm_list += player.id + ",";
 			}
 		}
 		gm_list = gm_list.substring(0,gm_list.length - 1);
@@ -112,4 +130,4 @@ const updateImageMacro = function(obj) {
 	}
 }
 // /define: global function
-/* (image_switcher.js) 220101 코드 종료 */
+/* (image_switcher.js) 220118 코드 종료 */
