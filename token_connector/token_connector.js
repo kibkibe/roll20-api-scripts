@@ -194,7 +194,7 @@ function tc_change_value(obj, prev) {
 			if (typeof note != 'string') {
 				return false;
 			}
-			if (note.indexOf(cha_id) > -1 && note.indexOf(obj.get('_id')) > -1) {
+			if (note.indexOf(cha_id) > -1 && note.indexOf(obj.get('_id')) > -1 && note.indexOf('"represents":"') > -1) {
 				return true;
 			}		
 		}
@@ -209,7 +209,9 @@ function tc_change_value(obj, prev) {
 				const key = keys[j];
 				if (connections[key] == obj.get('id')) {
 					token.set(key.replace('link','value'), obj.get('current'));
-					token.set(key.replace('link','max'), obj.get('max'));
+					if (obj.get('max') && obj.get('max').length > 0) {
+						token.set(key.replace('link','max'), obj.get('max'));
+					}
 				}
 			}
 		} catch(err) {
