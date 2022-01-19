@@ -1,5 +1,5 @@
 /* https://github.com/kibkibe/roll20-api-scripts/tree/master/image_switcher */
-/* (image_switcher.js) 220118 코드 시작 */
+/* (image_switcher.js) 220119 코드 시작 */
 
 // define: option
 const is_setting = {
@@ -19,11 +19,11 @@ on('ready', function() {
 	// /on.ready
 });
 on("destroy:deck", function(obj) {
-	// on.destroy:card
+	// on.destroy:deck
 	setTimeout(function() {
 		updateImageMacro();
 	},100);
-	// /on.destroy:card
+	// /on.destroy:deck
 });
 on("change:card", function(obj,prev) {
 	// on.change:card
@@ -130,4 +130,4 @@ const updateImageMacro = function() {
 	}
 }
 // /define: global function
-/* (image_switcher.js) 220118 코드 종료 */
+/* (image_switcher.js) 220119 코드 종료 */
