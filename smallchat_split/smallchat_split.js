@@ -3,6 +3,8 @@
 
 // define: option
 let ss_setting = {
+	// option: 어떤 기준으로 잡담을 분리해내고 싶은지 명령어를 설정합니다. (기본 값: "! ")
+	split_command: "! ",
 	// option: 맵에 채팅창을 표시할지(true) 별도의 핸드아웃에 실시간 채팅을 표시할지(false) 설정합니다.
 	show_chat_window: false,
 	// option: 세션 진행 중 채팅창에 흐린 색의 잡담을 일시적으로 표시할지(true) 표시하지 않을지(false) 설정합니다. 일시적으로 표시한 내용은 채팅 기록엔 남지 않습니다.
@@ -37,7 +39,7 @@ on("chat:message", function(msg)
 {
 if (msg.type == "api"){
 	// on.chat:message:api
-    if (msg.content.indexOf("! ") === 0) {
+    if (msg.content.indexOf(ss_setting.split_command) === 0) {
         try {
 			let bg_array = findObjs({ _type: 'graphic', name:'chat_bg', layer:'map'});
 			let ho = findObjs({ _type: 'handout', name:ss_setting.logname});
@@ -58,7 +60,7 @@ if (msg.type == "api"){
 				});
 			}
 
-			let filtered = msg.content.substring(2);
+			let filtered = msg.content.substring(ss_setting.split_command.length);
 			let filter_word = [
 				{regex:/\*.+\*/g,replace:/\*/g}, // *, **, ***
 				{regex:/``.+``/g,replace:/``/g}, // ``
@@ -176,7 +178,7 @@ if (msg.type == "api"){
 					}
 				}
 				chat_id = chat_id ? chat_id : "player|"+msg.playerid;
-				sendChat(chat_id,"<span style='" + style + "'>"+msg.content.substring(2, msg.content.length)+"</span>",null,{noarchive:true});
+				sendChat(chat_id,"<span style='" + style + "'>"+msg.content.substring(ss_setting.split_command.length, msg.content.length)+"</span>",null,{noarchive:true});
 			}
 			let d = new Date();
 			let tz = d.getTime() + (d.getTimezoneOffset() * 60000) + (ss_setting.timezone * 3600000);
